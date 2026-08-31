@@ -65,7 +65,12 @@
           "maximum": 3,
           "description": "화면 상한을 넘을 때 자르는 순서. 1 이 먼저 남는다. impact 만으로는 71개 항목 안에서 순위가 서지 않는다."
         },
-        "ko": { "type": "string", "minLength": 1 },
+        "ko": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "description": "사용자 화면에 그대로 뜨는 문장이라 터미널 한 줄을 넘지 않아야 한다. 원문 한 항목이 두 가지를 말하면 주된 것만 남기고 나머지는 en 이 갖는다 — 실측에서 109자짜리가 나왔고 그 형태가 전부 두 문장을 합친 것이었다."
+        },
         "en": {
           "type": "string",
           "minLength": 1,
