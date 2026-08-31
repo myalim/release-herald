@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/myalim/release-herald/schema/summaries.schema.json",
+  "title": "release-digest summaries",
+  "description": "요약 생성기와 표시 훅 사이의 유일한 접점. 생성 주체가 수동에서 CI 로 바뀌어도 이 계약은 그대로다. 배열 정렬·weight 의미 등 이 파일로 표현되지 않는 계약은 SPEC 4절이 갖는다.",
+  "type": "object",
+  "required": ["schema", "generated", "releases"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": 1,
+      "description": "계약 버전. 훅은 모르는 값을 만나면 에러가 아니라 침묵으로 처리한다."
+    },
+    "generated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "이 파일을 만든 시각(UTC). 갱신 판정과 CI 정지 감시에 쓴다."
+    },
+    "releases": {
+      "type": "array",
+      "description": "최신 우선 정렬. 훅은 마지막 통지 버전의 인덱스를 찾아 그 앞을 취하므로 버전 대소 비교를 하지 않는다.",
+      "items": { "$ref": "#/$defs/release" }
+    }
+  },
+  "$defs": {
+    "release": {
+      "type": "object",
+      "required": ["version", "date", "url", "items"],
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+$",
+          "description": "릴리스 태그. 통지 기록과 대조하는 키라 원문 표기를 그대로 쓴다."
+        },
+        "date": { "type": "string", "format": "date" },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "원문 릴리스 노트. 요약이 놓친 것을 사용자가 직접 볼 경로."
+        },
+        "items": {
+          "type": "array",
+          "description": "빈 배열이 정상이다 — 실측 10개 버전 중 4개가 항목 0~1개였다. '볼 것이 없다'와 '모른다'를 훅이 구분하려면 그 버전도 항목으로 존재해야 한다.",
+          "items": { "$ref": "#/$defs/item" }
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "required": ["kind", "impact", "weight", "ko", "en"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": ["added", "changed", "improved", "fixed", "other"],
+          "description": "원문 접두어에서 유래한 사실. 분류 기준이 바뀌어도 이 값은 불변이라 재생성 없이 impact 만 다시 매길 수 있다."
+        },
+        "impact": {
+          "enum": ["user", "internal"],
+          "description": "사용자 화면에 띄울지 가르는 판단. kind 로 대신할 수 없다 — 실측에서 fixed 가 64%였고 그 안에 보안 수정이 섞여 있었다."
+        },
+        "weight": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3,
+          "description": "화면 상한을 넘을 때 자르는 순서. 1 이 먼저 남는다. impact 만으로는 71개 항목 안에서 순위가 서지 않는다."
+        },
+        "ko": { "type": "string", "minLength": 1 },
+        "en": {
+          "type": "string",
+          "minLength": 1,
+          "description": "원문 항목. Claude 가 정확한 식별자(옵션명·플래그·이벤트명)를 짚을 수 있어야 하고, 번역 오류를 나중에 대조할 수 있어야 한다."
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "schema": 1,
+      "generated": "2026-08-31T04:12:00Z",
+      "releases": [
+        {
+          "version": "v2.1.251",
+          "date": "2026-08-28",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.251",
+          "items": [
+            {
+              "kind": "fixed",
+              "impact": "user",
+              "weight": 1,
+              "ko": "작업 디렉터리 안에서 심링크가 바뀌치기되면 승인 범위 밖 파일을 읽거나 쓸 수 있던 문제 수정",
+              "en": "Fixed file tools (Read, Write, Edit) following a symlink swapped inside the working directory after the permission check, which could read or write outside the approved location"
+            },
+            {
+              "kind": "added",
+              "impact": "user",
+              "weight": 2,
+              "ko": "모델 전환을 막거나 확인·주석할 수 있는 PreModelSwitch·PostModelSwitch 훅 이벤트 추가",
+              "en": "Added PreModelSwitch and PostModelSwitch hook events (block, confirm, or annotate a model switch)"
+            },
+            {
+              "kind": "changed",
+              "impact": "internal",
+              "weight": 3,
+              "ko": "내부 텔레메트리 필드 정리",
+              "en": "Changed internal telemetry field layout"
+            }
+          ]
+        },
+        {
+          "version": "v2.1.243",
+          "date": "2026-08-24",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.243",
+          "items": []
+        }
+      ]
+    }
+  ]
+}
