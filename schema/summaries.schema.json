@@ -57,7 +57,7 @@
         },
         "impact": {
           "enum": ["user", "internal"],
-          "description": "사용자 화면에 띄울지 가르는 판단. kind 로 대신할 수 없다 — 실측에서 fixed 가 64%였고 그 안에 보안 수정이 섞여 있었다."
+          "description": "사용자 화면에 띄울지 가르는 판단. kind 로 대신할 수 없다 — 한 접두어 안에 보안 수정과 특정 환경 한정 버그가 함께 들어 있다. 판정 기준은 SPEC 1절이 갖는다."
         },
         "weight": {
           "type": "integer",

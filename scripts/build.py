@@ -3,9 +3,9 @@
 
 이 스크립트는 파이프라인의 **양끝**만 맡는다 — 가운데(한국어 요약·impact·weight 판정)는
 LLM 이 채운다. P1 에서는 그 단계가 수동이고 P3 에서 CI 호출로 바뀌는데, 경계가
-schema/summaries.schema.json 이라 주체가 바뀌어도 이 스크립트는 그대로다 (decisions D4·D6).
+schema/summaries.schema.json 이라 주체가 바뀌어도 이 스크립트는 그대로다 (decisions D4).
 
-의존성은 표준 라이브러리뿐이다 — 하나라도 붙으면 P3 의 CI 재현 비용이 그만큼 는다.
+의존성은 표준 라이브러리뿐이다 (decisions D6).
 
   extract   atom → 중간 JSON (version·date·url·items[kind,en])
   validate  summaries.json 이 스키마를 만족하나
