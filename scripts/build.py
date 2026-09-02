@@ -8,16 +8,20 @@ schema/summaries.schema.json 이라 주체가 바뀌어도 이 스크립트는 �
 의존성은 표준 라이브러리뿐이다 (decisions D6).
 
   extract   atom → 중간 JSON (version·date·url·items[kind,en])
+  pending   아직 판정되지 않은 릴리스만 추린다 (LLM 입력)
+  merge     판정 결과를 summaries.json 에 병합한다 (LLM 출력 검사 포함)
   validate  summaries.json 이 스키마를 만족하나
 """
 
 import argparse
 import html
 import json
+import os
 import re
 import sys
 import urllib.request
 import xml.etree.ElementTree as ET
+from datetime import datetime, timezone
 from pathlib import Path
 
 ATOM_URL = "https://github.com/anthropics/claude-code/releases.atom"
@@ -106,6 +110,75 @@ def extract(url: str) -> dict:
     # 그대로 유지한다.
     releases.sort(key=lambda r: r["date"], reverse=True)
     return {"source": url, "releases": releases}
+
+
+# ── 판정 전후 ─────────────────────────────────────────────────────────────
+# 가운데(요약·분류)를 LLM 이 채우므로, 그 앞에서 **무엇을 물을지**를 좁히고 뒤에서 **답을 검사**한다.
+# 이미 판정된 버전을 다시 묻지 않는 것이 재현성과 사용량 양쪽에 걸린다.
+
+
+def pending(extracted: Path, summaries: Path, out: Path) -> int:
+    """summaries.json 에 없는 릴리스만 추려 낸다.
+
+    kind·en 만 넘긴다 — 판정에 필요한 것이 그것뿐이고, 나머지를 함께 주면 LLM 이 고칠 여지가
+    생긴다. 실제로 고쳐졌는지는 merge 가 대조한다.
+    """
+    ext = json.loads(extracted.read_text(encoding="utf-8"))
+    known = set()
+    if summaries.exists():
+        known = {r.get("version") for r in json.loads(summaries.read_text(encoding="utf-8")).get("releases", [])}
+
+    fresh = [
+        {
+            "version": r["version"],
+            "date": r["date"],
+            "url": r["url"],
+            "items": [{"kind": i["kind"], "en": i["en"]} for i in r["items"]],
+        }
+        for r in ext["releases"]
+        if r["version"] not in known
+    ]
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps({"releases": fresh}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return len(fresh)
+
+
+def merge(pending_file: Path, judged_file: Path, summaries: Path) -> list:
+    """판정 결과를 병합한다. **LLM 출력을 신뢰하지 않는다.**
+
+    무엇을 물었는지(pending)와 무엇을 받았는지(judged)를 대조해, 버전이 지어졌거나 원문이
+    바뀌었으면 병합하지 않는다. 어긋난 릴리스만 빼는 대신 **전체를 거부하는** 이유는, 이 설계의
+    모든 실패가 침묵으로 수렴하는데 생성 측만은 저자에게 침묵하면 안 되기 때문이다.
+    """
+    asked = {r["version"]: r for r in json.loads(pending_file.read_text(encoding="utf-8"))["releases"]}
+    got = json.loads(judged_file.read_text(encoding="utf-8")).get("releases", [])
+    errs = []
+
+    for r in got:
+        v = r.get("version")
+        src = asked.get(v)
+        if src is None:
+            errs.append(f"{v!r}: 묻지 않은 버전")
+            continue
+        if len(r.get("items", [])) != len(src["items"]):
+            errs.append(f"{v}: 항목 수가 다름 ({len(src['items'])} → {len(r.get('items', []))})")
+            continue
+        for n, (a, b) in enumerate(zip(src["items"], r["items"])):
+            if b.get("kind") != a["kind"] or b.get("en") != a["en"]:
+                errs.append(f"{v}[{n}]: 원문이 바뀜")
+    missing = set(asked) - {r.get("version") for r in got}
+    if missing:
+        errs.append(f"판정이 빠진 버전: {', '.join(sorted(missing))}")
+    if errs:
+        return errs
+
+    data = json.loads(summaries.read_text(encoding="utf-8"))
+    data["releases"] = sorted(
+        got + data["releases"], key=_order_key, reverse=True
+    )
+    data["generated"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    summaries.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return []
 
 
 # ── 검증 ──────────────────────────────────────────────────────────────────
@@ -214,6 +287,16 @@ def main() -> int:
     e.add_argument("--url", default=ATOM_URL)
     e.add_argument("--out", type=Path, default=ROOT / "data/extracted.json")
 
+    pd = sub.add_parser("pending", help="아직 판정되지 않은 릴리스만 추린다")
+    pd.add_argument("--extracted", type=Path, default=ROOT / "data/extracted.json")
+    pd.add_argument("--summaries", type=Path, default=ROOT / "data/summaries.json")
+    pd.add_argument("--out", type=Path, default=ROOT / "data/pending.json")
+
+    mg = sub.add_parser("merge", help="판정 결과를 summaries.json 에 병합한다")
+    mg.add_argument("--pending", type=Path, default=ROOT / "data/pending.json")
+    mg.add_argument("--judged", type=Path, default=ROOT / "data/judged.json")
+    mg.add_argument("--summaries", type=Path, default=ROOT / "data/summaries.json")
+
     v = sub.add_parser("validate", help="summaries.json 을 계약과 대조한다")
     v.add_argument("file", type=Path)
 
@@ -229,6 +312,27 @@ def main() -> int:
         empty = [r["version"] for r in data["releases"] if not r["items"]]
         if empty:
             print(f"  항목 없는 릴리스: {', '.join(empty)}")
+        return 0
+
+    if args.cmd == "pending":
+        n = pending(args.extracted, args.summaries, args.out)
+        print(f"✓ 판정 대기 릴리스 {n}")
+        # 대기가 없으면 뒤 단계를 통째로 건너뛰어야 한다 — 빈 판정을 LLM 에 묻는 것은
+        # 사용량만 쓰고 아무것도 바꾸지 않는다.
+        gh = os.environ.get("GITHUB_OUTPUT")
+        if gh:
+            with open(gh, "a", encoding="utf-8") as f:
+                f.write(f"count={n}\n")
+        return 0
+
+    if args.cmd == "merge":
+        errs = merge(args.pending, args.judged, args.summaries)
+        if errs:
+            print("✗ 판정 결과를 병합하지 않았다", file=sys.stderr)
+            for m in errs:
+                print(f"  {m}", file=sys.stderr)
+            return 1
+        print(f"✓ {args.summaries.name} 병합 완료")
         return 0
 
     errs = validate(args.file)

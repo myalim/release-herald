@@ -14,6 +14,8 @@ docs/
 # 중간 산출물 — atom 창이 흐르므로 돌릴 때마다 달라진다. 커밋 대상은 요약이 채워진
 # data/summaries.json 쪽이다.
 data/extracted.json
+data/pending.json
+data/judged.json
 
 __pycache__/
 
