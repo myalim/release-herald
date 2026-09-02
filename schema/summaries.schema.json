@@ -14,7 +14,8 @@
     "generated": {
       "type": "string",
       "format": "date-time",
-      "description": "이 파일을 만든 시각(UTC). 갱신 판정과 CI 정지 감시에 쓴다."
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$",
+      "description": "이 파일을 만든 시각(UTC). 갱신 판정과 CI 정지 감시에 쓴다. format 은 강제되지 않으므로 pattern 이 그 자리를 맡는다."
     },
     "releases": {
       "type": "array",
@@ -33,11 +34,17 @@
           "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+$",
           "description": "릴리스 태그. 통지 기록과 대조하는 키라 원문 표기를 그대로 쓴다."
         },
-        "date": { "type": "string", "format": "date" },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "description": "정렬 검증이 이 값을 사전식으로 비교하므로, 형식이 어긋나면 정렬 계약이 통과로 보고되면서 깨진다."
+        },
         "url": {
           "type": "string",
           "format": "uri",
-          "description": "원문 릴리스 노트. 요약이 놓친 것을 사용자가 직접 볼 경로."
+          "pattern": "^https://[^\\s]+$",
+          "description": "원문 릴리스 노트. 요약이 놓친 것을 사용자가 직접 볼 경로라, 비어 있으면 그 길이 조용히 끊긴다."
         },
         "items": {
           "type": "array",

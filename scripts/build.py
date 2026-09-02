@@ -78,10 +78,17 @@ def extract(url: str) -> dict:
 
     releases = []
     for e in root.findall("a:entry", NS):
-        version = (e.findtext("a:title", "", NS) or "").strip()
         updated = (e.findtext("a:updated", "", NS) or "")[:10]
         link = e.find("a:link", NS)
         href = link.get("href") if link is not None else ""
+        # version 은 통지 기록과 문자열 일치로 대조하는 키라 태그 그 자체여야 한다. title 은
+        # 사람이 붙이는 릴리스 **이름**이고 — 지금은 태그와 같지만 그것이 계약은 아니다 —
+        # 이름이 붙는 날 pattern 에 걸려 생성이 멈춘다. href 의 /tag/ 뒤가 태그를 확정적으로 준다.
+        version = (
+            href.rsplit("/tag/", 1)[-1]
+            if "/tag/" in href
+            else (e.findtext("a:title", "", NS) or "").strip()
+        )
         content = e.findtext("a:content", "", NS) or ""
 
         items = []
@@ -95,9 +102,9 @@ def extract(url: str) -> dict:
         )
 
     # atom 이 최신 우선으로 주지만 그것에 기대지 않는다 — 정렬이 계약이고(SPEC 4절),
-    # 그 계약을 지키는 책임이 생성기에 있다. 날짜 역순 + 원래 순서로 안정 정렬한다.
-    order = {id(r): i for i, r in enumerate(releases)}
-    releases.sort(key=lambda r: (r["date"], -order[id(r)]), reverse=True)
+    # 그 계약을 지키는 책임이 생성기에 있다. sort 가 안정 정렬이라 같은 날짜는 피드 순서를
+    # 그대로 유지한다.
+    releases.sort(key=lambda r: r["date"], reverse=True)
     return {"source": url, "releases": releases}
 
 
@@ -127,7 +134,9 @@ def _check(obj, spec, defs, path, errs):
             errs.append(f"{here}: {p['const']} 이어야 함 → {v!r}")
         if "enum" in p and v not in p["enum"]:
             errs.append(f"{here}: {p['enum']} 중 하나여야 함 → {v!r}")
-        if "pattern" in p and not re.match(p["pattern"], str(v)):
+        # fullmatch 를 쓴다 — match 는 `$` 가 끝의 개행 앞에서도 맞아 "v2.1.251\n" 이 통과하고,
+        # 훅이 통지 기록과 문자열 일치로 대조하므로 그런 값은 영영 매칭되지 않아 매 세션 재통지된다.
+        if "pattern" in p and not re.fullmatch(p["pattern"], str(v)):
             errs.append(f"{here}: 형식 불일치 → {v!r}")
         if p.get("type") == "integer":
             if not isinstance(v, int) or isinstance(v, bool):
@@ -139,6 +148,9 @@ def _check(obj, spec, defs, path, errs):
                 errs.append(f"{here}: 문자열이어야 함 → {v!r}")
             elif len(v) < p.get("minLength", 0):
                 errs.append(f"{here}: 비어 있음")
+            elif "maxLength" in p and len(v) > p["maxLength"]:
+                # 이 상한이 곧 "화면 한 줄" 계약이라(decisions D7), 안 보면 계약이 없는 것과 같다.
+                errs.append(f"{here}: {p['maxLength']}자 상한 초과 ({len(v)}자)")
         if p.get("type") == "array":
             if not isinstance(v, list):
                 errs.append(f"{here}: 배열이어야 함")
@@ -150,21 +162,51 @@ def _check(obj, spec, defs, path, errs):
                     _check(el, defs[name], defs, f"{here}[{i}]", errs)
 
 
+def _order_key(release: dict) -> tuple:
+    """정렬 검증 전용 키. 버전은 문자열이 아니라 정수 튜플로 비교한다.
+
+    훅의 통지 판정에는 버전 대소 비교가 없고(인덱스로 찾는다 — SPEC 4절) 여기서도 되살리지
+    않는다. 이 비교는 그 인덱스 판정이 딛는 **순서 자체**를 생성 시점에 확인하는 용도이고,
+    정수 튜플이라 v2.1.9 > v2.1.10 이 되는 문자열 비교의 함정도 없다.
+    """
+    return (release.get("date", ""), tuple(int(n) for n in re.findall(r"\d+", str(release.get("version", "")))))
+
+
 def validate(path: Path) -> list:
-    schema = json.loads((ROOT / "schema/summaries.schema.json").read_text())
-    data = json.loads(path.read_text())
+    schema = json.loads((ROOT / "schema/summaries.schema.json").read_text(encoding="utf-8"))
+    data = json.loads(path.read_text(encoding="utf-8"))
     errs = []
     _check(data, schema, schema["$defs"], path.name, errs)
 
+    releases = data.get("releases")
+    # 형태 오류는 위에서 이미 보고했다. 그래도 순회하면 보고 대신 traceback 이 나가고,
+    # 계약 위반을 알리는 것이 이 도구의 존재 이유라 그 자리에서 빈손이 된다.
+    if not isinstance(releases, list) or not all(isinstance(r, dict) for r in releases):
+        return errs
+
     # 정렬은 JSON Schema 로 표현되지 않아 계약이 SPEC 4절에 있다 — 훅이 인덱스로 판정하므로
-    # 이 순서가 깨지면 통지가 조용히 어긋난다. 검증이 여기 있어야 하는 이유다.
-    dates = [r.get("date", "") for r in data.get("releases", [])]
-    if dates != sorted(dates, reverse=True):
+    # 이 순서가 깨지면 통지가 조용히 어긋난다. 날짜만 보면 같은 날 두 릴리스의 역전을 놓치는데,
+    # 원본 피드에 같은 날짜 쌍이 실제로 있고 그 역전이 곧 통지 누락이다.
+    keys = [_order_key(r) for r in releases]
+    if keys != sorted(keys, reverse=True):
         errs.append("releases: 최신 우선 정렬이 아님 (SPEC 4절 계약)")
+
+    # 훅은 통지 기록과 일치하는 **첫** 원소를 찾으므로, 중복이 있으면 미통지 구간이 잘린다.
+    seen = set()
+    for r in releases:
+        v = r.get("version")
+        if v in seen:
+            errs.append(f"releases: version 중복 → {v!r}")
+        seen.add(v)
     return errs
 
 
 def main() -> int:
+    # 한국어 요약과 ✓ 를 읽고 쓰므로 로케일 기본값에 맡기지 않는다 — LC_ALL=C 나 Windows
+    # 기본 인코딩에서 UnicodeDecodeError/UnicodeEncodeError 로 죽는다.
+    for stream in (sys.stdout, sys.stderr):
+        stream.reconfigure(encoding="utf-8")
+
     ap = argparse.ArgumentParser(description=__doc__)
     sub = ap.add_subparsers(dest="cmd", required=True)
 
@@ -180,9 +222,10 @@ def main() -> int:
     if args.cmd == "extract":
         data = extract(args.url)
         args.out.parent.mkdir(parents=True, exist_ok=True)
-        args.out.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
+        args.out.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         total = sum(len(r["items"]) for r in data["releases"])
-        print(f"✓ {args.out.relative_to(ROOT)} — 릴리스 {len(data['releases'])} · 항목 {total}")
+        shown = args.out.relative_to(ROOT) if args.out.is_relative_to(ROOT) else args.out
+        print(f"✓ {shown} — 릴리스 {len(data['releases'])} · 항목 {total}")
         empty = [r["version"] for r in data["releases"] if not r["items"]]
         if empty:
             print(f"  항목 없는 릴리스: {', '.join(empty)}")

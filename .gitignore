@@ -15,5 +15,7 @@ docs/
 # data/summaries.json 쪽이다.
 data/extracted.json
 
+__pycache__/
+
 node_modules/
 .DS_Store
