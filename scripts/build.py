@@ -143,42 +143,99 @@ def pending(extracted: Path, summaries: Path, out: Path) -> int:
     return len(fresh)
 
 
-def merge(pending_file: Path, judged_file: Path, summaries: Path) -> list:
-    """판정 결과를 병합한다. **LLM 출력을 신뢰하지 않는다.**
+def _judged_releases(judged_file: Path) -> tuple:
+    """판정 결과를 읽는다. 없거나 깨졌으면 traceback 대신 사유를 돌려준다.
 
-    무엇을 물었는지(pending)와 무엇을 받았는지(judged)를 대조해, 버전이 지어졌거나 원문이
-    바뀌었으면 병합하지 않는다. 어긋난 릴리스만 빼는 대신 **전체를 거부하는** 이유는, 이 설계의
-    모든 실패가 침묵으로 수렴하는데 생성 측만은 저자에게 침묵하면 안 되기 때문이다.
+    액션이 성공으로 끝나고도 파일을 안 쓸 수 있다(턴 예산 소진 등). 그때 계약 위반을
+    알리는 도구가 스스로 죽으면 무엇이 잘못됐는지가 로그에서 사라진다.
+    """
+    try:
+        data = json.loads(judged_file.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return None, [f"{judged_file.name} 이 없다 — 판정 단계가 아무것도 쓰지 않았다"]
+    except json.JSONDecodeError as e:
+        return None, [f"{judged_file.name} 이 JSON 이 아니다: {e}"]
+    rel = data.get("releases") if isinstance(data, dict) else None
+    if not isinstance(rel, list) or not all(isinstance(r, dict) for r in rel):
+        return None, [f"{judged_file.name}: releases 가 객체 배열이 아니다"]
+    return rel, []
+
+
+def _reject_reason(asked: dict, got: dict) -> str:
+    """물은 것과 받은 것을 대조한다. 어긋나면 사유, 멀쩡하면 빈 문자열.
+
+    **`kind`·`en` 만 보면 부족하다** — `date` 가 바뀌면 정렬이 뒤집히고, 그 뒤집힘은 병합이
+    스스로 정렬한 결과를 검증이 같은 키로 다시 보는 구조라 잡히지 않는다(동어반복). 훅은
+    마지막 통지 버전의 인덱스 앞을 취하므로, 아래로 밀린 릴리스는 영영 통지되지 않는다.
+    `url` 은 사용자가 원문으로 가는 유일한 길이라 함께 본다.
+    """
+    for field in ("date", "url"):
+        if got.get(field) != asked[field]:
+            return f"{field} 가 바뀜"
+    items, src = got.get("items", []), asked["items"]
+    if len(items) != len(src):
+        return f"항목 수가 다름 ({len(src)} → {len(items)})"
+    for n, (a, b) in enumerate(zip(src, items)):
+        if b.get("kind") != a["kind"] or b.get("en") != a["en"]:
+            return f"{n}번째 항목의 원문이 바뀜"
+    return ""
+
+
+def merge(pending_file: Path, judged_file: Path, summaries: Path) -> tuple:
+    """판정 결과를 병합한다. **통과분만 넣고 어긋난 것은 사유와 함께 돌려준다.**
+
+    전부 거부하지 않는 이유는 정체다 — 한 릴리스가 계속 어긋나면 나머지까지 함께 멈추고,
+    원본이 좁은 창이라 그 사이 릴리스가 사라진다. 대신 거부가 있으면 호출한 쪽이 빨간 run 으로
+    끝내 저자에게는 침묵하지 않는다.
+
+    쓰기는 **검증을 통과한 뒤 원자적으로** 한다. 이 파일이 훅과의 유일한 접점이라 미검증
+    상태나 부분 상태로 존재해서는 안 된다(SPEC 불변식).
+
+    돌려주는 것은 (거부 사유 목록, 병합한 릴리스 수).
     """
     asked = {r["version"]: r for r in json.loads(pending_file.read_text(encoding="utf-8"))["releases"]}
-    got = json.loads(judged_file.read_text(encoding="utf-8")).get("releases", [])
-    errs = []
+    got, errs = _judged_releases(judged_file)
+    if errs:
+        return errs, 0
 
+    # handled 는 "이 버전을 다뤘다" 이지 "받아들였다" 가 아니다 — 거부한 버전을 빼지 않으면
+    # 아래 누락 검사에 다시 걸려 한 결함이 두 줄로 보고된다.
+    accepted, handled = [], set()
     for r in got:
         v = r.get("version")
-        src = asked.get(v)
-        if src is None:
+        if v not in asked:
             errs.append(f"{v!r}: 묻지 않은 버전")
             continue
-        if len(r.get("items", [])) != len(src["items"]):
-            errs.append(f"{v}: 항목 수가 다름 ({len(src['items'])} → {len(r.get('items', []))})")
+        if v in handled:
+            # 훅은 일치하는 **첫** 원소를 찾으므로, 중복이 들어가면 미통지 구간이 잘린다.
+            errs.append(f"{v}: 판정 결과에 중복")
             continue
-        for n, (a, b) in enumerate(zip(src["items"], r["items"])):
-            if b.get("kind") != a["kind"] or b.get("en") != a["en"]:
-                errs.append(f"{v}[{n}]: 원문이 바뀜")
-    missing = set(asked) - {r.get("version") for r in got}
-    if missing:
-        errs.append(f"판정이 빠진 버전: {', '.join(sorted(missing))}")
-    if errs:
-        return errs
+        handled.add(v)
+        reason = _reject_reason(asked[v], r)
+        if reason:
+            errs.append(f"{v}: {reason}")
+            continue
+        accepted.append(r)
+
+    for v in sorted(set(asked) - handled):
+        errs.append(f"{v}: 판정이 없음")
+
+    if not accepted:
+        return errs, 0
 
     data = json.loads(summaries.read_text(encoding="utf-8"))
-    data["releases"] = sorted(
-        got + data["releases"], key=_order_key, reverse=True
-    )
+    data["releases"] = sorted(accepted + data["releases"], key=_order_key, reverse=True)
     data["generated"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    summaries.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    return []
+
+    broken = validate_data(data)
+    if broken:
+        # 여기까지 왔는데 계약을 어겼다면 대조가 못 잡는 종류다 — 쓰지 않고 그대로 알린다.
+        return errs + [f"병합 결과가 계약 위반: {m}" for m in broken], 0
+
+    tmp = summaries.with_name(summaries.name + ".tmp")
+    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    os.replace(tmp, summaries)
+    return errs, len(accepted)
 
 
 # ── 검증 ──────────────────────────────────────────────────────────────────
@@ -245,11 +302,11 @@ def _order_key(release: dict) -> tuple:
     return (release.get("date", ""), tuple(int(n) for n in re.findall(r"\d+", str(release.get("version", "")))))
 
 
-def validate(path: Path) -> list:
+def validate_data(data: dict, label: str = "summaries") -> list:
+    """디스크가 아니라 **데이터**를 검증한다 — merge 가 쓰기 전에 같은 검사를 돌린다."""
     schema = json.loads((ROOT / "schema/summaries.schema.json").read_text(encoding="utf-8"))
-    data = json.loads(path.read_text(encoding="utf-8"))
     errs = []
-    _check(data, schema, schema["$defs"], path.name, errs)
+    _check(data, schema, schema["$defs"], label, errs)
 
     releases = data.get("releases")
     # 형태 오류는 위에서 이미 보고했다. 그래도 순회하면 보고 대신 traceback 이 나가고,
@@ -272,6 +329,10 @@ def validate(path: Path) -> list:
             errs.append(f"releases: version 중복 → {v!r}")
         seen.add(v)
     return errs
+
+
+def validate(path: Path) -> list:
+    return validate_data(json.loads(path.read_text(encoding="utf-8")), path.name)
 
 
 def main() -> int:
@@ -326,13 +387,16 @@ def main() -> int:
         return 0
 
     if args.cmd == "merge":
-        errs = merge(args.pending, args.judged, args.summaries)
-        if errs:
-            print("✗ 판정 결과를 병합하지 않았다", file=sys.stderr)
-            for m in errs:
-                print(f"  {m}", file=sys.stderr)
-            return 1
-        print(f"✓ {args.summaries.name} 병합 완료")
+        errs, n = merge(args.pending, args.judged, args.summaries)
+        print(f"✓ {args.summaries.name} — 병합한 릴리스 {n}")
+        for m in errs:
+            print(f"  거부: {m}", file=sys.stderr)
+        # 거부가 있어도 통과분은 이미 들어갔으므로 여기서 죽지 않는다 — 커밋까지 마친 뒤
+        # 호출한 쪽이 빨간 run 으로 끝내 저자에게 알린다.
+        gh = os.environ.get("GITHUB_OUTPUT")
+        if gh:
+            with open(gh, "a", encoding="utf-8") as f:
+                f.write(f"rejected={len(errs)}\n")
         return 0
 
     errs = validate(args.file)

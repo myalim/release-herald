@@ -17,6 +17,12 @@ on:
 permissions:
   contents: write
 
+# 수동 실행과 cron 이 겹치면 같은 대기분을 두 번 판정해 사용량을 두 배로 쓰고, 뒤 실행의
+# push 가 non-fast-forward 로 거부돼 실제 생성 실패와 구분되지 않는 빨간 run 이 남는다.
+concurrency:
+  group: summarize
+  cancel-in-progress: false
+
 jobs:
   summarize:
     runs-on: ubuntu-latest
@@ -44,8 +50,10 @@ jobs:
             --allowedTools "Read,Write"
             --max-turns 30
 
-      # 병합이 판정 결과를 pending 과 대조한다 — 버전이 지어졌거나 원문이 바뀌었으면 여기서 멈춘다.
+      # 병합이 판정 결과를 pending 과 대조해 통과분만 넣고, 어긋난 릴리스는 거부 수로 돌려준다.
+      # 그 신호는 커밋을 마친 뒤에 쓴다 — 통과분까지 함께 버리지 않기 위해서다.
       - name: Merge and validate
+        id: merge
         if: steps.pending.outputs.count != '0'
         run: |
           python3 scripts/build.py merge
@@ -58,4 +66,14 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add data/summaries.json
           git diff --cached --quiet || git commit -m 'chore: 릴리스 요약 갱신'
+          # 겹친 실행이 먼저 밀어 넣었을 수 있다 — 거부되면 이 실행의 판정이 통째로 버려진다.
+          git pull --rebase
           git push
+
+      # 거부된 릴리스가 있으면 여기서 실패로 끝낸다. 통과분은 이미 들어갔고, 실패한 run 이
+      # 저자에게 가는 유일한 신호다 — 사용자 화면의 침묵과 저자의 관측은 분리한다.
+      - name: Fail on rejected releases
+        if: steps.merge.outputs.rejected != '' && steps.merge.outputs.rejected != '0'
+        run: |
+          echo "판정이 거부된 릴리스가 있다 — 위 Merge 단계 로그를 볼 것" >&2
+          exit 1
