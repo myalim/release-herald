@@ -3,7 +3,9 @@
 # 결정적인 일(추출·추림·병합·검증)은 스크립트가, 판정만 액션이 한다. 그래서 액션에 주는 도구가
 # 파일 읽기·쓰기뿐이고, 커밋은 이 워크플로가 직접 한다.
 #
-# scheduled 워크플로는 default 브랜치에서만 돈다 — 작업 브랜치에서는 cron 이 뜨지 않는다.
+# 트리거를 늘릴 때 주의 — 액션이 받는 이벤트는 정해져 있다(schedule · workflow_dispatch ·
+# repository_dispatch · workflow_run 과 PR·issue 계열). push 는 목록에 없어 `Unsupported event
+# type` 으로 죽고, 그 넷이 전부 default 브랜치에서만 발화하므로 **작업 브랜치에서는 돌릴 수 없다.**
 name: summarize
 
 on:
@@ -11,14 +13,6 @@ on:
     # 22:00 UTC = 07:00 KST. 오너가 아침에 세션을 켤 때 이미 갱신돼 있게 둔다.
     - cron: '0 22 * * *'
   workflow_dispatch:
-  # 검증용 임시 트리거 — workflow_dispatch 는 default 브랜치의 워크플로만 실행할 수 있어,
-  # 작업 브랜치에서 돌려 보려면 이것이 필요하다. main 으로 나가기 전에 뺀다.
-  push:
-    branches: [feature/digest-delivery]
-    paths:
-      - '.github/workflows/summarize.yml'
-      - 'scripts/build.py'
-      - 'prompts/classify.md'
 
 permissions:
   contents: write
@@ -30,16 +24,16 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: 원문 추출
+      - name: Extract source items
         run: python3 scripts/build.py extract
 
       # 이미 판정된 버전은 다시 묻지 않는다 — 재현성과 사용량 양쪽에 걸린다.
-      - name: 판정 대기 추림
+      - name: Collect unjudged releases
         id: pending
         run: python3 scripts/build.py pending
 
       # 대기가 없으면 아래 전부를 건너뛴다. 빈 판정을 묻는 것은 사용량만 쓰고 아무것도 바꾸지 않는다.
-      - name: 판정
+      - name: Classify and translate
         if: steps.pending.outputs.count != '0'
         uses: anthropics/claude-code-action@v1
         with:
@@ -51,13 +45,13 @@ jobs:
             --max-turns 30
 
       # 병합이 판정 결과를 pending 과 대조한다 — 버전이 지어졌거나 원문이 바뀌었으면 여기서 멈춘다.
-      - name: 병합·검증
+      - name: Merge and validate
         if: steps.pending.outputs.count != '0'
         run: |
           python3 scripts/build.py merge
           python3 scripts/build.py validate data/summaries.json
 
-      - name: 커밋
+      - name: Commit
         if: steps.pending.outputs.count != '0'
         run: |
           git config user.name 'github-actions[bot]'
