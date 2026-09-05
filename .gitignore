@@ -16,6 +16,8 @@ docs/
 data/extracted.json
 data/pending.json
 data/judged.json
+data/pending/
+data/judged/
 
 __pycache__/
 
