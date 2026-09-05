@@ -19,6 +19,10 @@ SRC="$HERE/../data/summaries.json"
 command -v jq >/dev/null 2>&1 || { echo "jq 가 필요합니다"; exit 2; }
 [ -r "$SRC" ] || { echo "fixture 원본이 없습니다: $SRC"; exit 2; }
 
+# 갱신은 끈다 — 테스트가 실제 네트워크를 치고 사용자의 진짜 캐시를 갈아치우면
+# 그것은 검증이 아니라 부작용이다.
+export RELEASE_HERALD_NO_UPDATE=1
+
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 STATE="$TMP/state"
@@ -95,6 +99,20 @@ chk "additionalContext ⊇ systemMessage" "$MISS" "0"
 # 프로덕션 코드에 테스트용 분기를 심어야 한다. 미리 값을 바꿔 두는 방식은 그 값이 LAST 로
 # 읽혀 "기록이 캐시 밖" 경로를 타므로 가드가 아니라 다른 동작을 보게 된다.
 # 실제 세션 두 개를 동시에 켜는 것이 검증 경로이고, 그 자리는 SPEC 검증 게이트다.
+
+echo "── 갱신과의 경계 ──"
+# 경계 판정식은 프로세스 계보가 아니라 대기 여부다. 오래 걸리는 갱신기를 물려 놓고,
+# 훅이 그것을 기다리는지 본다 — 기다리면 훅 소요가 갱신기 시간만큼 늘어난다.
+SLOW="$TMP/slow-updater.sh"
+printf '#!/bin/sh\nsleep 5\n' > "$SLOW"; chmod +x "$SLOW"
+echo v2.1.260 > "$STATE"
+T0=$(date +%s)
+RELEASE_HERALD_CACHE="$CACHE" RELEASE_HERALD_STATE="$STATE" \
+  RELEASE_HERALD_NO_UPDATE= RELEASE_HERALD_UPDATER="$SLOW" "$HOOK" >/dev/null 2>&1
+T1=$(date +%s)
+chk "느린 갱신기를 기다리지 않음" "$([ $((T1 - T0)) -lt 3 ] && echo y || echo n)" "y"
+chk "  띄운 갱신기는 살아 있음"   "$(pgrep -f "$SLOW" >/dev/null && echo y || echo n)" "y"
+pkill -f "$SLOW" 2>/dev/null
 
 echo
 echo "통과 $PASS · 실패 $FAIL"

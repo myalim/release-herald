@@ -48,6 +48,23 @@ MAX_LINES="${RELEASE_HERALD_MAX_LINES:-8}"
 dbg() { [ -n "$RELEASE_HERALD_DEBUG" ] && printf '[release-herald] %s\n' "$*" >&2; return 0; }
 
 command -v jq >/dev/null 2>&1 || { dbg "jq 없음 — 침묵"; exit 0; }
+
+# ── 캐시 갱신을 배경으로 띄우고 기다리지 않는다 ─────────────────────
+# 경계 판정식은 프로세스 계보가 아니라 **대기 여부**다 — 자식이 네트워크를 써도 이 훅의 종료
+# 시점이 그 결과에 의존하지 않으면 위반이 아니다. 그래서 결과를 받아 쓰지 않고, 이번 세션은
+# 지금 있는 캐시로 판정한다(받은 것은 다음 세션이 본다).
+#
+# **캐시를 읽기 전에 띄운다** — 캐시가 아예 없는 첫 세션에서도 갱신은 시작돼야 한다. 그 세션의
+# 정답은 침묵이지만, 아무것도 시작하지 않으면 다음 세션에도 캐시가 없다.
+#
+# 서브셸 안에서 `&` 로 띄우면 그 서브셸이 즉시 끝나 자식이 이 훅에서 떨어져 나간다. nohup 은
+# 터미널이 닫힐 때 오는 SIGHUP 으로 갱신이 중간에 죽지 않게 한다.
+UPDATER="${RELEASE_HERALD_UPDATER:-${0%/*}/update-cache.sh}"
+if [ -z "${RELEASE_HERALD_NO_UPDATE:-}" ] && [ -x "$UPDATER" ]; then
+  ( nohup "$UPDATER" >/dev/null 2>&1 & ) 2>/dev/null
+  dbg "갱신 배경 실행: $UPDATER"
+fi
+
 [ -r "$CACHE" ] || { dbg "캐시 없음/읽기 불가: $CACHE"; exit 0; }
 
 # 기록은 한 줄짜리 버전 문자열이다. 공백만 걷고 값 자체는 해석하지 않는다.
