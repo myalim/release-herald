@@ -3,9 +3,9 @@
 
 이 스크립트는 파이프라인의 **양끝**만 맡는다 — 가운데(한국어 요약·impact·weight 판정)는
 LLM 이 채운다. P1 에서는 그 단계가 수동이고 P3 에서 CI 호출로 바뀌는데, 경계가
-schema/summaries.schema.json 이라 주체가 바뀌어도 이 스크립트는 그대로다 (decisions D4).
+schema/summaries.schema.json 이라 주체가 바뀌어도 이 스크립트는 그대로다.
 
-의존성은 표준 라이브러리뿐이다 (decisions D6).
+의존성은 표준 라이브러리뿐이다.
 
   extract   atom → 중간 JSON (version·date·url·items[kind,en])
   pending   아직 판정되지 않은 릴리스만 추린다 (LLM 입력) · --split-dir 로 릴리스별 분할
@@ -56,7 +56,7 @@ def strip_html(fragment: str) -> str:
 # 플랫폼·영역 접두어. 실측에서 `[VSCode] Fixed …`·`Windows: Fixed …` 처럼 동사 앞에 붙어
 # 그대로 읽으면 전부 other 로 빠졌다(11개 중 4개).
 PREFIX_RE = re.compile(r"^(\[[^\]]+\]|[A-Za-z][A-Za-z/ ]{0,20}:)\s*")
-# 버전이 판정 입출력의 **파일명**이 되므로(D14), 경로 구분자·상대경로가 섞이지 않는지 본다.
+# 버전이 판정 입출력의 **파일명**이 되므로, 경로 구분자·상대경로가 섞이지 않는지 본다.
 VERSION_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}")
 
 
@@ -143,7 +143,7 @@ def pending(extracted: Path, summaries: Path, out: Path, split_dir: Path = None)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps({"releases": fresh}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-    # split_dir 이 주어지면 **릴리스마다 한 파일**을 더 쓴다 — 판정을 나눠 부르기 위한 입력이다(D14).
+    # split_dir 이 주어지면 **릴리스마다 한 파일**을 더 쓴다 — 판정을 릴리스마다 나눠 부르기 위한 입력이다.
     # 파일 하나의 형태는 통짜 pending.json 과 같게 둔다 — 프롬프트와 merge 의 계약이 릴리스 수와
     # 무관해진다.
     if split_dir is not None:
@@ -181,7 +181,7 @@ def _judged_releases(judged_file: Path) -> tuple:
 
 
 def _judged_from_dir(judged_dir: Path) -> tuple:
-    """릴리스별 판정 파일을 모아 하나의 목록으로 만든다 (D14 의 분할 호출에 대응).
+    """릴리스별 판정 파일을 모아 하나의 목록으로 만든다 — 판정을 릴리스마다 나눠 부르므로 결과도 나뉜다.
 
     **못 읽은 파일에서 멈추지 않는다** — 분할의 목적이 실패 격리다. 사유만 모아 merge 로 넘긴다.
     """
@@ -280,7 +280,7 @@ def merge(pending_file: Path, judged_file: Path, summaries: Path, judged_dir: Pa
 
 
 # ── 검증 ──────────────────────────────────────────────────────────────────
-# jsonschema 를 쓰지 않는다(D6 단서: 표준 라이브러리만). 계약이 얕아 필요한 제약이
+# jsonschema 를 쓰지 않는다 — 의존성을 표준 라이브러리로 묶었다. 계약이 얕아 필요한 제약이
 # required·enum·pattern·범위뿐이고, 그것만 직접 본다.
 
 
@@ -320,7 +320,7 @@ def _check(obj, spec, defs, path, errs):
             elif len(v) < p.get("minLength", 0):
                 errs.append(f"{here}: 비어 있음")
             elif "maxLength" in p and len(v) > p["maxLength"]:
-                # 이 상한이 곧 "화면 한 줄" 계약이라(decisions D7), 안 보면 계약이 없는 것과 같다.
+                # 이 상한이 곧 "화면 한 줄" 계약이라, 안 보면 계약이 없는 것과 같다.
                 errs.append(f"{here}: {p['maxLength']}자 상한 초과 ({len(v)}자)")
         if p.get("type") == "array":
             if not isinstance(v, list):
