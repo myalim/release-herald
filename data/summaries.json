@@ -1795,7 +1795,7 @@
         {
           "kind": "improved",
           "impact": "user",
-          "weight": 2,
+          "weight": 1,
           "ko": "MCP 연결·OAuth 로그에서 URL·헤더의 자격증명 마스킹 개선",
           "en": "Improved MCP connection and OAuth debug/error logs so credentials carried in a server's URL or request headers are redacted"
         },
@@ -2061,7 +2061,7 @@
         {
           "kind": "fixed",
           "impact": "user",
-          "weight": 2,
+          "weight": 1,
           "ko": "프로젝트 설정으로 상세 베타 트레이싱이나 API 본문 원문 로깅을 켤 수 있던 문제 수정",
           "en": "Fixed project settings being able to enable detailed beta tracing or raw API body logging, and a lower-scope beta tracing endpoint bypassing an OTLP collector pinned by managed settings or a host app"
         },
@@ -3048,7 +3048,7 @@
         {
           "kind": "improved",
           "impact": "user",
-          "weight": 3,
+          "weight": 1,
           "ko": "마켓플레이스 이름의 제어·비가시 문자를 거부하고 출력 이스케이프를 강화",
           "en": "Improved plugin marketplace hardening: names containing control or invisible characters are rejected, and marketplace-supplied text in `/plugin` and `claude plugin` output is escape-safe"
         },
