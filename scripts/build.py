@@ -3,12 +3,12 @@
 
 이 스크립트는 파이프라인의 **양끝**만 맡는다 — 가운데(한국어 요약·impact·weight 판정)는
 LLM 이 채운다. P1 에서는 그 단계가 수동이고 P3 에서 CI 호출로 바뀌는데, 경계가
-schema/summaries.schema.json 이라 주체가 바뀌어도 이 스크립트는 그대로다 (decisions D4).
+schema/summaries.schema.json 이라 주체가 바뀌어도 이 스크립트는 그대로다.
 
-의존성은 표준 라이브러리뿐이다 (decisions D6).
+의존성은 표준 라이브러리뿐이다.
 
   extract   atom → 중간 JSON (version·date·url·items[kind,en])
-  pending   아직 판정되지 않은 릴리스만 추린다 (LLM 입력)
+  pending   아직 판정되지 않은 릴리스만 추린다 (LLM 입력) · --split-dir 로 릴리스별 분할
   merge     판정 결과를 summaries.json 에 병합한다 (LLM 출력 검사 포함)
   validate  summaries.json 이 스키마를 만족하나
 """
@@ -56,6 +56,8 @@ def strip_html(fragment: str) -> str:
 # 플랫폼·영역 접두어. 실측에서 `[VSCode] Fixed …`·`Windows: Fixed …` 처럼 동사 앞에 붙어
 # 그대로 읽으면 전부 other 로 빠졌다(11개 중 4개).
 PREFIX_RE = re.compile(r"^(\[[^\]]+\]|[A-Za-z][A-Za-z/ ]{0,20}:)\s*")
+# 버전이 판정 입출력의 **파일명**이 되므로, 경로 구분자·상대경로가 섞이지 않는지 본다.
+VERSION_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}")
 
 
 def kind_of(text: str) -> str:
@@ -117,7 +119,7 @@ def extract(url: str) -> dict:
 # 이미 판정된 버전을 다시 묻지 않는 것이 재현성과 사용량 양쪽에 걸린다.
 
 
-def pending(extracted: Path, summaries: Path, out: Path) -> int:
+def pending(extracted: Path, summaries: Path, out: Path, split_dir: Path = None) -> int:
     """summaries.json 에 없는 릴리스만 추려 낸다.
 
     kind·en 만 넘긴다 — 판정에 필요한 것이 그것뿐이고, 나머지를 함께 주면 LLM 이 고칠 여지가
@@ -140,6 +142,23 @@ def pending(extracted: Path, summaries: Path, out: Path) -> int:
     ]
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps({"releases": fresh}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+    # split_dir 이 주어지면 **릴리스마다 한 파일**을 더 쓴다 — 판정을 릴리스마다 나눠 부르기 위한 입력이다.
+    # 파일 하나의 형태는 통짜 pending.json 과 같게 둔다 — 프롬프트와 merge 의 계약이 릴리스 수와
+    # 무관해진다.
+    if split_dir is not None:
+        # 앞선 실행분이 남으면 이미 판정된 릴리스를 다시 묻게 된다.
+        if split_dir.exists():
+            for stale in split_dir.glob("*.json"):
+                stale.unlink()
+        split_dir.mkdir(parents=True, exist_ok=True)
+        for r in fresh:
+            if not VERSION_RE.fullmatch(r["version"]):
+                raise ValueError(f"파일명으로 쓸 수 없는 버전: {r['version']!r}")
+            body = {"releases": [r]}
+            (split_dir / f"{r['version']}.json").write_text(
+                json.dumps(body, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+            )
     return len(fresh)
 
 
@@ -159,6 +178,27 @@ def _judged_releases(judged_file: Path) -> tuple:
     if not isinstance(rel, list) or not all(isinstance(r, dict) for r in rel):
         return None, [f"{judged_file.name}: releases 가 객체 배열이 아니다"]
     return rel, []
+
+
+def _judged_from_dir(judged_dir: Path) -> tuple:
+    """릴리스별 판정 파일을 모아 하나의 목록으로 만든다 — 판정을 릴리스마다 나눠 부르므로 결과도 나뉜다.
+
+    **못 읽은 파일에서 멈추지 않는다** — 분할의 목적이 실패 격리다. 사유만 모아 merge 로 넘긴다.
+    """
+    if not judged_dir.is_dir():
+        return None, [f"{judged_dir.name}/ 이 없다 — 판정 단계가 아무것도 쓰지 않았다"]
+    files = sorted(judged_dir.glob("*.json"))
+    if not files:
+        return None, [f"{judged_dir.name}/ 이 비어 있다 — 판정 단계가 아무것도 쓰지 않았다"]
+
+    releases, errs = [], []
+    for f in files:
+        got, e = _judged_releases(f)
+        if got is None:
+            errs.extend(e)
+            continue
+        releases.extend(got)
+    return releases, errs
 
 
 def _reject_reason(asked: dict, got: dict) -> str:
@@ -181,7 +221,7 @@ def _reject_reason(asked: dict, got: dict) -> str:
     return ""
 
 
-def merge(pending_file: Path, judged_file: Path, summaries: Path) -> tuple:
+def merge(pending_file: Path, judged_file: Path, summaries: Path, judged_dir: Path = None) -> tuple:
     """판정 결과를 병합한다. **통과분만 넣고 어긋난 것은 사유와 함께 돌려준다.**
 
     전부 거부하지 않는 이유는 정체다 — 한 릴리스가 계속 어긋나면 나머지까지 함께 멈추고,
@@ -191,12 +231,13 @@ def merge(pending_file: Path, judged_file: Path, summaries: Path) -> tuple:
     쓰기는 **검증을 통과한 뒤 원자적으로** 한다. 이 파일이 훅과의 유일한 접점이라 미검증
     상태나 부분 상태로 존재해서는 안 된다(SPEC 불변식).
 
-    돌려주는 것은 (거부 사유 목록, 병합한 릴리스 수).
+    돌려주는 것은 (거부 사유 목록, 병합한 버전 목록) — 커밋 메시지가 그 목록을 제목에 쓴다.
     """
     asked = {r["version"]: r for r in json.loads(pending_file.read_text(encoding="utf-8"))["releases"]}
-    got, errs = _judged_releases(judged_file)
-    if errs:
-        return errs, 0
+    # 일부가 깨져도 나머지는 이어서 본다 — 아무것도 못 읽었을 때만(got is None) 중단한다.
+    got, errs = _judged_from_dir(judged_dir) if judged_dir is not None else _judged_releases(judged_file)
+    if got is None:
+        return errs, []
 
     # handled 는 "이 버전을 다뤘다" 이지 "받아들였다" 가 아니다 — 거부한 버전을 빼지 않으면
     # 아래 누락 검사에 다시 걸려 한 결함이 두 줄로 보고된다.
@@ -221,7 +262,7 @@ def merge(pending_file: Path, judged_file: Path, summaries: Path) -> tuple:
         errs.append(f"{v}: 판정이 없음")
 
     if not accepted:
-        return errs, 0
+        return errs, []
 
     data = json.loads(summaries.read_text(encoding="utf-8"))
     data["releases"] = sorted(accepted + data["releases"], key=_order_key, reverse=True)
@@ -230,16 +271,16 @@ def merge(pending_file: Path, judged_file: Path, summaries: Path) -> tuple:
     broken = validate_data(data)
     if broken:
         # 여기까지 왔는데 계약을 어겼다면 대조가 못 잡는 종류다 — 쓰지 않고 그대로 알린다.
-        return errs + [f"병합 결과가 계약 위반: {m}" for m in broken], 0
+        return errs + [f"병합 결과가 계약 위반: {m}" for m in broken], []
 
     tmp = summaries.with_name(summaries.name + ".tmp")
     tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     os.replace(tmp, summaries)
-    return errs, len(accepted)
+    return errs, sorted(r["version"] for r in accepted)
 
 
 # ── 검증 ──────────────────────────────────────────────────────────────────
-# jsonschema 를 쓰지 않는다(D6 단서: 표준 라이브러리만). 계약이 얕아 필요한 제약이
+# jsonschema 를 쓰지 않는다 — 의존성을 표준 라이브러리로 묶었다. 계약이 얕아 필요한 제약이
 # required·enum·pattern·범위뿐이고, 그것만 직접 본다.
 
 
@@ -279,7 +320,7 @@ def _check(obj, spec, defs, path, errs):
             elif len(v) < p.get("minLength", 0):
                 errs.append(f"{here}: 비어 있음")
             elif "maxLength" in p and len(v) > p["maxLength"]:
-                # 이 상한이 곧 "화면 한 줄" 계약이라(decisions D7), 안 보면 계약이 없는 것과 같다.
+                # 이 상한이 곧 "화면 한 줄" 계약이라, 안 보면 계약이 없는 것과 같다.
                 errs.append(f"{here}: {p['maxLength']}자 상한 초과 ({len(v)}자)")
         if p.get("type") == "array":
             if not isinstance(v, list):
@@ -352,10 +393,12 @@ def main() -> int:
     pd.add_argument("--extracted", type=Path, default=ROOT / "data/extracted.json")
     pd.add_argument("--summaries", type=Path, default=ROOT / "data/summaries.json")
     pd.add_argument("--out", type=Path, default=ROOT / "data/pending.json")
+    pd.add_argument("--split-dir", type=Path, default=None, help="릴리스마다 한 파일씩 더 쓴다")
 
     mg = sub.add_parser("merge", help="판정 결과를 summaries.json 에 병합한다")
     mg.add_argument("--pending", type=Path, default=ROOT / "data/pending.json")
     mg.add_argument("--judged", type=Path, default=ROOT / "data/judged.json")
+    mg.add_argument("--judged-dir", type=Path, default=None, help="릴리스별 판정 파일이 있는 디렉터리")
     mg.add_argument("--summaries", type=Path, default=ROOT / "data/summaries.json")
 
     v = sub.add_parser("validate", help="summaries.json 을 계약과 대조한다")
@@ -376,7 +419,7 @@ def main() -> int:
         return 0
 
     if args.cmd == "pending":
-        n = pending(args.extracted, args.summaries, args.out)
+        n = pending(args.extracted, args.summaries, args.out, args.split_dir)
         print(f"✓ 판정 대기 릴리스 {n}")
         # 대기가 없으면 뒤 단계를 통째로 건너뛰어야 한다 — 빈 판정을 LLM 에 묻는 것은
         # 사용량만 쓰고 아무것도 바꾸지 않는다.
@@ -387,8 +430,8 @@ def main() -> int:
         return 0
 
     if args.cmd == "merge":
-        errs, n = merge(args.pending, args.judged, args.summaries)
-        print(f"✓ {args.summaries.name} — 병합한 릴리스 {n}")
+        errs, merged = merge(args.pending, args.judged, args.summaries, args.judged_dir)
+        print(f"✓ {args.summaries.name} — 병합한 릴리스 {len(merged)}: {', '.join(merged) or '없음'}")
         for m in errs:
             print(f"  거부: {m}", file=sys.stderr)
         # 거부가 있어도 통과분은 이미 들어갔으므로 여기서 죽지 않는다 — 커밋까지 마친 뒤
@@ -397,6 +440,7 @@ def main() -> int:
         if gh:
             with open(gh, "a", encoding="utf-8") as f:
                 f.write(f"rejected={len(errs)}\n")
+                f.write(f"merged={', '.join(merged)}\n")
         return 0
 
     errs = validate(args.file)

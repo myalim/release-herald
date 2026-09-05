@@ -1,11 +1,16 @@
 # 릴리스 요약 갱신 — 매일 원문을 받아 새 버전만 판정하고 data/summaries.json 에 병합한다.
 #
-# 결정적인 일(추출·추림·병합·검증)은 스크립트가, 판정만 액션이 한다. 그래서 액션에 주는 도구가
-# 파일 읽기·쓰기뿐이고, 커밋은 이 워크플로가 직접 한다.
+# 결정적인 일(추출·추림·병합·검증)은 스크립트가, 판정만 claude CLI 가 한다. 그래서 CLI 에 주는
+# 도구가 파일 읽기·쓰기뿐이고(제한은 `--disallowedTools` 가 건다), 커밋은 이 워크플로가 직접 한다.
 #
-# 트리거를 늘릴 때 주의 — 액션이 받는 이벤트는 정해져 있다(schedule · workflow_dispatch ·
-# repository_dispatch · workflow_run 과 PR·issue 계열). push 는 목록에 없어 `Unsupported event
-# type` 으로 죽고, 그 넷이 전부 default 브랜치에서만 발화하므로 **작업 브랜치에서는 돌릴 수 없다.**
+# 공식 액션이 아니라 CLI 를 직접 설치해 돌리는 이유는 둘이다 —
+# 액션은 워크플로 파일이 default 브랜치와 한 글자도 다르지 않아야 돌아서, 워크플로를 고칠 때마다
+# "검증하려면 병합, 병합하려면 검증" 이 된다. 그리고 그렇게 건너뛴 실행을 `outcome=success` 로
+# 끝내 화면에서 초록으로 보인다. 정작 액션이 주는 것(PR 코멘트·트리거 감지)은 여기서 하나도 안 쓴다.
+#
+# 트리거 제약은 이제 하나뿐이다 — `schedule` 은 default 브랜치에서만 발화한다(GitHub 제약).
+# `workflow_dispatch` 는 어느 브랜치에서나 도므로 병합 전 검증은 그쪽으로 한다:
+#   gh workflow run summarize --ref <브랜치>
 name: summarize
 
 on:
@@ -26,7 +31,7 @@ concurrency:
 jobs:
   summarize:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v6
 
@@ -36,19 +41,65 @@ jobs:
       # 이미 판정된 버전은 다시 묻지 않는다 — 재현성과 사용량 양쪽에 걸린다.
       - name: Collect unjudged releases
         id: pending
-        run: python3 scripts/build.py pending
+        run: python3 scripts/build.py pending --split-dir data/pending
 
       # 대기가 없으면 아래 전부를 건너뛴다. 빈 판정을 묻는 것은 사용량만 쓰고 아무것도 바꾸지 않는다.
-      - name: Classify and translate
+      # 설치도 그 가드 뒤에 둔다 — 판정할 것이 없는 날에는 내려받지도 않는다.
+      - name: Install Claude Code
         if: steps.pending.outputs.count != '0'
-        uses: anthropics/claude-code-action@v1
-        with:
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          prompt: 'prompts/classify.md 를 읽고 거기 적힌 지시를 그대로 수행한다.'
-          claude_args: |
-            --model claude-opus-5
-            --allowedTools "Read,Write"
-            --max-turns 30
+        run: |
+          curl -fsSL https://claude.ai/install.sh | bash -s stable
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      # 판정이 죽어도 이 job 을 멈추지 않는다 — 이미 나온 판정분까지 함께 버리면 정체가 생기고,
+      # 원본 atom 이 9일 창이라 그 사이 릴리스가 사라진다. 대신 이 step 은 빨강으로
+      # 남고, 마지막 게이트가 그 outcome 을 다시 본다.
+      #
+      # **릴리스마다 한 번씩 부른다** — 통짜로 맡기면 `Write` 누적 재작성으로 턴이 소진된다.
+      - name: Classify and translate
+        id: classify
+        if: steps.pending.outputs.count != '0'
+        continue-on-error: true
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # 저장소 CLAUDE.md 가 자동으로 실린다 — 그 안의 승인 게이트·브랜치 확인·Serena 탐색 규칙은
+          # 사람이 앉아 있는 세션을 전제하므로, 무인 실행이라는 사실을 여기서 명시해 무력화한다.
+          CI_NOTE: |
+
+            이 실행은 무인 CI 다 — 승인을 물을 상대가 없다. 저장소 CLAUDE.md 의 승인 게이트·
+            브랜치 확인·Serena 탐색 규칙은 이 실행에 적용하지 않고, 출력 파일 쓰기를 바로 수행한다.
+        run: |
+          # 앞선 실행분이 남아 실패를 가리는 일이 없게 한다.
+          rm -rf data/judged
+          mkdir -p data/judged
+          failed=''
+          for f in data/pending/*.json; do
+            v=$(basename "$f" .json)
+            echo "::group::판정 $v"
+            # `--allowedTools` 는 자동 승인 목록이라 목록 밖 도구를 막지 못한다 — 탐색을 실제로
+            # 끊는 것은 `--disallowedTools` 다. </dev/null 은 stdin 을 3초 기다리는 것을 건너뛴다.
+            if claude -p "prompts/classify.md 를 읽고 거기 적힌 지시를 그대로 수행한다. 입력은 $f, 출력은 data/judged/$v.json 이다.${CI_NOTE}" \
+                 --model claude-opus-5 \
+                 --allowedTools "Read,Write" \
+                 --disallowedTools "Bash,Glob,Grep,WebFetch,WebSearch,Task,ToolSearch" \
+                 --max-turns 10 \
+                 < /dev/null
+            then
+              # CLI 가 0 으로 끝나고도 아무것도 안 쓸 수 있다. 그 침묵을 여기서 끊는다.
+              test -s "data/judged/$v.json" || {
+                echo "::warning::$v — 판정이 0 으로 끝났는데 출력 파일이 없다"
+                failed="$failed $v"
+              }
+            else
+              echo "::warning::$v — 판정이 실패로 끝났다"
+              failed="$failed $v"
+            fi
+            echo "::endgroup::"
+          done
+          if [ -n "$failed" ]; then
+            echo "::error::판정 실패:$failed"
+            exit 1
+          fi
 
       # 병합이 판정 결과를 pending 과 대조해 통과분만 넣고, 어긋난 릴리스는 거부 수로 돌려준다.
       # 그 신호는 커밋을 마친 뒤에 쓴다 — 통과분까지 함께 버리지 않기 위해서다.
@@ -56,24 +107,28 @@ jobs:
         id: merge
         if: steps.pending.outputs.count != '0'
         run: |
-          python3 scripts/build.py merge
+          python3 scripts/build.py merge --judged-dir data/judged
           python3 scripts/build.py validate data/summaries.json
 
       - name: Commit
         if: steps.pending.outputs.count != '0'
+        env:
+          MERGED: ${{ steps.merge.outputs.merged }}
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add data/summaries.json
-          git diff --cached --quiet || git commit -m 'chore: 릴리스 요약 갱신'
+          git diff --cached --quiet || git commit -m "chore: update release summaries (${MERGED})"
           # 겹친 실행이 먼저 밀어 넣었을 수 있다 — 거부되면 이 실행의 판정이 통째로 버려진다.
           git pull --rebase
           git push
 
-      # 거부된 릴리스가 있으면 여기서 실패로 끝낸다. 통과분은 이미 들어갔고, 실패한 run 이
-      # 저자에게 가는 유일한 신호다 — 사용자 화면의 침묵과 저자의 관측은 분리한다.
-      - name: Fail on rejected releases
-        if: steps.merge.outputs.rejected != '' && steps.merge.outputs.rejected != '0'
+      # 거부된 릴리스가 있거나 판정 자체가 실패했으면 여기서 끝을 빨강으로 만든다. 통과분은 이미
+      # 들어갔고, 실패한 run 이 저자에게 가는 유일한 신호다 — 사용자 화면의 침묵과 저자의 관측은
+      # 분리한다. 판정 실패를 따로 보는 이유는 그것이 거부 수에 안 잡히는 경우가 있어서다.
+      - name: Fail on classify failure or rejected releases
+        if: >-
+          steps.classify.outcome == 'failure' || (steps.merge.outputs.rejected != '' && steps.merge.outputs.rejected != '0')
         run: |
-          echo "판정이 거부된 릴리스가 있다 — 위 Merge 단계 로그를 볼 것" >&2
+          echo "판정이 실패했거나 거부된 릴리스가 있다 — 위 Classify·Merge 단계 로그를 볼 것" >&2
           exit 1
