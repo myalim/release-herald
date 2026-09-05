@@ -83,7 +83,6 @@ jobs:
                  --allowedTools "Read,Write" \
                  --disallowedTools "Bash,Glob,Grep,WebFetch,WebSearch,Task,ToolSearch" \
                  --max-turns 10 \
-                 --verbose \
                  < /dev/null
             then
               # CLI 가 0 으로 끝나고도 아무것도 안 쓸 수 있다. 그 침묵을 여기서 끊는다.
