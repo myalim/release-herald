@@ -58,6 +58,22 @@ chk "  기록 건드리지 않음"  "$(cat "$STATE")" "v2.1.247"
 chk "모르는 스키마 → 침묵"  "$(len "$(run "$SCHEMA2")")" "0"
 chk "  기록 건드리지 않음"  "$(cat "$STATE")" "v2.1.247"
 
+echo "── 침묵의 사유 ──"
+# **침묵하는지만 보면 이 결함이 안 잡힌다.** 실제로 "미통지분 없음" 을 "캐시가 깨졌다" 로
+# 보고한 적이 있고, 침묵 자체는 정상이라 모든 테스트가 통과했다. 진단 경로의 값은
+# "조용한가" 가 아니라 "왜 조용한지를 맞게 말하는가" 다.
+diag() { RELEASE_HERALD_CACHE="$1" RELEASE_HERALD_STATE="$STATE" RELEASE_HERALD_DEBUG=1 \
+         "$HOOK" >/dev/null 2>"$TMP/diag"; tail -1 "$TMP/diag"; }
+echo v2.1.261 > "$STATE"; D_NONE="$(diag "$CACHE")"
+echo v2.1.261 > "$STATE"; D_SCHEMA="$(diag "$SCHEMA2")"
+echo v2.1.261 > "$STATE"; D_BROKEN="$(diag "$BROKEN")"
+# case 를 명령 치환에 한 줄로 넣으면 닫는 괄호가 치환의 끝으로 읽혀 깨진다.
+has() { case "$2" in *"$1"*) echo y ;; *) echo n ;; esac; }
+chk "미통지분 없음을 그렇게 말함"   "$(has "미통지분 없음" "$D_NONE")" "y"
+chk "계약 불일치를 그렇게 말함"     "$(has "계약 버전" "$D_SCHEMA")" "y"
+chk "파싱 실패를 그렇게 말함"       "$(has "읽지 못했" "$D_BROKEN")" "y"
+chk "세 사유가 서로 다름"           "$([ "$D_NONE" != "$D_SCHEMA" ] && [ "$D_SCHEMA" != "$D_BROKEN" ] && [ "$D_NONE" != "$D_BROKEN" ] && echo y || echo n)" "y"
+
 echo "── stderr 오염 (침묵은 stdout 만이 아니다) ──"
 rm -f "$STATE";           chk "기록 없음 경로 stderr 없음"  "$(len "$(run_err "$CACHE")")" "0"
 echo v2.1.247 > "$STATE"; chk "캐시 없음 경로 stderr 없음"  "$(len "$(run_err /nonexistent.json)")" "0"
@@ -94,11 +110,28 @@ while IFS= read -r line; do
 done < <(printf '%s' "$OUT" | jq -r .systemMessage | grep '·' | sed 's/^  · //')
 chk "additionalContext ⊇ systemMessage" "$MISS" "0"
 
-# **단조 증가 가드는 여기서 검증하지 않는다.** 그 가드가 발동하는 조건은 훅이 기록을 읽은
-# 시점과 쓰는 시점 **사이에** 다른 세션이 더 새 값을 쓰는 경합인데, 두 읽기 사이에 끼어들려면
-# 프로덕션 코드에 테스트용 분기를 심어야 한다. 미리 값을 바꿔 두는 방식은 그 값이 LAST 로
-# 읽혀 "기록이 캐시 밖" 경로를 타므로 가드가 아니라 다른 동작을 보게 된다.
-# 실제 세션 두 개를 동시에 켜는 것이 검증 경로이고, 그 자리는 SPEC 검증 게이트다.
+echo "── 단조 증가 가드 ──"
+# 훅을 배경으로 띄우고 **실행 중에** 기록을 바꾸면 그 경합을 겨냥할 수 있다. 미리 바꿔 두는
+# 방식으로는 안 된다 — 그 값이 LAST 로 읽혀 가드가 아니라 다른 경로를 타기 때문이다.
+# 지연은 훅의 "기록 읽기 → 쓰기" 사이를 노린다. 실측에서 그 구간이 5~25ms 였다.
+OLDCACHE="$TMP/old.json"
+jq '.releases = [.releases[] | select(.version < "v2.1.258")]' "$CACHE" > "$OLDCACHE"
+GUARD=0
+for d in 0.005 0.010 0.015 0.020; do
+  echo v2.1.252 > "$STATE"
+  RELEASE_HERALD_CACHE="$OLDCACHE" RELEASE_HERALD_STATE="$STATE" RELEASE_HERALD_DEBUG=1 \
+    "$HOOK" >/dev/null 2>"$TMP/guard.log" &
+  gpid=$!
+  sleep "$d"
+  echo v2.1.261 > "$STATE"      # 더 새 캐시를 본 세션이 먼저 썼다고 가정
+  wait $gpid
+  grep -q "물러남" "$TMP/guard.log" && GUARD=$((GUARD+1))
+done
+chk "경합에서 기록이 되돌아가지 않음" "$([ "$GUARD" -gt 0 ] && echo y || echo n)" "y"
+# **가드가 창을 좁힐 뿐 없애지는 못한다** — 읽기와 쓰기 사이(실측 30ms 부근)에 끼어들면
+# 그대로 통과한다. 파일 상태에 원자적 비교-교체가 없어서이고, 최악의 결과가 "이미 본
+# 릴리스가 한 번 더 뜸" 이라 수용한다. 그 사실을 여기 남겨 다음 사람이 완전 방어로 읽지 않게 한다.
+
 
 echo "── 조정 손잡이 ──"
 # 손잡이는 기본값 경로만 확인하면 깨져도 안 잡힌다 — 값을 바꿔 실제로 반영되는지 본다.
