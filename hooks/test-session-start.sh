@@ -100,6 +100,18 @@ chk "additionalContext ⊇ systemMessage" "$MISS" "0"
 # 읽혀 "기록이 캐시 밖" 경로를 타므로 가드가 아니라 다른 동작을 보게 된다.
 # 실제 세션 두 개를 동시에 켜는 것이 검증 경로이고, 그 자리는 SPEC 검증 게이트다.
 
+echo "── 조정 손잡이 ──"
+# 손잡이는 기본값 경로만 확인하면 깨져도 안 잡힌다 — 값을 바꿔 실제로 반영되는지 본다.
+echo v2.1.247 > "$STATE"
+chk "화면 줄 수 상한이 반영됨" \
+  "$(RELEASE_HERALD_MAX_LINES=3 run "$CACHE" | jq -r .systemMessage | grep -c '·')" "3"
+echo v2.1.247 > "$STATE"
+chk "  상한을 바꿔도 잘림은 알림"  \
+  "$(RELEASE_HERALD_MAX_LINES=3 run "$CACHE" | jq -r .systemMessage | grep -c '외 .*건')" "1"
+echo v2.0.0 > "$STATE"
+chk "캐시 밖 기록의 취할 개수가 반영됨" \
+  "$(RELEASE_HERALD_FRESH_LIMIT=1 run "$CACHE" | jq -r .systemMessage | grep -c '개 버전')" "0"
+
 echo "── 갱신과의 경계 ──"
 # 경계 판정식은 프로세스 계보가 아니라 대기 여부다. 오래 걸리는 갱신기를 물려 놓고,
 # 훅이 그것을 기다리는지 본다 — 기다리면 훅 소요가 갱신기 시간만큼 늘어난다.

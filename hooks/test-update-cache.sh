@@ -56,6 +56,12 @@ chk "보관 상한(8) 적용"      "$(count)" "8"
 chk "최신 우선 정렬 보존"     "$(jq -r '.releases[0].version' "$CACHE")" "$(jq -r '.releases[0].version' "$SRC")"
 chk "갱신 시각 기록"          "$([ -s "$STATE_DIR/last-update" ] && echo y || echo n)" "y"
 
+# 보관 개수는 훅의 세션 시작 예산을 지키는 값이라, 손잡이가 죽으면 예산이 조용히 깨진다.
+PATH="$STUB_DIR:$PATH" RELEASE_HERALD_CACHE="$CACHE" RELEASE_HERALD_STATE_DIR="$STATE_DIR" \
+  RELEASE_HERALD_CACHE_KEEP=2 "$UPDATER" --force >/dev/null 2>&1
+chk "보관 개수 손잡이가 반영됨" "$(count)" "2"
+run --force
+
 echo "── 쿨다운 ──"
 # 원격 내용을 바꿔 두고 부른다. 쿨다운이 걸리면 캐시가 그대로여야 한다.
 jq '.releases = .releases[0:2]' "$SRC" > "$TMP/gh-response"
