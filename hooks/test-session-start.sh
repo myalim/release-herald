@@ -33,6 +33,13 @@ BROKEN="$TMP/broken.json"; printf '{"schema":1,"releases":[' > "$BROKEN"
 SCHEMA2="$TMP/schema2.json"; jq '.schema = 2' "$CACHE" > "$SCHEMA2"
 # 체감 항목이 0인 릴리스만 미통지가 되는 형태
 W0="$TMP/w0.json"; jq '[.releases[] | select(.version=="v2.1.250" or .version=="v2.1.248")] as $r | .releases = $r' "$CACHE" > "$W0"
+# 미통지가 한 릴리스뿐인 경로. **버전을 고정 지정한다** — 최신 두 개로 만들면 봇이 릴리스를
+# 추가할 때마다 대상이 바뀌지만, 과거 릴리스의 항목은 더 변하지 않는다.
+W1="$TMP/w1.json"; jq '.releases = [.releases[] | select(.version=="v2.1.261" or .version=="v2.1.260")]' "$CACHE" > "$W1"
+
+# **최신 버전은 데이터에서 뽑는다.** 원본이 fixture 인데 봇이 매일 릴리스를 덧붙이므로,
+# 기대값에 버전을 적으면 그 갱신마다 회귀가 깨진다(실제로 v2.1.263 이 들어와 3건이 깨졌다).
+LATEST="$(jq -r '.releases[0].version' "$SRC")"
 
 PASS=0; FAIL=0
 chk() { # chk <이름> <실제> <기대>
@@ -50,7 +57,7 @@ chk "캐시 없음 → 기록 만들지 않음"  "$([ -f "$STATE" ] && echo y ||
 
 rm -f "$STATE"
 chk "기록 없음 → 침묵 (소급 통지 안 함)" "$(len "$(run "$CACHE")")" "0"
-chk "기록 없음 → 기준선만 세움"          "$(cat "$STATE")" "v2.1.261"
+chk "기록 없음 → 기준선만 세움"          "$(cat "$STATE")" "$LATEST"
 
 echo v2.1.247 > "$STATE"
 chk "깨진 JSON → 침묵"     "$(len "$(run "$BROKEN")")" "0"
@@ -64,9 +71,9 @@ echo "── 침묵의 사유 ──"
 # "조용한가" 가 아니라 "왜 조용한지를 맞게 말하는가" 다.
 diag() { RELEASE_HERALD_CACHE="$1" RELEASE_HERALD_STATE="$STATE" RELEASE_HERALD_DEBUG=1 \
          "$HOOK" >/dev/null 2>"$TMP/diag"; tail -1 "$TMP/diag"; }
-echo v2.1.261 > "$STATE"; D_NONE="$(diag "$CACHE")"
-echo v2.1.261 > "$STATE"; D_SCHEMA="$(diag "$SCHEMA2")"
-echo v2.1.261 > "$STATE"; D_BROKEN="$(diag "$BROKEN")"
+echo "$LATEST" > "$STATE"; D_NONE="$(diag "$CACHE")"
+echo "$LATEST" > "$STATE"; D_SCHEMA="$(diag "$SCHEMA2")"
+echo "$LATEST" > "$STATE"; D_BROKEN="$(diag "$BROKEN")"
 # case 를 명령 치환에 한 줄로 넣으면 닫는 괄호가 치환의 끝으로 읽혀 깨진다.
 has() { case "$2" in *"$1"*) echo y ;; *) echo n ;; esac; }
 chk "미통지분 없음을 그렇게 말함"   "$(has "미통지분 없음" "$D_NONE")" "y"
@@ -85,11 +92,11 @@ OUT="$(run "$CACHE")"
 chk "미통지분 있음 → 출력"      "$(printf '%s' "$OUT" | jq -e 'has("systemMessage")' >/dev/null && echo y || echo n)" "y"
 chk "  화면 8줄 상한"           "$(printf '%s' "$OUT" | jq -r .systemMessage | grep -c '·')" "8"
 chk "  잘림을 숨기지 않음"       "$(printf '%s' "$OUT" | jq -r .systemMessage | grep -c '외 .*건')" "1"
-chk "  기록 갱신"               "$(cat "$STATE")" "v2.1.261"
+chk "  기록 갱신"               "$(cat "$STATE")" "$LATEST"
 chk "같은 버전 재실행 → 침묵"    "$(len "$(run "$CACHE")")" "0"
 
 echo v2.1.260 > "$STATE"
-chk "1릴리스는 상한에 안 걸림"   "$(run "$CACHE" | jq -r .systemMessage | grep -c '·')" "4"
+chk "1릴리스는 상한에 안 걸림"   "$(run "$W1" | jq -r .systemMessage | grep -c '·')" "4"
 
 echo v2.0.0 > "$STATE"
 chk "기록이 캐시 밖 → 최근 3개만" "$(run "$CACHE" | jq -r .systemMessage | grep -c '3개 버전')" "1"
