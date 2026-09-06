@@ -19,9 +19,10 @@ STATE_DIR="${RELEASE_HERALD_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/rel
 STAMP="$STATE_DIR/last-update"
 LOCK="$STATE_DIR/update.lock"
 
-# 세션을 켤 때마다 네트워크로 나가지 않도록 최소 간격을 둔다. 생성은 하루 한 번(07:00 KST)이라
-# 그보다 촘촘히 받아도 얻는 것이 없다.
-COOLDOWN="${RELEASE_HERALD_COOLDOWN:-21600}"   # 6시간
+# 세션을 켤 때마다 네트워크로 나가지 않도록 최소 간격을 둔다. **생성 주기보다 짧게 둔다** —
+# 길면 생성된 요약을 캐시가 건너뛰어, 워크플로를 촘촘히 해도 여기가 새 병목이 된다.
+# 생성이 3시간마다(summarize.yml)이므로 그 1/3 이다.
+COOLDOWN="${RELEASE_HERALD_COOLDOWN:-3600}"   # 1시간
 
 # 캐시에 남길 릴리스 개수. **훅의 비용은 파일 크기가 아니라 한 번에 조립하는 미통지 릴리스
 # 개수에 비례한다** — 11개를 담으면 최대 밀림 경로가 세션 시작 예산을 넘었고 8개면 절반으로

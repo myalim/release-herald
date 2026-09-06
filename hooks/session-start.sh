@@ -74,10 +74,15 @@ dbg "캐시=$CACHE 기록=${LAST:-<없음>}"
 # 판정과 분배를 jq 한 번으로 끝낸다. 원격에서 온 문자열은 여기서만 다뤄지고 셸 평가 경로에
 # 들어가지 않는다 — 요약 문자열이 곧 명령이 되지 않도록.
 #
-# 출력은 두 줄이다: 1줄 = 새로 기록할 버전(없으면 빈 줄), 2줄 = 훅 출력 JSON(없으면 빈 줄).
+# 출력은 세 줄이다: 1줄 = 상태, 2줄 = 새로 기록할 버전(없으면 빈 줄), 3줄 = 훅 출력 JSON(없으면 빈 줄).
+#
+# **상태 줄이 있는 이유는 침묵끼리 구분되지 않아서다.** 이 설계는 모든 실패가 침묵으로
+# 수렴하는데, 정상 침묵(미통지분 없음)과 고장(계약 불일치)이 같은 빈 출력이면 진단이
+# 거짓말을 한다 — 실제로 "미통지분 없음" 을 "캐시가 깨졌다" 로 보고한 적이 있고, 그것이
+# 원인을 엉뚱한 곳에서 찾게 만들었다.
 RESULT=$(jq -r --arg last "$LAST" --argjson fresh "$FRESH_LIMIT" --argjson max "$MAX_LINES" '
   # 스키마 가드 — 모르는 계약 버전이면 에러가 아니라 침묵이다.
-  if (.schema != 1) then "", "" else
+  if (.schema != 1) then "SCHEMA", "", "" else
 
   .releases as $r
   # 마지막 통지 버전과 **문자열이 같은** 원소의 인덱스를 찾아 그 앞을 취한다.
@@ -94,8 +99,9 @@ RESULT=$(jq -r --arg last "$LAST" --argjson fresh "$FRESH_LIMIT" --argjson max "
     ) as $new
 
   | if ($new | length) == 0 then
-      # 미통지분 없음. 기록도 손대지 않는다(기준선 세우기는 아래 최초 설치 분기가 맡는다).
-      (if ($last == "" and ($r|length) > 0) then $r[0].version else "" end), ""
+      # 미통지분 없음. 기록은 최초 설치일 때만 세운다(기준선).
+      if ($last == "" and ($r|length) > 0) then "BASE", $r[0].version, ""
+      else "NONE", "", "" end
     else
       # impact:internal 은 여기서 걷힌다 — 양쪽 채널 어디에도 가지 않는다.
       [ $new[] | . as $rel | $rel.items[] | select(.impact == "user") | . + {v: $rel.version} ] as $user
@@ -143,22 +149,34 @@ RESULT=$(jq -r --arg last "$LAST" --argjson fresh "$FRESH_LIMIT" --argjson max "
           + (if $sys == "" then {} else { systemMessage: $sys } end)
         ) as $payload
 
-      | $new[0].version, ($payload | @json)
+      | "SHOW", $new[0].version, ($payload | @json)
     end
   end
 ' "$CACHE" 2>/dev/null)
 
-# jq 가 죽었거나(깨진 JSON) 스키마 가드에 걸리면 여기서 끝난다.
+# 출력이 아예 없으면 jq 가 죽은 것이다 — 캐시가 JSON 으로 파싱되지 않았다는 뜻이라
+# 아래 상태 줄과 다른 사건이고, 그래서 여기서 먼저 가른다.
 if [ -z "$RESULT" ]; then
-  dbg "판정 산출 없음 — 캐시가 깨졌거나 스키마 불일치"
+  dbg "캐시를 읽지 못했다 (JSON 파싱 실패)"
   exit 0
 fi
 
-# 첫 줄 = 새 기록 버전, 둘째 줄 = 훅 출력. 파라미터 확장으로 가른다(위와 같은 이유).
-NEWVER="${RESULT%%$'\n'*}"
-PAYLOAD="${RESULT#*$'\n'}"
-# 줄이 하나뿐이면 위 확장이 같은 값을 두 번 준다 — 그 경우 payload 는 없는 것이다.
-[ "$PAYLOAD" = "$RESULT" ] && PAYLOAD=""
+# 상태 / 새 기록 버전 / payload. 파라미터 확장으로 가른다(위와 같은 이유 — 포크를 늘리지 않는다).
+STATUS="${RESULT%%$'\n'*}"
+REST="${RESULT#*$'\n'}"
+NEWVER="${REST%%$'\n'*}"
+PAYLOAD="${REST#*$'\n'}"
+# REST 에 개행이 없으면 위 두 확장이 같은 값을 준다 — 그때 없는 것은 payload 쪽이다.
+# **NEWVER 에는 이 가드를 걸지 않는다** — 걸면 기준선만 세우는 경로에서 그 버전이 지워진다.
+[ "$PAYLOAD" = "$REST" ] && PAYLOAD=""
+
+case "$STATUS" in
+  SCHEMA) dbg "계약 버전을 모른다 — 침묵"; exit 0 ;;
+  NONE)   dbg "미통지분 없음 (기록=$LAST) — 정상 침묵"; exit 0 ;;
+  BASE)   dbg "최초 설치 — 기준선을 $NEWVER 로 세우고 이번 세션은 침묵" ;;
+  SHOW)   dbg "미통지분 있음 — $NEWVER 까지 통지" ;;
+  *)      dbg "알 수 없는 판정 상태($STATUS) — 침묵"; exit 0 ;;
+esac
 
 # 기록 갱신. 미통지분이 없어도 최초 설치라면 기준선을 세워야 하므로 payload 와 독립이다.
 if [ -n "$NEWVER" ]; then
@@ -184,10 +202,9 @@ if [ -n "$NEWVER" ]; then
   fi
 fi
 
-# 최초 설치는 기준선만 세우고 이번 세션엔 아무것도 띄우지 않는다.
+# 여기까지 온 것은 BASE 아니면 SHOW 다. BASE 는 기준선만 세우고 아무것도 띄우지 않는다 —
 # 첫인상이 "설치했더니 뭔가 쏟아짐" 이 되면 안 된다.
 if [ -z "$PAYLOAD" ]; then
-  dbg "출력 없음 (미통지분 없음 · 기준선 세움 · 또는 체감 항목 0)"
   exit 0
 fi
 
