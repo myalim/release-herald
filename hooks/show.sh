@@ -47,7 +47,9 @@ for a in "$@"; do
     --en)      EN=true ;;
     -h|--help) usage; exit 0 ;;
     -*)        echo "모르는 옵션: $a" >&2; usage >&2; exit 2 ;;
-    *)         TARGET="$a" ;;
+    # 대상을 둘 이상 주면 앞의 것이 조용히 사라진다 — 모르는 옵션과 같게 막는다(범위는 `..`).
+    *)         [ -n "$TARGET" ] && { echo "대상은 하나만 지정합니다 — 범위는 257..263" >&2; exit 2; }
+               TARGET="$a" ;;
   esac
 done
 

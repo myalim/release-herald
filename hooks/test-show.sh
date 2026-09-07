@@ -59,6 +59,11 @@ chk "  마커가 기록된 버전에 붙는다" "$(run | grep '← 여기까지'
 : > "$STATE"
 chk "기록이 없으면 마커도 없다" "$(run | grep -c '← 여기까지 통지됨')" "0"
 
+# **조회가 기록을 소진하면 그 릴리스가 세션 시작에 다시 안 뜬다** — 읽기 전용이 계약이라 회귀로 잡는다.
+printf '%s\n' "$LATEST" > "$STATE"
+run >/dev/null; run 260 >/dev/null; run 257..258 >/dev/null
+chk "조회는 통지 기록을 쓰지 않는다" "$(cat "$STATE")" "$LATEST"
+
 echo "── 버전 지정 ──"
 chk "숫자만"        "$(run 260   | grep -c '^## v2.1.260')" "1"
 chk "v 접두어"      "$(run v2.1.260 | grep -c '^## v2.1.260')" "1"
@@ -86,6 +91,7 @@ echo "── 옵션 ──"
 chk "--en 이 원문을 붙인다" "$(run --en "$W0" | grep -c '^       [A-Z]')" "2"
 chk "옵션 순서는 무관"      "$(run "$W0" --en | grep -c '^       [A-Z]')" "2"
 chk "모르는 옵션은 실패"    "$(code --nope)" "2"
+chk "대상 중복도 실패"      "$(code 260 261)" "2"
 chk "--help 는 성공"        "$(code --help)" "0"
 
 echo
