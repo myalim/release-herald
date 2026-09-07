@@ -773,7 +773,7 @@
         {
           "kind": "other",
           "impact": "user",
-          "weight": 2,
+          "weight": 1,
           "ko": "`Read()` 거부 규칙을 Bash 인자에 적용하던 2.1.259 변경 되돌림",
           "en": "Reverted the 2.1.259 change applying `Read()` deny rules to Bash arguments; it denied `npm run build` under a `Read(./**/build/**)` rule in every mode and made `cd … && grep` prompt even in auto mode"
         },
