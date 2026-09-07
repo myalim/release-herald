@@ -1,19 +1,11 @@
 #!/usr/bin/env bash
 # 지난 릴리스 요약을 골라 본다 — 세션 시작 화면이 놓친 것을 오너가 직접 확인하는 경로.
-#
-# 표시 계층의 두 번째 진입점이다. session-start.sh 가 **밀어주는** 쪽이라면 여기는
-# **당겨오는** 쪽이고, 같은 캐시·같은 필드(`impact`·`weight`)를 읽는다.
+# 사용법은 --help.
 #
 # **게이트를 걸지 않는 것이 이 도구의 존재 이유다** — 화면(`weight 1`)에서 잘린 것을 보러
-# 오는 경로라, 여기서도 1 만 보이면 아무 소용이 없다. 1 을 위에 놓고 나머지를 아래에 둔다.
+# 오는 경로라, 여기서도 1 만 보이면 아무 소용이 없다.
 #
 # 훅과 달리 실패가 침묵이 아니다 — 사람이 직접 부른 명령이라 왜 안 나왔는지 말해야 한다.
-#
-#   ./hooks/show.sh                 릴리스 목록
-#   ./hooks/show.sh 260             한 릴리스 (v2.1.260 · 2.1.260 · 260 다 된다)
-#   ./hooks/show.sh 257..263        범위 (양끝 포함)
-#   ./hooks/show.sh --all 260       impact:internal 까지
-#   ./hooks/show.sh --en 260        원문(en) 병기
 
 set -u
 
@@ -64,8 +56,8 @@ else
   exit 1
 fi
 
-# 어디까지 통지됐는지 표시하려고 읽는다. **통지 = 화면에 떴다가 아니다** — weight 1 이
-# 0건인 릴리스는 통지되고도 화면이 비므로, 목록에 두 값을 나란히 두고 판단은 사람이 한다.
+# **통지 = 화면에 떴다가 아니다** — `weight 1` 이 0건인 릴리스는 통지되고도 화면이 빈다.
+# 그래서 목록은 두 값을 나란히 두기만 한다.
 LAST=""
 [ -r "$STATE" ] && read -r LAST < "$STATE"
 LAST="${LAST//[[:space:]]/}"
@@ -96,8 +88,8 @@ case "$TARGET" in
   *)    FROM="$TARGET";        TO="$TARGET" ;;
 esac
 
-# 버전 대소 비교를 하지 않는다 — session-start.sh 와 같은 이유로, 문자열 비교는
-# v2.1.9 > v2.1.10 이 되는 함정이 있다. 배열이 최신 우선이라 **인덱스**로 자른다.
+# 버전 대소 비교를 하지 않는다 — 문자열 비교가 v2.1.9 > v2.1.10 이 되는 함정은
+# session-start.sh 가 갖는다. 배열이 최신 우선이라 **인덱스**로 자른다.
 for q in "$FROM" "$TO"; do
   if ! jq -e --arg q "$q" '
         any(.releases[];
@@ -117,8 +109,6 @@ jq -r --arg from "$FROM" --arg to "$TO" --argjson all "$ALL" --argjson en "$EN" 
               or ($r[.].version | endswith("." + $q)))]
     | first;
 
-  # 항목 한 줄. --en 이면 원문을 들여써 붙인다 — ko 가 80자 상한이라 환경변수명·설정 키가
-  # 잘리고, 그때 필요한 것이 원문이다.
   def line($it; $tag):
     "   · " + $tag + $it.ko + (if $en then "\n       " + $it.en else "" end);
 
