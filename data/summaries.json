@@ -1,7 +1,385 @@
 {
   "schema": 1,
-  "generated": "2026-09-09T03:56:05Z",
+  "generated": "2026-09-09T20:47:09Z",
   "releases": [
+    {
+      "version": "v2.1.267",
+      "date": "2026-09-09",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.267",
+      "items": [
+        {
+          "kind": "added",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`maxEffortLevel` 설정 추가 — 모든 프로바이더에서 노력 수준 상한 지정",
+          "en": "Added `maxEffortLevel` setting (top-level or per model under `modelSettings`): caps the effort level on every provider, including Bedrock, Vertex and Foundry; users can still pick a lower level"
+        },
+        {
+          "kind": "added",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`--system-prompt-snapshot off` 추가 — 매 요청마다 시스템 프롬프트 새로 생성",
+          "en": "Added `--system-prompt-snapshot off` to render the system prompt fresh on every request instead of reusing the conversation's recorded prompt (for iterating on prompt text)"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "관리 설정이 샌드박스를 요구하는 조직에서 클라우드 Cowork 예약 작업 실패 수정",
+          "en": "Fixed Cowork scheduled tasks in the cloud failing at startup for organizations whose managed settings require sandboxing"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "모바일 클라이언트에서 `/context` 등 로컬 명령 출력이 빈 화면으로 뜨던 문제 수정",
+          "en": "Fixed `/context` and other local command output rendering blank on mobile clients"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "tmux·ssh 재접속 후 shift+enter·option+backspace 가 먹지 않던 문제 수정",
+          "en": "Fixed shift+enter and option+backspace not working after reconnecting to a tmux or ssh session inside an agent view"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "전체화면에서 위로 스크롤할 때 흐린 이전 프롬프트 헤더가 안 뜨던 문제 수정",
+          "en": "Fixed the dim last-prompt header not appearing at the top of the conversation when scrolling up in fullscreen mode"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "출력 스키마가 큰 Workflow `agent()` 호출이 auto 모드에서 거부되던 문제 수정",
+          "en": "Fixed Workflow `agent()` calls with large output schemas being refused in auto mode instead of being checked by the safety classifier"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "백슬래시가 든 경로로 마켓플레이스 격리 검사를 우회할 수 있던 문제 수정",
+          "en": "Fixed a case where a marketplace entry path containing a backslash could bypass the containment check for fetched marketplaces on macOS and Linux"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "만료된 AWS·Google Cloud 자격증명이 재인증 안내 없이 10회 재시도되던 문제 수정",
+          "en": "Fixed expired AWS or Google Cloud credentials under a host app such as Claude Desktop retrying ten times with a generic \"request failed\" before the re-authenticate error appeared"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`-p --resume` 재개 시 \"Continue from where you left off.\" 턴이 끼던 문제 수정",
+          "en": "Fixed resuming a session after `/compact` or another slash command ran via `-p --resume`: a spurious \"Continue from where you left off.\" turn is no longer inserted"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "5MB 초과 세션 재개 시 병렬 도구 호출과 훅 출력이 사라지던 문제 수정",
+          "en": "Fixed resuming a large session (transcript over 5 MB): parallel tool calls and their hook output are no longer dropped from the reloaded conversation"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "관리 허용 목록을 읽지 못하면 전부 허용하던 문제 수정 — 이제 전부 차단",
+          "en": "Fixed managed `allowedHttpHookUrls`, `httpHookAllowedEnvVars` and `allowedChannelPlugins` to admit nothing, not everything, when unreadable"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "게이트웨이 로그인을 강제하는 환경에서 `/login` 창이 Esc 로 안 닫히던 문제 수정",
+          "en": "Fixed `/login` on machines whose managed settings require Claude apps gateway sign-in: Esc now closes the dialog instead of doing nothing"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "업로드 중 연결이 끊긴 아티팩트 게시를 1회 재시도하도록 수정",
+          "en": "Fixed artifact publishes cut off by a dropped connection mid-upload: they now retry once when Claude Code can tell the upload never completed, instead of reporting an unknown outcome"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "기본 노력 수준이 고정된 모델에서 `effort:` frontmatter 가 무시되던 문제 수정",
+          "en": "Fixed `effort:` frontmatter on custom commands, skills, and subagents being ignored on models whose default effort is still pinned (Opus 4.7, Opus 4.8, Fable 5)"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "페이지 파일이 UTF-8 이 아닐 때 아티팩트 게시 오류가 줄·열을 알려주도록 수정",
+          "en": "Fixed artifact publish failing with an unhelpful error when the page file isn't valid UTF-8 or contains a replacement character (U+FFFD); the error now names the line and column to fix"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "`claude agents` 의 `@` 디렉터리 메뉴에 새로 만든 저장소가 안 뜨던 문제 수정",
+          "en": "Fixed `claude agents` `@` directory menu not listing repositories created after the session started"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "Remote Control 클라이언트가 권한 모드를 옛 값으로 보여주던 문제 수정",
+          "en": "Fixed Remote Control clients that join a Claude Desktop or VS Code session showing a stale permission mode until it was changed again"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "서버 자격증명 만료 시 `claude remote-control` 이 전체 세션을 끊고 종료되던 문제 수정",
+          "en": "Fixed `claude remote-control` exiting and dropping every attached session when its server credential expires (about 30 days after start); the host now re-registers and keeps going"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "모델·모드별 한도 창이 달라 사용량 한도 경고가 깜빡이던 문제 수정",
+          "en": "Fixed the usage-limit warning flickering on and off during a session when requests for different models or modes report different limit windows"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "MCP 서버가 도구를 다시 보낼 때 앞선 추론이 사라지던 문제 수정",
+          "en": "Fixed earlier reasoning being dropped when an MCP server re-sends, or a built-in tool re-renders, a tool the model already loaded"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "대화 도중 도구가 사라지면 도구 목록이 재작성되어 추론이 버려지던 문제 수정",
+          "en": "Fixed a tool that disappears mid-conversation, from a disconnected MCP server or an upgrade, rewriting the tool list and discarding earlier thinking"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "포크된 백그라운드 워커가 `EnterWorktree` 를 도구 블록에 추가하던 문제 수정",
+          "en": "Fixed a background worker forked from a conversation adding EnterWorktree to the conversation's tool block mid-session, which broke prompt-cache reuse"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "ToolSearch 없는 세션에서 MCP·플러그인 도구 추가로 캐시가 깨지던 문제 수정",
+          "en": "Fixed mid-session MCP and plugin tools being added to the tool list in sessions without ToolSearch, which broke prompt-cache reuse; supported models now receive them as deferred definitions"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`/model` 로 모델 전환 시 모든 도구 정의가 다시 전송되던 문제 수정",
+          "en": "Fixed switching models with /model re-sending every tool definition (a prompt-cache miss); commit and PR attribution text now arrives as a conversation note that updates on model changes"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "MCP 커넥터 재연결 시점 차이로 재개 세션이 도구 목록을 다시 쓰던 문제 수정",
+          "en": "Fixed resumed sessions rewriting the inline tool set when an MCP connector reconnects at a different moment than before"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "재개 세션이 기록된 도구 설명 대신 새로 렌더링하던 문제 수정",
+          "en": "Fixed resumed sessions re-rendering tool descriptions instead of replaying the recorded ones when the first turn ran a tool"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "claude.ai 커넥터 도구 변경으로 캐시가 깨지고 확장 사고가 사라지던 문제 수정",
+          "en": "Fixed prompt-cache misses and dropped extended thinking when a claude.ai connector's tools change between a session and its resume"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "커넥터 재연결 전 재개 세션이 이전 MCP 도구 안내를 다시 쓰던 문제 수정",
+          "en": "Fixed resumed sessions rewriting earlier MCP tool announcements (and dropping extended thinking) before their connectors reconnect"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "`-p` 대화를 대화형으로 재개할 때 프롬프트 캐시가 깨지던 문제 수정",
+          "en": "Fixed a prompt-cache break when a print-mode (`-p`) conversation is resumed interactively: the system prompt prefix no longer changes"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "`/diff` 패널의 \"0 files changed\" 깜빡임 제거와 빈 상태 가운데 정렬",
+          "en": "Improved the `/diff` panel: it no longer flashes \"0 files changed\" and a spinner before settling, and its empty state is centered in the panel"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "Bash 도구 설명이 명령을 그대로 옮기지 않고 풀어 쓰도록 안내 개선",
+          "en": "Improved the Bash tool's description guidance so Claude describes what a command does in plain words instead of echoing the command"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "샌드박스에서 `pbcopy` 등이 실패하면 `/copy` 를 안내하도록 개선",
+          "en": "Improved sandbox guidance so Claude suggests `/copy` when clipboard commands such as `pbcopy` fail inside the sandbox"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "Bash 호출이 많은 세션의 `--resume` 첫 렌더링 시간 개선",
+          "en": "Improved `--resume` first-render time for sessions with many Bash tool calls"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "스피너·스트리밍 재그리기에 입력이 밀리지 않도록 프롬프트 입력 반응성 개선",
+          "en": "Improved prompt input responsiveness: keystrokes no longer occasionally wait a frame behind spinner or streaming repaints"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "`--system-prompt` 세션과 서브에이전트가 프롬프트를 한 번만 기록하도록 개선",
+          "en": "Improved prompt-cache stability: subagents and sessions started with `--system-prompt` or `--append-system-prompt` now record the system prompt and tool definitions once instead of re-rendering them"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "아티팩트 게시 거부 시 이유와 조치를 알려주도록 오류 메시지 개선",
+          "en": "Improved Artifact tool publish errors: when a publish is refused, the message now says why and what to do about it"
+        },
+        {
+          "kind": "other",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "셀프 호스티드 러너: `--use-anthropic-git-proxy` 등록 보고와 세션별 경고 추가",
+          "en": "Self-hosted runner: Changed `--use-anthropic-git-proxy` to be reported to the server at registration and to print a warning for each session that still clones through the legacy git proxy"
+        },
+        {
+          "kind": "changed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "게이트웨이: `forward_user_identity` 업스트림의 429 를 그대로 반환하도록 변경",
+          "en": "Gateway: Changed `forward_user_identity` upstreams to return a 429 as-is to a developer whose email was forwarded, instead of failing over to the next upstream, so the proxy's per-user limits hold"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 순환 부모 링크가 있는 대화에서 확장 호스트가 CPU 100% 로 멈추던 문제 수정",
+          "en": "[VSCode] Fixed the extension host hanging at 100% CPU when forking, editing an earlier message, or rewinding in a conversation whose saved transcript contains a cyclic parent link"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] WSL2/WSLg 에서 스크린샷 붙여넣기가 원시 바이트로 들어가던 문제 수정",
+          "en": "[VSCode] Fixed pasting a screenshot on WSL2/WSLg inserting raw image bytes into the chat input; the image is now attached when the clipboard provides it, otherwise the paste is ignored"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 채팅 diff 블록이 항상 어두운 테마로 렌더링되던 문제 수정",
+          "en": "[VSCode] Fixed chat diff blocks always rendering with a dark editor theme; they now follow the active VS Code color theme, including high contrast"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 입력창에서 RTL 과 영문이 섞이면 순서가 어긋나던 문제 수정",
+          "en": "[VSCode] Fixed mixed right-to-left and English text rendering in the wrong order while typing in the message input"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] CRLF 줄바꿈 파일의 diff 편집 수락이 실패하던 문제 수정",
+          "en": "[VSCode] Fixed accepting an edit in the diff view on a file with Windows (CRLF) line endings failing with \"String not found in file\""
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] `@` 멘션에서 공백이 포함된 경로가 누락되던 문제 수정",
+          "en": "[VSCode] Fixed @-mentions dropping files whose paths contain spaces"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] Remote-SSH 창에서 세션 목록 뷰가 로드되지 않던 문제 수정",
+          "en": "[VSCode] Fixed the sessions list view failing to load in windows connected over Remote-SSH when the workspace folder exists only on the remote host"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 대규모·심볼릭 링크가 많은 워크스페이스의 ripgrep 폭주 수정",
+          "en": "[VSCode] Fixed runaway ripgrep processes when viewing files in large or symlink-heavy workspaces"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[웹] GitHub Enterprise Server 토큰 만료 시 계정이 끊긴 것으로 뜨던 문제 수정",
+          "en": "[Claude Code on the web] Fixed GitHub Enterprise Server sessions showing your GitHub account as disconnected once its token expired; PR and issue operations now refresh it automatically"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[웹] Claude GitHub App 이 없는 조직에서 `gh` 호출이 실패하던 문제 수정",
+          "en": "[Claude Code on the web] Fixed `gh` and GitHub API calls failing in organizations without the Claude GitHub App; they now use your connected GitHub account and say so when none is connected"
+        },
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[Claude Tag] 프리셋 연결 폼에 \"Use a custom connector\" 링크 추가",
+          "en": "[Claude Tag] Added a \"Use a custom connector\" link to the preset connection forms in Claude Tag admin settings, so you can switch to a custom connection without starting over"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[Claude Tag] 사용량 크레딧 소진 시 잘못된 요청 오류로 답하던 문제 수정",
+          "en": "[Claude Tag] Fixed Claude replying \"The API rejected the request as invalid\" when the organization has run out of usage credits; the reply now says so and explains how to add more"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[Claude Tag] 최상위 메시지 편집·삭제 요청이 해당 세션에 닿지 않던 문제 수정",
+          "en": "[Claude Tag] Fixed thread requests to edit or delete a message Claude posted at the channel's top level being answered with a correction instead of reaching the session that posted it"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[Claude Tag] Connect on Tool 접근 요청 검토가 권한 오류로 실패하던 문제 수정",
+          "en": "[Claude Tag] Fixed Connect on Tool access requests under Admin settings > Review requests failing with \"Authorization failed\" or showing the requested access bundle as deleted"
+        }
+      ]
+    },
     {
       "version": "v2.1.266",
       "date": "2026-09-08",
