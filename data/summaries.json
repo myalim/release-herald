@@ -1,7 +1,21 @@
 {
   "schema": 1,
-  "generated": "2026-09-14T23:52:13Z",
+  "generated": "2026-09-15T04:10:11Z",
   "releases": [
+    {
+      "version": "v2.1.272",
+      "date": "2026-09-15",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.272",
+      "items": [
+        {
+          "kind": "other",
+          "impact": "user",
+          "weight": 3,
+          "ko": "버그 수정 및 안정성 개선",
+          "en": "Bug fixes and reliability improvements"
+        }
+      ]
+    },
     {
       "version": "v2.1.271",
       "date": "2026-09-14",
