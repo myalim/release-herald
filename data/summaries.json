@@ -1,7 +1,28 @@
 {
   "schema": 1,
-  "generated": "2026-09-18T20:45:03Z",
+  "generated": "2026-09-19T03:55:47Z",
   "releases": [
+    {
+      "version": "v2.1.278",
+      "date": "2026-09-19",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.278",
+      "items": [
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "auto 모드 분류기가 서버 측 기본으로 변경 (`CLAUDE_CODE_AUTO_MODE_SERVER=0` 로 해제)",
+          "en": "Changed auto mode for Claude API and Enterprise users, and on Bedrock, Vertex, Foundry and gateways, to default to the server-side classifier, which does not charge for classifier overhead (`CLAUDE_CODE_AUTO_MODE_SERVER=0` opts out on Bedrock, Vertex, Foundry and gateways); warns on billed fallback. See https://code.claude.com/docs/en/auto-mode-classifier-billing"
+        },
+        {
+          "kind": "added",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`/status` 에 auto 모드 분류기 서버 실행 여부를 보여주는 `Auto mode server` 행 추가",
+          "en": "Added an `Auto mode server` row to `/status` showing whether this session's auto mode classifier runs on the server"
+        }
+      ]
+    },
     {
       "version": "v2.1.277",
       "date": "2026-09-18",
