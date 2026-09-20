@@ -221,7 +221,7 @@ def _reject_reason(asked: dict, got: dict) -> str:
     return ""
 
 
-def merge(pending_file: Path, judged_file: Path, summaries: Path, judged_dir: Path = None) -> tuple:
+def merge(pending_file: Path, judged_dir: Path, summaries: Path) -> tuple:
     """판정 결과를 병합한다. **통과분만 넣고 어긋난 것은 사유와 함께 돌려준다.**
 
     전부 거부하지 않는 이유는 정체다 — 한 릴리스가 계속 어긋나면 나머지까지 함께 멈추고,
@@ -235,7 +235,7 @@ def merge(pending_file: Path, judged_file: Path, summaries: Path, judged_dir: Pa
     """
     asked = {r["version"]: r for r in json.loads(pending_file.read_text(encoding="utf-8"))["releases"]}
     # 일부가 깨져도 나머지는 이어서 본다 — 아무것도 못 읽었을 때만(got is None) 중단한다.
-    got, errs = _judged_from_dir(judged_dir) if judged_dir is not None else _judged_releases(judged_file)
+    got, errs = _judged_from_dir(judged_dir)
     if got is None:
         return errs, []
 
@@ -397,8 +397,7 @@ def main() -> int:
 
     mg = sub.add_parser("merge", help="판정 결과를 summaries.json 에 병합한다")
     mg.add_argument("--pending", type=Path, default=ROOT / "data/pending.json")
-    mg.add_argument("--judged", type=Path, default=ROOT / "data/judged.json")
-    mg.add_argument("--judged-dir", type=Path, default=None, help="릴리스별 판정 파일이 있는 디렉터리")
+    mg.add_argument("--judged-dir", type=Path, default=ROOT / "data/judged", help="릴리스별 판정 파일이 있는 디렉터리")
     mg.add_argument("--summaries", type=Path, default=ROOT / "data/summaries.json")
 
     v = sub.add_parser("validate", help="summaries.json 을 계약과 대조한다")
@@ -430,7 +429,7 @@ def main() -> int:
         return 0
 
     if args.cmd == "merge":
-        errs, merged = merge(args.pending, args.judged, args.summaries, args.judged_dir)
+        errs, merged = merge(args.pending, args.judged_dir, args.summaries)
         print(f"✓ {args.summaries.name} — 병합한 릴리스 {len(merged)}: {', '.join(merged) or '없음'}")
         for m in errs:
             print(f"  거부: {m}", file=sys.stderr)
