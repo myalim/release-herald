@@ -77,38 +77,7 @@ jobs:
 
             이 실행은 무인 CI 다 — 승인을 물을 상대가 없다. 저장소 CLAUDE.md 의 승인 게이트·
             브랜치 확인·Serena 탐색 규칙은 이 실행에 적용하지 않고, 출력 파일 쓰기를 바로 수행한다.
-        run: |
-          # 앞선 실행분이 남아 실패를 가리는 일이 없게 한다.
-          rm -rf data/judged
-          mkdir -p data/judged
-          failed=''
-          for f in data/pending/*.json; do
-            v=$(basename "$f" .json)
-            echo "::group::판정 $v"
-            # `--allowedTools` 는 자동 승인 목록이라 목록 밖 도구를 막지 못한다 — 탐색을 실제로
-            # 끊는 것은 `--disallowedTools` 다. </dev/null 은 stdin 을 3초 기다리는 것을 건너뛴다.
-            if claude -p "prompts/classify.md 를 읽고 거기 적힌 지시를 그대로 수행한다. 입력은 $f, 출력은 data/judged/$v.json 이다.${CI_NOTE}" \
-                 --model claude-opus-5 \
-                 --allowedTools "Read,Write" \
-                 --disallowedTools "Bash,Glob,Grep,WebFetch,WebSearch,Task,ToolSearch" \
-                 --max-turns 10 \
-                 < /dev/null
-            then
-              # CLI 가 0 으로 끝나고도 아무것도 안 쓸 수 있다. 그 침묵을 여기서 끊는다.
-              test -s "data/judged/$v.json" || {
-                echo "::warning::$v — 판정이 0 으로 끝났는데 출력 파일이 없다"
-                failed="$failed $v"
-              }
-            else
-              echo "::warning::$v — 판정이 실패로 끝났다"
-              failed="$failed $v"
-            fi
-            echo "::endgroup::"
-          done
-          if [ -n "$failed" ]; then
-            echo "::error::판정 실패:$failed"
-            exit 1
-          fi
+        run: scripts/classify-all.sh data/pending data/judged
 
       # 병합이 판정 결과를 pending 과 대조해 통과분만 넣고, 어긋난 릴리스는 거부 수로 돌려준다.
       # 그 신호는 커밋을 마친 뒤에 쓴다 — 통과분까지 함께 버리지 않기 위해서다.

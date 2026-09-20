@@ -107,7 +107,7 @@ chk "오래된 락은 무시하고 진행"  "$(count)" "1"
 chk "락 정리됨"                "$([ -d "$STATE_DIR/update.lock" ] && echo y || echo n)" "n"
 
 echo "── 뒷정리 ──"
-chk "임시 파일 안 남김" "$(ls "$TMP/cache/" | grep -cE '\.(fetch|trim)\.')" "0"
+chk "임시 파일 안 남김" "$(find "$TMP/cache" -name '*.fetch.*' -o -name '*.trim.*' | wc -l | tr -d ' ')" "0"
 
 echo
 echo "통과 $PASS · 실패 $FAIL"
