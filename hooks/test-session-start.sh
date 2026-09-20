@@ -153,17 +153,26 @@ chk "캐시 밖 기록의 취할 개수가 반영됨" \
   "$(RELEASE_HERALD_FRESH_LIMIT=1 run "$CACHE" | jq -r .systemMessage | grep -c '개 버전')" "0"
 
 echo "── 갱신과의 경계 ──"
-# 경계 판정식은 프로세스 계보가 아니라 대기 여부다. 오래 걸리는 갱신기를 물려 놓고,
-# 훅이 그것을 기다리는지 본다 — 기다리면 훅 소요가 갱신기 시간만큼 늘어난다.
+# **기다리는 것이 계약이다** — 기다리지 않으면 이번 세션이 갱신 전 캐시로 판정해 새 릴리스가
+# 한 세션 늦게 뜬다. 오래 걸리는 갱신기를 물려 훅 소요가 그만큼 늘어나는지 본다.
+# 상한은 이 스크립트가 아니라 훅 등록의 `timeout` 이 걸므로 여기서 검증하지 않는다.
 SLOW="$TMP/slow-updater.sh"
-printf '#!/bin/sh\nsleep 5\n' > "$SLOW"; chmod +x "$SLOW"
+printf '#!/bin/sh\nsleep 3\n' > "$SLOW"; chmod +x "$SLOW"
 echo v2.1.260 > "$STATE"
 T0=$(date +%s)
 RELEASE_HERALD_CACHE="$CACHE" RELEASE_HERALD_STATE="$STATE" \
   RELEASE_HERALD_NO_UPDATE= RELEASE_HERALD_UPDATER="$SLOW" "$HOOK" >/dev/null 2>&1
 T1=$(date +%s)
-chk "느린 갱신기를 기다리지 않음" "$([ $((T1 - T0)) -lt 3 ] && echo y || echo n)" "y"
-chk "  띄운 갱신기는 살아 있음"   "$(pgrep -f "$SLOW" >/dev/null && echo y || echo n)" "y"
+chk "갱신기를 기다린다"       "$([ $((T1 - T0)) -ge 2 ] && echo y || echo n)" "y"
+chk "  끝난 뒤에 판정한다"    "$(pgrep -f "$SLOW" >/dev/null && echo y || echo n)" "n"
+
+# 갱신을 끄는 손잡이가 살아 있어야 테스트 자신이 사용자의 진짜 캐시를 건드리지 않는다.
+echo v2.1.260 > "$STATE"
+T0=$(date +%s)
+RELEASE_HERALD_CACHE="$CACHE" RELEASE_HERALD_STATE="$STATE" \
+  RELEASE_HERALD_NO_UPDATE=1 RELEASE_HERALD_UPDATER="$SLOW" "$HOOK" >/dev/null 2>&1
+T1=$(date +%s)
+chk "NO_UPDATE 면 갱신을 안 부른다" "$([ $((T1 - T0)) -lt 2 ] && echo y || echo n)" "y"
 pkill -f "$SLOW" 2>/dev/null
 
 echo
