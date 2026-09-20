@@ -57,8 +57,15 @@ command -v jq >/dev/null 2>&1 || { dbg "jq 없음 — 침묵"; exit 0; }
 # 폴링 `sleep` 이 포크를 무더기로 무는데, 하네스가 이미 같은 일을 하기 때문이다.
 UPDATER="${RELEASE_HERALD_UPDATER:-${0%/*}/update-cache.sh}"
 if [ -z "${RELEASE_HERALD_NO_UPDATE:-}" ] && [ -x "$UPDATER" ]; then
-  "$UPDATER" >/dev/null 2>&1
-  dbg "갱신 완료: $UPDATER"
+  # **진단은 성패를 갈라 적는다** — 배너가 "이번 세션에 갱신이 돌았나" 에 걸리게 된 뒤로,
+  # 이 줄이 "왜 새 릴리스가 안 떴나" 를 설명하는 유일한 자리다. 무조건 "완료" 라고 적으면
+  # 오프라인·락 점유·계약 불일치가 정상 갱신과 구분되지 않는다(침묵 사유를 가르는 아래 규칙과 같은 축).
+  if [ -n "${RELEASE_HERALD_DEBUG:-}" ]; then
+    "$UPDATER" >/dev/null           # 진단 중에는 갱신기의 stderr 를 그대로 흘린다
+    dbg "갱신기 종료코드 $?: $UPDATER"
+  else
+    "$UPDATER" >/dev/null 2>&1
+  fi
 fi
 
 [ -r "$CACHE" ] || { dbg "캐시 없음/읽기 불가: $CACHE"; exit 0; }

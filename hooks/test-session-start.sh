@@ -47,6 +47,8 @@ chk() { # chk <이름> <실제> <기대>
   else FAIL=$((FAIL+1)); printf '  ✗ %s — 기대=%s 실제=%s\n' "$1" "$3" "$2"; fi
 }
 run() { RELEASE_HERALD_CACHE="$1" RELEASE_HERALD_STATE="$STATE" "$HOOK" 2>/dev/null; }
+# stderr 만 잡고 stdout 은 버린다 — 순서가 그 뜻이라 뒤집으면 안 된다(SC2069 는 오타를 의심한 것).
+# shellcheck disable=SC2069
 run_err() { RELEASE_HERALD_CACHE="$1" RELEASE_HERALD_STATE="$STATE" "$HOOK" 2>&1 >/dev/null; }
 len() { printf '%s' "$1" | wc -c | tr -d ' '; }
 
@@ -160,8 +162,9 @@ SLOW="$TMP/slow-updater.sh"
 printf '#!/bin/sh\nsleep 3\n' > "$SLOW"; chmod +x "$SLOW"
 echo v2.1.260 > "$STATE"
 T0=$(date +%s)
+# 갱신을 켜려고 빈 값을 넘긴다 — 훅이 `-z` 로 보므로 빈 문자열이 곧 "끄지 않음" 이다.
 RELEASE_HERALD_CACHE="$CACHE" RELEASE_HERALD_STATE="$STATE" \
-  RELEASE_HERALD_NO_UPDATE= RELEASE_HERALD_UPDATER="$SLOW" "$HOOK" >/dev/null 2>&1
+  RELEASE_HERALD_NO_UPDATE='' RELEASE_HERALD_UPDATER="$SLOW" "$HOOK" >/dev/null 2>&1
 T1=$(date +%s)
 chk "갱신기를 기다린다"       "$([ $((T1 - T0)) -ge 2 ] && echo y || echo n)" "y"
 chk "  끝난 뒤에 판정한다"    "$(pgrep -f "$SLOW" >/dev/null && echo y || echo n)" "n"
