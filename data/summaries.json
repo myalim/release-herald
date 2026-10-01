@@ -1,7 +1,756 @@
 {
   "schema": 1,
-  "generated": "2026-09-30T22:08:01Z",
+  "generated": "2026-10-01T20:19:52Z",
   "releases": [
+    {
+      "version": "v2.1.287",
+      "date": "2026-10-01",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.287",
+      "items": [
+        {
+          "kind": "added",
+          "impact": "user",
+          "weight": 1,
+          "ko": "Claude Mods 추가 — 플러그인이 더 깊은 동작까지 수정 가능",
+          "en": "Added Claude Mods: plugins may now modify deeper behavior"
+        },
+        {
+          "kind": "added",
+          "impact": "user",
+          "weight": 2,
+          "ko": "놓친 것을 짚어주는 내장 모드 You should know 추가",
+          "en": "Added You should know, a built-in mod where a side agent watches your back and flags things you or Claude might miss. Turn it on with `/plugin enable cc-plugin-you-should-know@builtin` (for first-party sessions with telemetry on)"
+        },
+        {
+          "kind": "added",
+          "impact": "user",
+          "weight": 2,
+          "ko": "에이전트 뷰에 세션명·작업을 찾는 `n:<text>` 필터 추가",
+          "en": "Added an `n:<text>` filter to the agents view that matches session names and tasks; a filter now shows matches in collapsed sections and Enter opens the first match"
+        },
+        {
+          "kind": "added",
+          "impact": "user",
+          "weight": 1,
+          "ko": "OpenTelemetry `user_prompt` 에 `prompt` 사본 `prompt_text` 추가 — 마스킹 필요",
+          "en": "Added `prompt_text` to the OpenTelemetry `user_prompt` event, a copy of `prompt` for backends that nest dotted keys; drop or mask it wherever you drop or mask `prompt` (#70763)"
+        },
+        {
+          "kind": "added",
+          "impact": "user",
+          "weight": 1,
+          "ko": "MCP 서버 URL 프롬프트 지원 추가 — 연결 끊기면 `bareElicitationCapability`",
+          "en": "Added URL prompts from MCP servers on the 2025-11-25 protocol, for example to sign in. If a server no longer connects after this update, add \"bareElicitationCapability\": true to its MCP config entry"
+        },
+        {
+          "kind": "added",
+          "impact": "user",
+          "weight": 2,
+          "ko": "Windows: Bash 거부 시 PowerShell 도구도 꺼진다는 시작 경고 추가",
+          "en": "Windows: Added a startup warning when denying the Bash tool also turns off the PowerShell tool, so Claude has no shell tool"
+        },
+        {
+          "kind": "other",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "셀프호스티드 러너: GitHub CLI 없는 환경용 내장 `gh api` 추가",
+          "en": "Self-hosted runner: Added a built-in `gh api` (REST only) for sessions that use Anthropic-managed git on macOS and Linux machines where the GitHub CLI is not installed"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "사용자 계정 없는 에이전트의 원격 세션에서 fast mode 가 꺼져 있던 문제 수정",
+          "en": "Fixed fast mode staying off in remote sessions owned by an agent with no user account, even when the organization allows it"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "재연결 요청 무응답 시 Remote Control 메시지가 수 분간 끊기던 문제 수정",
+          "en": "Fixed Remote Control not receiving messages for minutes at a time when a reconnect request got no response; it now gives up after 30 seconds and retries"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`asyncRewake` 훅의 스크립트 누락 시 반복해서 깨우던 문제 수정",
+          "en": "Fixed hooks configured with `asyncRewake` waking Claude over and over with \"found issues\" notifications when the hook's script file is missing; the broken hook is now reported once"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "응답 스트림이 멈춘 동안 SDK 호스트에 도구 하트비트가 안 가던 문제 수정",
+          "en": "Fixed tool heartbeats not reaching SDK hosts while the model's response stream was stalled with no data arriving"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "Bedrock·Vertex 시작 모델 점검이 `availableModels` 를 무시하던 문제 수정",
+          "en": "Fixed Bedrock and Vertex startup model checks ignoring an enforced `availableModels` list, which could collapse `/model` to one Opus row"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "Chrome 연결 실패 시 브라우저 선택기에 JSON 파싱 오류가 뜨던 문제 수정",
+          "en": "Fixed the Claude in Chrome browser picker showing a JSON parse error when Chrome could not be reached"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`/model` 의 Fable 기본값이 최신 버전을 따르지 않던 문제 수정",
+          "en": "Fixed picking Fable in `/model` on a claude.ai login saving the current version's id, so your saved default now follows the newest Fable like Opus and Sonnet do"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "Opus 5.5↔Sonnet 5.5 전환이 이전 확장 사고를 날리던 문제 수정",
+          "en": "Fixed switching between Opus 5.5 and Sonnet 5.5 (`/model`, `opusplan`) rewriting earlier MCP tool announcements, which could drop earlier extended thinking"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "Bedrock Guardrails 의 응답 중 차단이 API 오류로 끝나던 문제 수정",
+          "en": "Fixed Amazon Bedrock Guardrails blocks that arrive mid-response ending the turn with an API error instead of the guardrail's message when the reply began with thinking"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "`~`·와일드카드 리다이렉트가 위험한 `rm` 의 항상 확인을 없애던 문제 수정",
+          "en": "Fixed a dangerous `rm` (such as one on `/` or the home directory) losing its always-ask safeguard when the same command also redirected output to a `~` or wildcard path"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "응답 중 모델을 바꾼 뒤 `claude -p`·SDK 가 폴백을 반복하던 문제 수정",
+          "en": "Fixed `claude -p` and SDK sessions repeating a model fallback on every later message after the model was switched while a reply was running"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "세션 재개·압축 후 CLAUDE.md 가 한 번 더 첨부되던 문제 수정",
+          "en": "Fixed a folder's CLAUDE.md being attached a second time after resuming a session or after a compaction"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "워크트리가 사라진 백그라운드 세션을 다시 열 수 없던 문제 수정",
+          "en": "Fixed background sessions that could not be reopened from `claude agents` after the agent exited and removed the worktree the session was started in"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`/advisor` 짝 검사 수정 — Sonnet 5.5 가 Opus 4.7·4.8 조언 가능",
+          "en": "Fixed `/advisor` pairing checks: Sonnet 5.5 can now advise Opus 4.7 and 4.8, and advisors the API would refuse are flagged up front instead of being silently dropped"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "Bash 권한 프롬프트에 내부 파서 이름이 그대로 뜨던 문제 수정",
+          "en": "Fixed Bash permission prompts showing internal parser names such as \"Contains simple_expansion\" instead of a plain explanation"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "긴 대화에서 스크롤 키를 누른 채 전체화면 세션이 종료되던 원인 수정",
+          "en": "Fixed a cause of fullscreen sessions on slow or busy machines exiting with \"Claude Code exited after an unrecoverable interface error\" while a scroll key was held in a long conversation"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "`__proto__` 이름의 MCP 도구에 조직 권한 상한이 적용되지 않던 문제 수정",
+          "en": "Fixed organization per-tool permission ceilings being silently dropped for an MCP tool named `__proto__`"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "큰 MCP 결과를 `Read` 오프셋으로 나눠 읽으라던 잘못된 안내 수정",
+          "en": "Fixed Claude being told to page large MCP results saved as JSON with Read's offset and limit, which cannot split one long line"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "압축 후 커밋 귀속 알림이 도구 결과 안에 전달되던 문제 수정",
+          "en": "Fixed the commit attribution reminder being delivered inside a tool result after a compaction"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "스크린 리더 모드에서 검색창·인증 코드 입력의 커서 위치 문제 수정",
+          "en": "Fixed screen reader mode leaving the cursor away from the typed text in search boxes (such as /resume and /permissions) and sign-in code fields"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "스크린 리더 모드에서 `/rewind` 요약 옵션이 빈 Enter 를 거부하던 문제 수정",
+          "en": "Fixed screen reader mode refusing Enter with nothing typed on /rewind's summarize options, whose added context is optional"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "스크린 리더 모드 승인 프롬프트의 무효한 \"Tab to amend\" 안내 제거",
+          "en": "Fixed screen reader mode showing a \"Tab to amend\" hint on approval prompts, where Tab does nothing"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "스크린 리더 모드가 동작하지 않는 방향키·번호 선택을 안내하던 문제 수정",
+          "en": "Fixed screen reader mode listing arrow keys that do nothing in /permissions and /mcp, and saying \"Select with numbers\" in empty menus or while a search box has the keys"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "스크린 리더 모드가 편집 승인 프롬프트의 변경 줄을 빠뜨리던 문제 수정",
+          "en": "Fixed screen reader mode leaving out the changed lines in file edit approval prompts and other diffs"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "스크린 리더 모드가 스피너 프레임마다 진행 화면을 다시 읽던 문제 수정",
+          "en": "Fixed screen reader mode sending the `claude --teleport` progress screen, and an MCP form field while it is being checked, to the screen reader again on every spinner frame"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` 가 구조적 출력 형식을 못 빼던 문제 수정",
+          "en": "Fixed `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` not removing the structured-output format from session-title and prompt-hook requests, which Bedrock-backed gateways reject"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "스크린 리더 모드가 두 번째 승인 프롬프트의 윗줄을 빠뜨리던 문제 수정",
+          "en": "Fixed screen reader mode leaving out the top lines of a second approval prompt, a changed /config row or the rejected-plan line when the previous screen was taller than the terminal window"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "`--include-partial-messages` 의 `message_stop` 지연·누락 수정",
+          "en": "Fixed `--include-partial-messages` sending a cut-short reply's `message_stop` late or never, so apps could show the reply as still in progress"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`claude agents` 에서 백그라운드 세션의 권한 프롬프트가 안 보이던 문제 수정",
+          "en": "Fixed `claude agents` sometimes not showing the permission prompt a background session is waiting on"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "읽을 수 없는 `.gitattributes` 로 업로드가 멈출 때의 `/ultrareview` 안내 수정",
+          "en": "Fixed `/ultrareview` giving advice about `.git/info/attributes` when the upload stops on a committed `.gitattributes` it cannot read, such as one saved as UTF-16"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "HTTP 프록시 뒤 `claude remote-control` 등록 실패의 오해 소지 오류 수정",
+          "en": "Fixed `claude remote-control` failing to register behind an HTTP proxy with a misleading \"Check your organization permissions\" error (#97352)"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "Linux 샌드박스 Bash 가 실행 파일 핸들을 물려받던 문제 수정",
+          "en": "Fixed sandboxed Bash commands on Linux inheriting an open handle on the Claude Code executable"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "\"Reduce motion\" 설정에도 점·스피너가 계속 움직이던 문제 수정",
+          "en": "Fixed the running-tool dot and three spinners still moving with the \"Reduce motion\" setting on, and /rewind's confirm screen updating its \"ago\" time while you type a note"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "스크린 리더 모드에서 `claude agents` 시간 표시가 매초 바뀌던 문제 수정",
+          "en": "Fixed times in `claude agents` changing every second in screen reader mode; they now change at most every 10 seconds"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "폐기된 claude.ai 로그인이 `API Error: 401` 로만 표시되던 문제 수정",
+          "en": "Fixed a revoked claude.ai login showing a generic `API Error: 401` instead of \"OAuth token revoked\"; in `-p` mode the error now starts with \"Failed to authenticate\""
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "저장소 설정 파일이 지정한 변수를 사용자 설정에 복사하라던 안내 수정",
+          "en": "Fixed `/ultrareview` upload refusals advising you to copy a variable named by a repository's settings file into your own user settings"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "`/<skill>` 로 실행한 `context: fork` 턴이 스트리밍되지 않던 문제 수정",
+          "en": "Fixed `--output-format stream-json` and the SDK not streaming the turns of a `context: fork` skill run by typing `/<skill>` as the prompt, as they do for the Skill tool's fork"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "`/feedback`·`/bug` 의 사전 작성 이슈에 최근 오류 메시지가 담기던 문제 수정",
+          "en": "Fixed /feedback and /bug: the pre-filled GitHub issue no longer includes your recent error messages, and the confirmation screen now lists them as part of the report"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "평문 http 저장소의 `--sparse`·`git-subdir` 플러그인 설치 실패 수정",
+          "en": "Fixed `claude plugin marketplace add --sparse` and `git-subdir` plugin installs failing with \"transport 'http' not allowed\" when the repository is served over plain http"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "압축 중 재시작된 클라우드 세션이 이전 대화를 잃던 문제 수정",
+          "en": "Fixed cloud sessions sometimes losing the earlier conversation when the session restarted while it was being compacted"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "`--plugin-url` 다운로드와 겹친 재로드가 플러그인 캐시를 깨던 문제 수정",
+          "en": "Fixed a plugin reload that overlapped the startup `--plugin-url` download corrupting the session's cached copy of the plugin archive"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "`/desktop` 이 타임아웃·과다 출력 시 부분 출력만 인용하던 문제 수정",
+          "en": "Fixed `/desktop` quoting partial output when opening Claude Desktop timed out or printed too much output; the error now names the cause"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "MCP 프로토콜 버전 변경 시 커넥터 도구 호출이 두 번 실행되던 문제 수정",
+          "en": "Fixed an MCP connector tool call occasionally running twice, or the connector's calls failing until restart, when its server changed which MCP protocol version it supports"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "동기화된 플러그인의 SessionStart 훅이 클라우드 세션에서 안 돌던 문제 수정",
+          "en": "Fixed SessionStart hooks from synced plugins not running in new cloud sessions"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "\"N hooks ran\" 집계에 내부 콜백이 포함되던 문제 수정",
+          "en": "Fixed the transcript's \"N hooks ran\" summary and the verbose debug log's matched-hooks count including Claude Code's internal callbacks, so one configured hook no longer shows as two"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "30초 직후 끝난 파일 업로드가 실패하던 문제 수정 — 35초로 연장",
+          "en": "Fixed files Claude sends from cloud and Remote Control sessions failing when the upload finished just after the 30-second timeout; it now waits 35 seconds"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "세션 중 추가된 저장소의 스킬·플러그인이 로드되지 않던 문제 수정",
+          "en": "Fixed repositories added mid-session in cloud and SDK sessions not loading their skills and plugins, and loading CLAUDE.md late, after Claude changed directory"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "원격 세션에서 8,000px 초과 이미지 전송 실패 수정 — 축소본 전송",
+          "en": "Fixed PNG, JPEG and WebP images over 8,000 pixels on a side failing to send from a remote session; Claude now sends a scaled-down copy"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "첨부 17~20개 메시지가 앞 16개만 전달되던 문제 수정",
+          "en": "Fixed messages sent from the Claude apps with 17 to 20 attached files delivering only the first 16"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "거부된 호출 한 번으로 MCP 서버를 인증 필요로 보고하던 문제 수정",
+          "en": "Fixed headless sessions reporting an MCP server as needing authentication after one refused call, even though later calls succeed"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "macOS: Mac 유휴 절전 시 Remote Control 세션이 멈추던 문제 수정",
+          "en": "macOS: Fixed Remote Control sessions started with `claude remote-control` stopping mid-turn when the Mac went to idle sleep"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "Windows: 입력이 파이프될 때 `claude` 가 멈추거나 죽던 문제 수정",
+          "en": "Windows: Fixed interactive `claude` hanging or crashing with \"Raw mode is not supported\" when its input is piped or redirected; it now says why and exits (use `-p` for piped input)"
+        },
+        {
+          "kind": "other",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "Bedrock·Vertex·Mantle: 모델 점검의 `Authorization` 헤더 불일치 수정",
+          "en": "Bedrock, Vertex, Mantle: Fixed model availability checks under `CLAUDE_CODE_SKIP_*_AUTH` sending a different `Authorization` header than real requests when `ANTHROPIC_CUSTOM_HEADERS` repeats it"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`/config` 개선 — ‹ › 양방향 전환·좁은 터미널 줄바꿈·PgUp/PgDn 페이지",
+          "en": "Improved `/config`: settings that cycle show ‹ › and step both ways with ←/→, narrow terminals stack each value under its label, and PgUp/PgDn page the list"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "플러그인 마켓플레이스 오류에 무시·거부 이유와 조치를 담도록 개선",
+          "en": "Improved plugin marketplace errors to say in plain words why a marketplace was ignored or refused, and what to do"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "플러그인 의존성 미설치 표시와 업데이트 시 설치 재시도 개선",
+          "en": "Improved plugin listings to note when a plugin's dependencies were not installed, and updating a plugin now retries an install that did not finish"
+        },
+        {
+          "kind": "improved",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "Bedrock 이 모델 ID 를 거부할 때의 게이트웨이 오류 메시지 개선",
+          "en": "Improved the Claude apps gateway's error when Amazon Bedrock rejects a model ID: developers now see which model is unavailable, and the gateway log names the ID that was sent"
+        },
+        {
+          "kind": "improved",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "SDK 의 \"now\" 우선 메시지가 진행 중 웹 요청을 취소하지 않도록 개선",
+          "en": "Improved SDK sessions so a message sent with priority \"now\" no longer cancels a running web fetch or web search; it keeps loading in the background"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "`/memory` 의 on/off 설정을 좌우 방향키로 전환하도록 개선",
+          "en": "Improved `/memory`: the left and right arrow keys now flip its on/off settings, such as Auto-memory"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 2,
+          "ko": "메시지 중간에 쓴 `/skill` 이름을 스킬로 인식하도록 개선",
+          "en": "Improved `/skill` names typed mid-message: Claude is now told they are skills, including `disable-model-invocation` ones"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "라이트 테마 입력 테두리와 이전 메시지 ❯ 의 명암 개선",
+          "en": "Improved the contrast of the prompt input border in light themes and of the ❯ before your earlier messages"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "타임아웃·네트워크 오류·502·503·504 시 파일 업로드 1회 재시도 개선",
+          "en": "Improved delivery of files Claude sends from cloud sessions and Remote Control: an upload that fails on a timeout, a network error or a 502, 503 or 504 is now retried once"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "일시적 이유로 파일 전송이 막히면 재요청 안내를 덧붙이도록 개선",
+          "en": "Improved what Claude says when a file cannot be sent for a reason that may be temporary: it now mentions that you can ask for the file again in a few minutes"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "다른 세션의 보류 메시지를 점선으로 감싸 보여주도록 개선",
+          "en": "Improved the prompt for a held message from another session to show the message between dashed lines, matching other permission prompts"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 2,
+          "ko": "MCP 등 도구 권한 프롬프트에 도구 호출을 점선으로 감싸 표시",
+          "en": "Improved MCP and other tool permission prompts to show the tool call between dashed lines, matching file edit prompts"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "헤드리스 MCP 시작 시 일시 실패한 서버를 바로 재시도하도록 개선",
+          "en": "Improved MCP startup in headless mode: a remote server whose first connect fails transiently is now retried without waiting for the slowest server to finish connecting"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "원격 세션의 대용량 파일을 디스크에서 스트리밍하도록 개선",
+          "en": "Improved files Claude sends from a remote session: large files now stream from disk instead of being read into memory, and a file over the size limit is refused with the server's limit named"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "서버가 파일 전송을 거부할 때 Claude 가 주는 설명 개선",
+          "en": "Improved the explanation Claude gives when the server refuses a file it sends from a Remote Control or cloud session, such as an oversized image"
+        },
+        {
+          "kind": "improved",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "대용량 MCP 결과 처리 개선 — 메모리·세션 파일 크기 절감",
+          "en": "Improved handling of large MCP tool results: less memory, smaller session files, and no extra upload to count tokens for results far over the limit"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 2,
+          "ko": "Windows: 명령마다 돌던 서브셸을 없애 Bash 도구 속도 개선",
+          "en": "Windows: Improved Bash tool speed by removing a subshell that ran before every command"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "저장소 심링크를 통한 민감 파일 쓰기에 경로 표시와 확인 대기 추가",
+          "en": "Changed a shell write through a repo-committed symlink onto a sensitive file or out of the working tree to name where it lands and wait for a person, on lines with a `~` target too"
+        },
+        {
+          "kind": "changed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "Bedrock·Vertex·Foundry 의 Opus 4.7+·Fable 기본 컨텍스트 1M 로 변경",
+          "en": "Changed Opus 4.7+ and Fable to use a 1M context window by default on Bedrock, Vertex, Foundry and the Claude apps gateway, with no `[1m]` suffix (`CLAUDE_CODE_DISABLE_1M_CONTEXT=1` keeps 200K)"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`claude agents` 응답이 대기 메시지로 도착하도록 변경",
+          "en": "Changed replies from `claude agents` to arrive as queued messages; slash commands other than `/stop` sent while a turn is running now run when it ends"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "`Bash` 전체 허용·훅 허용에도 자격증명 파일 쓰기는 확인받도록 변경",
+          "en": "Changed whole-tool `Bash` allow rules and allowing hooks to prompt for, not run, shell writes to files Claude Code's file tools refuse outright (the Anthropic profile store, the host credentials file)"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "Windows·Linux 우클릭 붙여넣기를 버튼을 놓을 때 실행하도록 변경",
+          "en": "Changed right-click paste on Windows and Linux, and middle-click paste on Linux, to happen when the button is released; moving the pointer away before releasing cancels it"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "MCP `alwaysLoad: false` 서버의 모든 도구를 도구 검색 뒤로 변경",
+          "en": "Changed MCP server `alwaysLoad: false` to defer all of that server's tools behind tool search"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "스크린 리더 모드의 줄 시작 멈춤 제거 — `CLAUDE_AX_PREPARK_MS=50` 로 복원",
+          "en": "Changed screen reader mode to write new or changed lines without first pausing with the cursor at the start of the line; set `CLAUDE_AX_PREPARK_MS=50` to restore the pause"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "자동 모델 전환 시 새 모델 기본값 대신 현재 노력 수준 유지로 변경",
+          "en": "Changed automatic model switches after a flagged message to keep your current effort level instead of the new model's default"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "대기 중 권한 프롬프트를 오래된 것부터 보여주도록 변경",
+          "en": "Changed waiting permission prompts to show oldest first, so a new prompt no longer covers the one you're reading (prompts with a countdown still open on top)"
+        },
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 실행 중 명령·서브에이전트의 \"Run in background\" 추가",
+          "en": "[VSCode] Added \"Run in background\" to a running command or sub-agent, to move it to the background and keep working"
+        },
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 에이전트 맵 카드에 백그라운드 셸·Monitor 출력 추가",
+          "en": "[VSCode] Added the output of background shells and Monitors to their cards in the agent map"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 응답이 너무 커 저장을 확인 못할 때 타임아웃 탓하던 문제 수정",
+          "en": "[VSCode] Fixed settings dialogs blaming a timeout when Claude Code's reply was too large to confirm a save"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 사이드바가 가져온 클라우드 세션이 새 탭으로 또 열리던 문제 수정",
+          "en": "[VSCode] Fixed reopening a cloud session that the side bar already brought to this machine opening it again in a new tab; the side bar is shown instead"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] Web 탭이 창 로드 후 시작된 클라우드 세션을 빠뜨리던 문제 수정",
+          "en": "[VSCode] Fixed the side bar's Web tab not listing cloud sessions started after the window loaded; a failed load now says \"Remote server is not connected\" instead of \"No web sessions yet\""
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 리로드 후 복원된 탭이 두 번째 프로세스를 띄우던 문제 수정",
+          "en": "[VSCode] Fixed a tab restored after a reload starting a second Claude process on a conversation the side bar already has open; it now shows the \"still open somewhere else\" notice"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 파일 링크·세션 목록 링크가 평문으로 표시되던 문제 수정",
+          "en": "[VSCode] Fixed tool-row file links, session-list links and two hints showing in plain text"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 백그라운드 에이전트의 실행 중 명령이 실패로 뜨던 문제 수정",
+          "en": "[VSCode] Fixed a background agent's still-running command showing as failed once the main turn ended"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] `/usage`·`/context` 가 확장 대화창을 열던 문제 수정",
+          "en": "[VSCode] Fixed a user's own `/usage` or `/context` command opening the extension's dialog instead of running when picked from the command menu"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 플랜 미리보기 탭의 파일 링크가 동작하지 않던 문제 수정",
+          "en": "[VSCode] Fixed file links in the plan preview tab doing nothing when clicked; they now open the file like links in chat replies"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] WSL 등 원격 호스트에서 도구 입출력 탭 열기 실패 수정",
+          "en": "[VSCode] Fixed opening a tool's input or output in an editor tab failing with \"Timeout waiting after 1000ms\" on remote hosts such as WSL when the tab is slow to appear"
+        },
+        {
+          "kind": "improved",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 마켓플레이스 추가·삭제·갱신 실패 이유 표시 개선",
+          "en": "[VSCode] Improved the Manage plugins dialog: a failed marketplace add, remove or refresh now says what went wrong"
+        },
+        {
+          "kind": "changed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] Claude in Chrome 기본 활성 스위치를 편집기 세션에도 적용",
+          "en": "[VSCode] Changed the Claude in Chrome \"Enabled by default\" switch to also connect the editor's own sessions, which still ask before browser actions"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "[Cloud sessions] 새 토큰 거부로 GitHub 통신이 실패하던 문제 수정",
+          "en": "[Cloud sessions] Fixed occasional failures to fetch from or push to GitHub when GitHub briefly refused a newly issued access token"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "[Claude Tag] 배경 이벤트로 깨울 때 실패 경고를 스레드에 올리던 문제 수정",
+          "en": "[Claude Tag] Fixed Claude posting a failure warning, such as a spend limit notice, in a Slack thread when a background event like GitHub activity woke it and nobody was waiting on a reply"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[Claude Tag] 지출 한도 페이지가 최근·비공개 채널을 빠뜨리던 문제 수정",
+          "en": "[Claude Tag] Fixed Claude Tag's spend limits page in admin settings leaving out recently created and private channels in organizations with many channels"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "[Claude Tag] 긴 스레드에서 작업 목록을 새 메시지로 재게시하지 않도록 개선",
+          "en": "[Claude Tag] Improved Claude's task list in long Slack threads: background work no longer reposts it as a new message on its own, so people following the thread aren't notified"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "[Code Review] 발견 코멘트가 문장 중간에 끊기던 문제 수정",
+          "en": "[Code Review] Fixed finding comments and their \"Why this was flagged\" text stopping mid-sentence; they now end on a complete sentence"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "[Code Review] 두 번 실패한 PR 의 새 푸시를 건너뛰던 문제 수정",
+          "en": "[Code Review] Fixed Code Review skipping a pull request after a new push when its review had failed twice on the previous commit; it now reviews the latest commit"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "[Code Review] 대화가 잠긴 PR 의 리뷰 실패 카드 설명 개선",
+          "en": "[Code Review] Improved the failed-review card on a pull request whose conversation is locked: it now says the lock blocked the review and that nothing was posted or charged"
+        }
+      ]
+    },
     {
       "version": "v2.1.286",
       "date": "2026-09-30",
