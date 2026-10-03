@@ -116,22 +116,35 @@ RESULT=$(jq -r --arg last "$LAST" --argjson fresh "$FRESH_LIMIT" --argjson max "
       # impact:internal 은 여기서 걷힌다 — 양쪽 채널 어디에도 가지 않는다.
       [ $new[] | . as $rel | $rel.items[] | select(.impact == "user") | . + {v: $rel.version} ] as $user
       | [ $user[] | select(.weight == 1) ] as $shown
+      | [ $user[] | select(.weight == 2) ] as $second
+      # 여러 버전이 밀려도 버전별 블록을 쌓지 않고 하나로 합친다 — 화면 분량이
+      # 1개 버전일 때와 같아야 한다. 헤더만 범위를 밝힌다.
+      | ( if ($new|length) == 1 then "Claude Code \($new[0].version)"
+          else "Claude Code \($new[-1].version) → \($new[0].version) (\($new|length)개 버전)"
+          end ) as $head
+      | ($second | length) as $n2
+      # 갈래는 넷이다 — 침묵 · weight 1 · weight 2 한 줄 보충 · 안내.
       | (
-          if ($shown | length) == 0 then ""
+          # 체감 항목이 하나도 없으면 침묵한다 — 새 버전이 있다는 사실만으로는 띄울 이유가 아니다.
+          if ($user | length) == 0 then ""
           else
-            # 여러 버전이 밀려도 버전별 블록을 쌓지 않고 하나로 합친다 — 화면 분량이
-            # 1개 버전일 때와 같아야 한다. 헤더만 범위를 밝힌다.
-            ( if ($new|length) == 1 then "Claude Code \($new[0].version)"
-              else "Claude Code \($new[-1].version) → \($new[0].version) (\($new|length)개 버전)"
-              end ) as $head
-            # 최신 릴리스부터 채워 상한에서 자른다. $new 가 최신 우선이라 순서가 이미 그렇다.
-            | ($shown | length) as $total
-            | "[release-herald] \($head)\n"
-              + ([ $shown[0:$max][] | "  · \(.ko)" ] | join("\n"))
-              # 잘렸다는 사실을 숨기지 않는다 — 숨기면 "중요한 게 안 뜸" 과 구분되지 않는다.
-              # 남은 것은 컨텍스트에 있으므로 물어보는 경로로 잇는다.
-              + (if $total > $max then "\n  … 외 \($total - $max)건 — 물어보면 답합니다" else "" end)
-              + "\n  \($new[0].url)"
+            "[release-herald] \($head)\n"
+            + ( if ($shown | length) > 0 then
+                  # 최신 릴리스부터 채워 상한에서 자른다. $new 가 최신 우선이라 순서가 이미 그렇다.
+                  ([ $shown[0:$max][] | "  · \(.ko)" ] | join("\n"))
+                  # 잘렸다는 사실을 숨기지 않는다 — 숨기면 "중요한 게 안 뜸" 과 구분되지 않는다.
+                  # 남은 것은 컨텍스트에 있으므로 물어보는 경로로 잇는다.
+                  + (if ($shown | length) > $max then "\n  … 외 \(($shown | length) - $max)건 — 물어보면 답합니다" else "" end)
+                # **weight 1 이 묶음 전체에서 0건일 때만 아래로 내려간다.** 그대로 침묵하면 통지 기록은
+                # 소진되는데 화면이 비어, 체감 항목이 있던 릴리스가 세션 시작에 다시는 안 뜬다.
+                # 보충은 한 줄까지다 — 게이트를 2 까지 넓히면 단일 릴리스의 분량 수렴이 깨진다.
+                # 여럿이면 최신 버전의 첫 항목을 고른다. 한 릴리스 안의 항목끼리는 선후가 없어
+                # 문구에 "최신" 을 쓰지 않는다.
+                elif $n2 == 0 then "  주요 변경 사항이 없습니다. 세부 내역은 물어보시면 답해 드립니다."
+                elif $n2 == 1 then "  주요 변경 사항은 없습니다. 참고할 만한 변경은 다음과 같습니다.\n  · \($second[0].ko)"
+                else "  주요 변경 사항은 없습니다. 참고할 만한 변경 \($n2)건 중 1건입니다.\n  · \($second[0].ko)"
+                end )
+            + "\n  \($new[0].url)"
           end
         ) as $sys
 

@@ -31,8 +31,17 @@ STATE="$TMP/state"
 CACHE="$TMP/cache.json";  cp "$SRC" "$CACHE"
 BROKEN="$TMP/broken.json"; printf '{"schema":1,"releases":[' > "$BROKEN"
 SCHEMA2="$TMP/schema2.json"; jq '.schema = 2' "$CACHE" > "$SCHEMA2"
-# 체감 항목이 0인 릴리스만 미통지가 되는 형태
-W0="$TMP/w0.json"; jq '[.releases[] | select(.version=="v2.1.250" or .version=="v2.1.248")] as $r | .releases = $r' "$CACHE" > "$W0"
+# weight 1 이 0건인 묶음 — 보충 경로 셋. 아래 버전의 항목 분포가 곧 갈래다:
+# v2.1.250 은 weight 3 하나뿐 · v2.1.276 은 weight 2 하나 · v2.1.258 은 weight 2 둘.
+W3="$TMP/w3.json"; jq '.releases = [.releases[] | select(.version=="v2.1.250" or .version=="v2.1.248")]' "$CACHE" > "$W3"
+# 체감 항목이 0인 릴리스만 미통지가 되는 형태. 실제 데이터에 그런 릴리스는 가장 오래된 끝에만
+# 있어 앞에 기록을 세울 자리가 없으므로, 위 묶음의 항목을 전부 internal 로 바꿔 만든다.
+W0="$TMP/w0.json"; jq '.releases[0].items |= map(.impact = "internal")' "$W3" > "$W0"
+W2A="$TMP/w2a.json"; jq '.releases = [.releases[] | select(.version=="v2.1.276" or .version=="v2.1.275")]' "$CACHE" > "$W2A"
+W2B="$TMP/w2b.json"; jq '.releases = [.releases[] | select(.version=="v2.1.258" or .version=="v2.1.257")]' "$CACHE" > "$W2B"
+# 여러 버전이 함께 밀렸는데 어느 버전에도 weight 1 이 없는 묶음. 실제 데이터에서는 그런 버전이
+# 이웃하지 않으므로 둘을 골라 붙인다 — 보충이 묶음 단위로 세고 최신 버전의 항목을 고르는지 본다.
+W2M="$TMP/w2m.json"; jq '.releases = [.releases[] | select(.version=="v2.1.276" or .version=="v2.1.258" or .version=="v2.1.257")]' "$CACHE" > "$W2M"
 # 미통지가 한 릴리스뿐인 경로. **버전을 고정 지정한다** — 최신 두 개로 만들면 봇이 릴리스를
 # 추가할 때마다 대상이 바뀌지만, 과거 릴리스의 항목은 더 변하지 않는다.
 W1="$TMP/w1.json"; jq '.releases = [.releases[] | select(.version=="v2.1.261" or .version=="v2.1.260")]' "$CACHE" > "$W1"
@@ -107,6 +116,34 @@ echo v2.1.248 > "$STATE"
 OUT="$(run "$W0")"
 chk "체감 항목 0 → 화면 침묵"     "$(printf '%s' "$OUT" | jq 'has("systemMessage")')" "false"
 chk "  그래도 컨텍스트는 간다"     "$(printf '%s' "$OUT" | jq '.hookSpecificOutput.additionalContext | length > 0')" "true"
+
+echo "── weight 1 이 0건인 묶음의 보충 ──"
+sysmsg() { run "$1" | jq -r '.systemMessage // ""'; }
+echo v2.1.248 > "$STATE"
+OUT="$(sysmsg "$W3")"
+chk "weight 3 뿐 → 안내 한 줄"      "$(printf '%s' "$OUT" | grep -c '주요 변경 사항이 없습니다')" "1"
+chk "  항목은 띄우지 않음"          "$(printf '%s' "$OUT" | grep -c '·')" "0"
+echo v2.1.275 > "$STATE"
+OUT="$(sysmsg "$W2A")"
+chk "weight 2 하나 → 그 한 줄"      "$(printf '%s' "$OUT" | grep -c '·')" "1"
+chk "  보충임을 밝힘"               "$(printf '%s' "$OUT" | grep -c '참고할 만한 변경은 다음과 같습니다')" "1"
+echo v2.1.257 > "$STATE"
+OUT="$(sysmsg "$W2B")"
+chk "weight 2 여럿 → 한 줄만"       "$(printf '%s' "$OUT" | grep -c '·')" "1"
+chk "  몇 건 중인지 밝힘"           "$(printf '%s' "$OUT" | grep -c '2건 중 1건입니다')" "1"
+echo v2.1.257 > "$STATE"
+OUT="$(sysmsg "$W2M")"
+chk "여러 버전이 밀려도 묶음으로 셈"  "$(printf '%s' "$OUT" | grep -c '3건 중 1건입니다')" "1"
+chk "  최신 버전의 항목을 고름"       "$(printf '%s' "$OUT" | grep -c 'ANTHROPIC_BASE_URL')" "1"
+# 보충 줄도 컨텍스트에 있어야 한다 — 아래 불변식 절은 weight 1 경로만 밟으므로 여기서 따로 본다.
+echo v2.1.257 > "$STATE"
+OUT="$(run "$W2M")"
+SUP="$(jq -r '.releases[] | select(.version=="v2.1.276") | [.items[] | select(.impact=="user" and .weight==2)][0].ko' "$W2M")"
+CTX="$(printf '%s' "$OUT" | jq -r '.hookSpecificOutput.additionalContext')"
+chk "  보충 줄도 컨텍스트에 있음"     "$(has "$SUP" "$CTX")" "y"
+# 묶음 안 다른 릴리스에 weight 1 이 있으면 보충하지 않는다 — 판정 단위가 릴리스가 아니라 묶음이다.
+echo v2.1.275 > "$STATE"
+chk "묶음에 weight 1 이 있으면 보충 없음" "$(sysmsg "$CACHE" | grep -c '주요 변경 사항')" "0"
 
 echo "── 불변식 ──"
 echo v2.1.247 > "$STATE"
