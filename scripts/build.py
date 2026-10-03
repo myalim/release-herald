@@ -14,6 +14,7 @@ schema/summaries.schema.json 이라 주체가 바뀌어도 이 스크립트는 �
 """
 
 import argparse
+import functools
 import html
 import json
 import os
@@ -232,6 +233,7 @@ def merge(pending_file: Path, judged_dir: Path, summaries: Path) -> tuple:
     상태나 부분 상태로 존재해서는 안 된다(SPEC 불변식).
 
     돌려주는 것은 (거부 사유 목록, 병합한 버전 목록) — 커밋 메시지가 그 목록을 제목에 쓴다.
+    영역은 여기서 다루지 않는다 — 병합 뒤 `attach_areas` 가 영역 없는 릴리스 전부를 대상으로 붙인다.
     """
     asked = {r["version"]: r for r in json.loads(pending_file.read_text(encoding="utf-8"))["releases"]}
     # 일부가 깨져도 나머지는 이어서 본다 — 아무것도 못 읽었을 때만(got is None) 중단한다.
@@ -256,6 +258,12 @@ def merge(pending_file: Path, judged_dir: Path, summaries: Path) -> tuple:
         if reason:
             errs.append(f"{v}: {reason}")
             continue
+        # 계약 위반도 릴리스 단위로 거른다 — 합친 전체를 한 번에 검증하면 한 릴리스의 80자를 넘은
+        # ko 하나로 그 실행의 나머지 릴리스까지 함께 막힌다.
+        broken = _release_errors(r)
+        if broken:
+            errs.append(f"{v}: 계약 위반 — {_summarize(broken)}")
+            continue
         accepted.append(r)
 
     for v in sorted(set(asked) - handled):
@@ -273,15 +281,97 @@ def merge(pending_file: Path, judged_dir: Path, summaries: Path) -> tuple:
         # 여기까지 왔는데 계약을 어겼다면 대조가 못 잡는 종류다 — 쓰지 않고 그대로 알린다.
         return errs + [f"병합 결과가 계약 위반: {m}" for m in broken], []
 
-    tmp = summaries.with_name(summaries.name + ".tmp")
-    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    os.replace(tmp, summaries)
+    _write_json_atomic(summaries, data)
     return errs, sorted(r["version"] for r in accepted)
+
+
+def _untagged(release: dict) -> bool:
+    """영역을 아직 받지 못한 릴리스인가 — 항목이 하나라도 영역이 없으면 그렇다. 항목 0개는 받을 것이 없다."""
+    return any("area" not in it for it in release.get("items", []))
+
+
+def area_pending(summaries: Path, out_dir: Path, limit: int = None) -> int:
+    """영역이 없는 릴리스를 골라 영역 판정 입력을 쓴다 — 최신부터, `limit` 개까지.
+
+    **대상은 새로 판정된 릴리스가 아니라 영역이 없는 릴리스 전부다** — 판정할 때 한 번만 물으면 그 호출이
+    한 번 실패한 릴리스는 영역이 영영 빠진다(이미 판정돼 다시 묻지 않는다). 영역이 없는 동안은 실행마다
+    다시 대상이 되므로 실패가 스스로 메워지고, 기존 릴리스를 채우는 일도 같은 길로 끝난다.
+
+    입력에는 원문(`en`)만 넣는다 — `impact`·`weight`·`ko` 를 보여 주면 영역 판정이 그 값에 섞인다.
+    """
+    data = json.loads(summaries.read_text(encoding="utf-8"))
+    picked = [r for r in data["releases"] if _untagged(r)][:limit]
+    if out_dir.exists():
+        for stale in out_dir.glob("*.json"):
+            stale.unlink()
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for r in picked:
+        if not VERSION_RE.fullmatch(r["version"]):
+            raise ValueError(f"파일명으로 쓸 수 없는 버전: {r['version']!r}")
+        body = {"version": r["version"], "items": [{"en": it["en"]} for it in r["items"]]}
+        (out_dir / f"{r['version']}.json").write_text(json.dumps(body, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return len(picked)
+
+
+def attach_areas(pending_dir: Path, areas_dir: Path, summaries: Path) -> tuple:
+    """영역 판정 출력을 summaries.json 의 해당 릴리스에 붙인다. (붙인 버전 목록, 못 붙인 사유 목록).
+
+    물은 릴리스(`pending_dir`)마다 결과를 대조해 붙이고, 못 붙인 것은 영역 없이 둔다 — 다음 실행에서 다시
+    대상이 된다. 쓰기는 전체 계약을 통과한 뒤 원자적으로 한다(merge 와 같은 불변식).
+    """
+    data = json.loads(summaries.read_text(encoding="utf-8"))
+    by_version = {r.get("version"): r for r in data["releases"]}
+    tagged, missing = [], []
+    for f in sorted(pending_dir.glob("*.json")):
+        v = f.stem
+        rel = by_version.get(v)
+        if rel is None:
+            missing.append(f"{v}: 요약 파일에 없는 버전")
+            continue
+        reason = _attach_area(rel, areas_dir / f"{v}.json")
+        if reason:
+            missing.append(f"{v}: {reason}")
+        else:
+            tagged.append(v)
+    if not tagged:
+        return [], missing
+    broken = validate_data(data)
+    if broken:
+        # 릴리스마다 검증한 뒤라 여기서 걸리면 붙이기가 못 잡는 종류다 — 쓰지 않고 그대로 알린다.
+        return [], missing + [f"붙인 결과가 계약 위반: {m}" for m in broken]
+    _write_json_atomic(summaries, data)
+    return tagged, missing
+
+
+def _attach_area(release: dict, area_file: Path) -> str:
+    """영역 판정 출력(`prompts/area.md`)을 계약을 통과한 릴리스에 붙인다. 못 붙이면 사유, 붙였으면 빈 문자열.
+
+    **영역 판정의 출력에서는 영역 배열만 받는다** — 항목 대응은 순서로만 하고, 개수가 다르면 어느 항목에
+    무엇이 붙는지 알 수 없으므로 통째로 붙이지 않는다. 사본에 붙여 계약을 본 뒤 통과할 때만 실제 릴리스에
+    붙인다 — 이 릴리스는 이미 계약을 통과했으므로 사본의 위반은 영역의 것이고, 원본은 건드리지 않는다.
+    """
+    if not area_file.exists():
+        return "영역 판정이 없음"
+    try:
+        got = json.loads(area_file.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as e:
+        return f"영역 판정을 읽지 못함 ({e})"
+    if not isinstance(got, dict) or got.get("version") != release.get("version"):
+        return f"버전이 다름 ({release.get('version')} → {got.get('version') if isinstance(got, dict) else '형태 다름'})"
+    areas, items = got.get("areas"), release["items"]
+    if not isinstance(areas, list) or len(areas) != len(items):
+        return f"항목 수가 다름 ({len(items)} → {len(areas) if isinstance(areas, list) else '배열 아님'})"
+    candidate = dict(release, items=[dict(it, area=a) for it, a in zip(items, areas)])
+    broken = _release_errors(candidate)
+    if broken:
+        return f"영역이 계약 위반 — {_summarize(broken)}"
+    release["items"] = candidate["items"]
+    return ""
 
 
 # ── 검증 ──────────────────────────────────────────────────────────────────
 # jsonschema 를 쓰지 않는다 — 의존성을 표준 라이브러리로 묶었다. 계약이 얕아 필요한 제약이
-# required·enum·pattern·범위뿐이고, 그것만 직접 본다.
+# required·enum·pattern·범위·배열 원소(개수·목록)뿐이고, 그것만 직접 본다.
 
 
 def _check(obj, spec, defs, path, errs):
@@ -326,6 +416,13 @@ def _check(obj, spec, defs, path, errs):
             if not isinstance(v, list):
                 errs.append(f"{here}: 배열이어야 함")
                 continue
+            if not p.get("minItems", 0) <= len(v) <= p.get("maxItems", 1 << 62):
+                errs.append(f"{here}: 원소 수가 범위 밖 → {len(v)}")
+            allowed = p.get("items", {}).get("enum")
+            if allowed is not None:
+                for i, el in enumerate(v):
+                    if el not in allowed:
+                        errs.append(f"{here}[{i}]: 목록에 없는 값 → {el!r}")
             ref = p.get("items", {}).get("$ref", "")
             name = ref.rsplit("/", 1)[-1] if ref else None
             if name:
@@ -343,9 +440,35 @@ def _order_key(release: dict) -> tuple:
     return (release.get("date", ""), tuple(int(n) for n in re.findall(r"\d+", str(release.get("version", "")))))
 
 
+@functools.lru_cache(maxsize=None)
+def _schema() -> dict:
+    """계약 스키마. 한 실행 안에서 여러 번 검증해도 한 번만 읽는다."""
+    return json.loads((ROOT / "schema/summaries.schema.json").read_text(encoding="utf-8"))
+
+
+def _summarize(errs: list) -> str:
+    """오류 목록을 거부 사유 한 줄로 — 첫 오류와 나머지 건수."""
+    return errs[0] + (f" 외 {len(errs) - 1}건" if len(errs) > 1 else "")
+
+
+def _write_json_atomic(path: Path, data: dict) -> None:
+    """임시 파일에 쓰고 rename 한다 — 훅·병합이 부분 상태를 읽지 않게 한다."""
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    os.replace(tmp, path)
+
+
+def _release_errors(release: dict) -> list:
+    """릴리스 하나를 계약의 `release` 정의로 검증한다 — merge 가 받아들이기 전에 건다."""
+    schema = _schema()
+    errs = []
+    _check(release, schema["$defs"]["release"], schema["$defs"], str(release.get("version")), errs)
+    return errs
+
+
 def validate_data(data: dict, label: str = "summaries") -> list:
     """디스크가 아니라 **데이터**를 검증한다 — merge 가 쓰기 전에 같은 검사를 돌린다."""
-    schema = json.loads((ROOT / "schema/summaries.schema.json").read_text(encoding="utf-8"))
+    schema = _schema()
     errs = []
     _check(data, schema, schema["$defs"], label, errs)
 
@@ -400,6 +523,16 @@ def main() -> int:
     mg.add_argument("--judged-dir", type=Path, default=ROOT / "data/judged", help="릴리스별 판정 파일이 있는 디렉터리")
     mg.add_argument("--summaries", type=Path, default=ROOT / "data/summaries.json")
 
+    ap_ = sub.add_parser("area-pending", help="영역이 없는 릴리스의 영역 판정 입력을 쓴다")
+    ap_.add_argument("--summaries", type=Path, default=ROOT / "data/summaries.json")
+    ap_.add_argument("--out-dir", type=Path, default=ROOT / "data/area-pending")
+    ap_.add_argument("--limit", type=int, default=None, help="한 실행에 물을 릴리스 상한 (최신부터)")
+
+    at = sub.add_parser("attach-area", help="영역 판정 출력을 summaries.json 에 붙인다")
+    at.add_argument("--pending-dir", type=Path, default=ROOT / "data/area-pending")
+    at.add_argument("--areas-dir", type=Path, default=ROOT / "data/areas")
+    at.add_argument("--summaries", type=Path, default=ROOT / "data/summaries.json")
+
     v = sub.add_parser("validate", help="summaries.json 을 계약과 대조한다")
     v.add_argument("file", type=Path)
 
@@ -419,13 +552,19 @@ def main() -> int:
 
     if args.cmd == "pending":
         n = pending(args.extracted, args.summaries, args.out, args.split_dir)
-        print(f"✓ 판정 대기 릴리스 {n}")
-        # 대기가 없으면 뒤 단계를 통째로 건너뛰어야 한다 — 빈 판정을 LLM 에 묻는 것은
+        # 영역이 없는 릴리스 수도 함께 낸다 — 판정할 것이 없어도 영역을 채울 것이 있으면 판정기를
+        # 설치해야 해서, 이 단계 하나가 "할 일이 있나" 를 다 답한다.
+        untagged = 0
+        if args.summaries.exists():
+            untagged = sum(map(_untagged, json.loads(args.summaries.read_text(encoding="utf-8"))["releases"]))
+        print(f"✓ 판정 대기 릴리스 {n} · 영역 없는 릴리스 {untagged}")
+        # 둘 다 없으면 뒤 단계를 통째로 건너뛰어야 한다 — 빈 판정을 LLM 에 묻는 것은
         # 사용량만 쓰고 아무것도 바꾸지 않는다.
         gh = os.environ.get("GITHUB_OUTPUT")
         if gh:
             with open(gh, "a", encoding="utf-8") as f:
                 f.write(f"count={n}\n")
+                f.write(f"untagged={untagged}\n")
         return 0
 
     if args.cmd == "merge":
@@ -440,6 +579,28 @@ def main() -> int:
             with open(gh, "a", encoding="utf-8") as f:
                 f.write(f"rejected={len(errs)}\n")
                 f.write(f"merged={', '.join(merged)}\n")
+        return 0
+
+    if args.cmd == "area-pending":
+        n = area_pending(args.summaries, args.out_dir, args.limit)
+        print(f"✓ 영역 판정 대기 릴리스 {n}")
+        gh = os.environ.get("GITHUB_OUTPUT")
+        if gh:
+            with open(gh, "a", encoding="utf-8") as f:
+                f.write(f"count={n}\n")
+        return 0
+
+    if args.cmd == "attach-area":
+        tagged, missing = attach_areas(args.pending_dir, args.areas_dir, args.summaries)
+        print(f"✓ {args.summaries.name} — 영역을 붙인 릴리스 {len(tagged)}: {', '.join(tagged) or '없음'}")
+        for m in missing:
+            print(f"  영역 미부착: {m}", file=sys.stderr)
+        # 못 붙인 것은 다음 실행에서 다시 대상이 되므로 여기서 죽지 않는다 — 수는 호출한 쪽이 알린다.
+        gh = os.environ.get("GITHUB_OUTPUT")
+        if gh:
+            with open(gh, "a", encoding="utf-8") as f:
+                f.write(f"missing={len(missing)}\n")
+                f.write(f"tagged={', '.join(tagged)}\n")
         return 0
 
     errs = validate(args.file)
