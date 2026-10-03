@@ -79,7 +79,7 @@ if [ -z "$TARGET" ]; then
           + (if .version == $last then "   ← 여기까지 통지됨" else "" end)
       ),
       "",
-      "  화면 0 = weight 1 이 없는 릴리스 — 함께 밀린 버전에도 없으면 참고 한 줄이나 안내만 뜬다 (user 0 이면 침묵)."
+      "  화면 0 = weight 1 이 없는 릴리스 — 함께 밀린 버전에도 없으면 참고 한 줄이나 안내만 뜬다 (묶음 전체가 user 0 이면 침묵)."
   ' "$DATA"
   exit 0
 fi
