@@ -13,7 +13,7 @@
 # 진단은 RELEASE_HERALD_DEBUG=1 로 켠다.
 #
 #   수동 실행: ./hooks/update-cache.sh [--force]
-#     --force  쿨다운을 무시하고 즉시 받는다 (진단·초기 설치용)
+#     --force  쿨다운과 조건부 요청(ETag)을 건너뛰고 즉시 전체를 받는다 (진단·초기 설치용)
 
 set -u
 
@@ -21,6 +21,7 @@ CACHE="${RELEASE_HERALD_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/release-herald/su
 STATE_DIR="${RELEASE_HERALD_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/release-herald}"
 STAMP="$STATE_DIR/last-update"
 LOCK="$STATE_DIR/update.lock"
+ETAG_FILE="$STATE_DIR/etag"   # 캐시와 짝인 원본의 ETag
 
 # 세션을 켤 때마다 네트워크로 나가지 않도록 최소 간격을 둔다. **생성 주기보다 짧게 둔다** —
 # 길면 생성된 요약을 캐시가 건너뛰어, 워크플로를 촘촘히 해도 여기가 새 병목이 된다.
@@ -81,22 +82,61 @@ CACHE_DIR="${CACHE%/*}"
 
 # 임시 파일은 캐시와 **같은 디렉터리**에 만든다 — rename 이 원자적인 것은 같은 파일시스템
 # 안에서뿐이라, /tmp 를 거치면 교체 중 부분 상태가 관측될 수 있다.
+RESP="$CACHE.resp.$$"
 TMP="$CACHE.fetch.$$"
 TRIM="$CACHE.trim.$$"
-trap 'rm -f "$TMP" "$TRIM" 2>/dev/null; rmdir "$LOCK" 2>/dev/null' EXIT
+trap 'rm -f "$RESP" "$TMP" "$TRIM" 2>/dev/null; rmdir "$LOCK" 2>/dev/null' EXIT
 
-if ! gh api "repos/$REPO/contents/$SRC_PATH?ref=$REF" \
-      -H "Accept: application/vnd.github.raw" > "$TMP" 2>/dev/null; then
-  dbg "받기 실패 (오프라인·인증 만료·경로 없음)"
+# 쓰다 잘려도 반쪽 파일이 남지 않게 임시 파일에 쓰고 rename 한다.
+atomic_write() { printf '%s\n' "$2" > "$1.tmp" 2>/dev/null && mv -f "$1.tmp" "$1" 2>/dev/null; }
+# 캐시 계약 — 조건부 요청 여부와 받은 내용 검증이 같은 식을 써야 둘이 어긋나지 않는다.
+CONTRACT='.schema == 1 and (.releases | type) == "array"'
+
+# 조건부 요청 — 직전 응답의 ETag 를 보내 원본이 그대로면 304 로 본문 없이 끝낸다. 원본은 누적
+# 파일이라 릴리스마다 커지는데 갱신 대부분은 바뀐 게 없는 회차라, 그 전송을 건너뛴다.
+# **ETag 는 캐시와 짝이라 캐시가 계약대로 읽힐 때만 보낸다** — 캐시가 없거나 깨졌는데 ETag 만
+# 보내면 304 가 돌아와 영영 다시 받지 못한다. --force 는 진단·설정 변경(보관 개수 등) 뒤에
+# 다시 받으려는 것이라 조건 없이 받는다.
+COND=()
+if [ -z "$FORCE" ] && [ -s "$ETAG_FILE" ] \
+   && jq -e "$CONTRACT" "$CACHE" >/dev/null 2>&1; then
+  read -r PREV_ETAG < "$ETAG_FILE"
+  [ -n "$PREV_ETAG" ] && COND=(-H "If-None-Match: $PREV_ETAG")
+fi
+
+# -i 로 상태 줄과 헤더를 함께 받는다. **gh 는 304 를 실패(종료코드 1)로 내므로** 종료코드만으로는
+# "안 바뀜" 과 "못 받음" 이 갈리지 않는다 — 상태 줄로 가른다. 상태 줄은 LF, 헤더 줄은 CRLF 로
+# 끝나고, 헤더와 본문 사이 빈 줄은 "\r" 하나다. 상태 줄에 사유구가 빠지면 코드에 CR 이 붙을 수
+# 있어 떼고 비교한다. bash 3.2 는 set -u 에서 빈 배열 전개를 unbound 로 죽이므로 ${arr[@]+...}
+# 형태로 편다.
+gh api -i "repos/$REPO/contents/$SRC_PATH?ref=$REF" \
+   -H "Accept: application/vnd.github.raw" ${COND[@]+"${COND[@]}"} > "$RESP" 2>/dev/null
+STATUS=""
+[ -s "$RESP" ] && read -r _ STATUS _ < "$RESP"
+STATUS="${STATUS%$'\r'}"
+
+if [ "$STATUS" = "304" ]; then
+  # 안 바뀌었다는 확인도 신선함이다 — 쿨다운을 다시 세지 않으면 다음 세션이 또 묻는다.
+  atomic_write "$STAMP" "$NOW"
+  dbg "변경 없음 (304) — 캐시 유지"
   exit 0
 fi
+if [ "$STATUS" != "200" ]; then
+  dbg "받기 실패 (오프라인·인증 만료·경로 없음 · 상태 ${STATUS:-없음})"
+  exit 0
+fi
+
+# 첫 빈 줄 뒤가 본문이다. ETag 는 따옴표째 다음 요청에 그대로 돌려준다 — 헤더 이름은 대소문자가
+# 갈리므로(실제 응답은 `Etag`) 소문자로 맞춰 찾는다.
+awk 'f { print; next } /^\r?$/ { f = 1 }' "$RESP" > "$TMP" 2>/dev/null
+NEW_ETAG=$(awk '/^\r?$/ { exit } tolower($0) ~ /^etag:/ { sub(/^[^:]*:[ \t]*/, ""); sub(/\r$/, ""); print; exit }' "$RESP" 2>/dev/null)
 
 # ── 검증 ────────────────────────────────────────────────────────────
 # 받은 것이 요약 파일이 맞는지 본다. 인증이 만료되면 gh 가 JSON 형태의 에러 본문을 200 이
 # 아닌 코드와 함께 주지만, 프록시나 로그인 페이지가 200 으로 HTML 을 주는 경우까지 막으려면
 # 내용을 봐야 한다. **깨진 것을 캐시에 넣는 것이 안 받는 것보다 나쁘다** — 훅은 캐시를
 # 신뢰하고 읽는다.
-if ! jq -e '.schema == 1 and (.releases | type) == "array"' "$TMP" >/dev/null 2>&1; then
+if ! jq -e "$CONTRACT" "$TMP" >/dev/null 2>&1; then
   dbg "받은 내용이 계약과 다름 — 캐시 유지"
   exit 0
 fi
@@ -107,8 +147,15 @@ if ! jq --argjson keep "$KEEP" '.releases = .releases[0:$keep]' "$TMP" > "$TRIM"
   exit 0
 fi
 
+# ETag 는 교체 **앞에서 지우고 뒤에서만** 적는다 — 그 사이에 실패하거나 훅 timeout 에 잘려도
+# 어긋난 짝(옛 캐시+새 ETag · 새 캐시+옛 ETag)이 남지 않고, 지운 채 끝나면 다음 회차가 조건 없이
+# 받을 뿐이다. 헤더가 없는 응답도 지운 채 둔다.
+rm -f "$ETAG_FILE" 2>/dev/null
 if mv -f "$TRIM" "$CACHE" 2>/dev/null; then
-  printf '%s\n' "$NOW" > "$STAMP.tmp" 2>/dev/null && mv -f "$STAMP.tmp" "$STAMP" 2>/dev/null
+  atomic_write "$STAMP" "$NOW"
+  if [ -n "$NEW_ETAG" ]; then
+    atomic_write "$ETAG_FILE" "$NEW_ETAG"
+  fi
   dbg "갱신 완료: $(jq -r '.releases | length' "$CACHE" 2>/dev/null)개 릴리스 (원본 ref=$REF)"
 else
   dbg "교체 실패"

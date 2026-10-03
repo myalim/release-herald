@@ -46,22 +46,15 @@
 
 `@docs/coding-conventions.md` 참고
 
-## Git 브랜치 규칙
+## 작업 공간 좌표
 
-첫 번째 Edit 또는 Write 실행 전, 반드시 `git branch --show-current`로 현재 브랜치를 확인한다.
+이 프로젝트가 `workspace` 규약에 넣는 값이다.
 
-### main 브랜치 감지 시 필수 절차
-
-> **예외:** `.gitignore` 대상 파일/디렉토리는 main 브랜치에서도 Edit/Write 허용
-
-1. Edit/Write 실행을 **즉시 중단**한다
-2. 사용자에게 현재 main 브랜치임을 알린다
-3. 기능 단위로 브랜치 이름을 제안한다
-   - 형식: `feature/{기능-요약}`
-4. 사용자 승인 후 브랜치를 생성한다 (`git switch -c`)
-5. 브랜치 전환 완료 후에만 Edit/Write를 실행한다
-
-**main 브랜치에서 Edit/Write 실행 절대 금지**
+- 모드: branch mode
+- 작업 트리 자리: 없음
+- 적재 예외: `.claude/settings.local.json` 의 `block-main-edit` 훅 인자
+- default 브랜치로의 merge: squash
+- 원격 브랜치: merge 시 자동 삭제 꺼짐
 
 ## 금지 규칙
 
