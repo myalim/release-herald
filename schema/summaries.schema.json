@@ -82,6 +82,15 @@
           "type": "string",
           "minLength": 1,
           "description": "원문 항목. Claude 가 정확한 식별자(옵션명·플래그·이벤트명)를 짚을 수 있어야 하고, 번역 오류를 나중에 대조할 수 있어야 한다."
+        },
+        "area": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": {
+            "enum": ["permissions", "sandbox", "hooks", "settings", "auth-account", "mcp", "plugins", "skills-commands", "agents", "memory-context", "models-usage", "sessions", "tools", "terminal-ui", "runtime", "remote-control", "cloud-sessions", "ide-desktop", "claude-tag", "artifacts", "code-review", "providers", "other"]
+          },
+          "description": "이 변경이 건드린 표면 하나. 배열로 두는 것은 둘째 영역을 열 때(상한만 올림) 데이터를 옮기지 않기 위해서다. 고정 목록이라 같은 표면이 여러 이름으로 갈리지 않는다. 판정 기준은 prompts/area.md 가 갖는다. 훅은 이 필드를 읽지 않아 없는 캐시와도 호환된다."
         }
       }
     }

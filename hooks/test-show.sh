@@ -35,6 +35,9 @@ chk() { # chk <이름> <실제> <기대>
 }
 run() { RELEASE_HERALD_CACHE="$CACHE" RELEASE_HERALD_STATE="$STATE" "$SHOW" "$@" 2>/dev/null; }
 code() { RELEASE_HERALD_CACHE="$CACHE" RELEASE_HERALD_STATE="$STATE" "$SHOW" "$@" >/dev/null 2>&1; echo $?; }
+# stderr(왜 실패했는지)만 잡고 stdout 은 버린다 — 순서가 그 뜻이다.
+# shellcheck disable=SC2069
+err()  { RELEASE_HERALD_CACHE="$CACHE" RELEASE_HERALD_STATE="$STATE" "$SHOW" "$@" 2>&1 >/dev/null; }
 
 echo "── 데이터 선택 ──"
 chk "캐시를 읽는다" "$(run | grep -c "$CACHE")" "1"
@@ -61,8 +64,29 @@ chk "기록이 없으면 마커도 없다" "$(run | grep -c '← 여기까지 �
 
 # **조회가 기록을 소진하면 그 릴리스가 세션 시작에 다시 안 뜬다** — 읽기 전용이 계약이라 회귀로 잡는다.
 printf '%s\n' "$LATEST" > "$STATE"
-run >/dev/null; run 260 >/dev/null; run 257..258 >/dev/null
+run >/dev/null; run 260 >/dev/null; run 257..258 >/dev/null; run --find 훅 >/dev/null; run --area hooks >/dev/null
 chk "조회는 통지 기록을 쓰지 않는다" "$(cat "$STATE")" "$LATEST"
+
+echo "── 캐시 + 원본 ──"
+PKG="$TMP/pkg/hooks/show.sh"
+jq '.releases = .releases[0:3]' "$SRC" > "$TMP/short.json"
+prun() { RELEASE_HERALD_CACHE="$1" RELEASE_HERALD_STATE="$STATE" "$PKG" "${@:2}" 2>/dev/null; }
+chk "캐시에 없는 버전도 원본에서 찾는다" "$(prun "$TMP/short.json" "$W0" | grep -c "^## $W0")" "1"
+LIST="$(prun "$TMP/short.json")"
+chk "목록은 둘을 합친 개수"             "$(grep -c '^  v' <<<"$LIST")" "$COUNT"
+chk "  출처를 둘 다 밝힌다"             "$(head -1 <<<"$LIST" | grep -c "short.json + .*summaries.json")" "1"
+jq --arg v "$W0" '(.releases[] | select(.version == $v) | .items[0].ko) = "캐시판"' "$SRC" > "$TMP/edited.json"
+chk "같은 버전은 캐시를 쓴다"           "$(prun "$TMP/edited.json" --all "$W0" | grep -c '캐시판')" "1"
+jq '.releases = [.releases[0] | .version = "v9.9.9" | .date = "2099-01-01"] + .releases' "$SRC" > "$TMP/newer.json"
+jq '.releases = .releases[1:]' "$SRC" > "$TMP/pkg/data/summaries.json"
+chk "합쳐도 최신 우선"                  "$(prun "$TMP/newer.json" | grep '^  v' | head -1 | grep -c 'v9.9.9')" "1"
+chk "  범위 자르기가 그 순서를 딛는다"  "$(prun "$TMP/newer.json" 9.9.9.."$W0" | grep -c '^## ')" "$(( $(jq --arg v "$W0" '[.releases[].version] | index($v)' "$SRC") + 2 ))"
+cp "$SRC" "$TMP/pkg/data/summaries.json"
+chk "캐시 밖 릴리스도 찾기로 나온다"    "$(prun "$TMP/short.json" --find 'Remote Control 세션 이름' | grep -c '^  v2.1.268 ')" "1"
+echo '{bad' > "$TMP/bad.json"
+chk "깨진 캐시는 원본으로 내려간다"     "$(prun "$TMP/bad.json" "$W0" | grep -c "^## $W0")" "1"
+chk "원본 없이 캐시만 깨졌으면 왜인지 말한다" \
+  "$(RELEASE_HERALD_CACHE="$TMP/bad.json" "$TMP/lonely/show.sh" 2>&1 >/dev/null | grep -c '깨졌습니다')" "1"
 
 echo "── 버전 지정 ──"
 chk "숫자만"        "$(run 260   | grep -c '^## v2.1.260')" "1"
@@ -87,12 +111,44 @@ echo "── impact 경계 ──"
 chk "internal 은 기본으로 안 보인다" "$(run "$INT" | grep -c '^  internal')" "0"
 chk "--all 이면 보인다"              "$(run --all "$INT" | grep -c '^  internal')" "1"
 
+echo "── 찾기 ──"
+RC="v2.1.268"   # "Remote Control 세션 이름" 으로 찾혀야 하는 항목이 있는 릴리스 (PRD 의 예)
+chk "낱말이 모두 든 항목이 버전과 함께 나온다" "$(run --find 'Remote Control 세션 이름' | grep -c "^  $RC ")" "1"
+chk "  대소문자를 가리지 않는다"     "$(run --find 'remote control 세션 이름' | grep -c "^  $RC ")" "1"
+chk "  낱말 하나라도 없으면 안 나온다" "$(code --find 'Remote Control 세션 이름 없는낱말쀍')" "1"
+chk "  못 찾으면 왜인지 말한다"      "$(err --find 쀍 | grep -c '맞는 항목이 없습니다')" "1"
+VERS="$(run --find 훅 | awk '{print $1}' | uniq)"
+chk "  최신부터"                     "$VERS" "$(sort -t. -k3,3nr <<<"$VERS")"
+chk "  범위를 주면 그 안에서만"      "$(run --find 훅 270..275 | awk '{print $1}' | grep -cvE '^v2\.1\.27[0-5]$')" "0"
+INTWORD="$(jq -r --arg v "$INT" '.releases[]|select(.version==$v)|.items[]|select(.impact=="internal")|.en' "$CACHE" | head -1)"
+chk "  internal 은 기본으로 안 찾는다" "$(code --find "$INTWORD" "$INT")" "1"
+chk "  --all 이면 찾는다"            "$(run --all --find "$INTWORD" "$INT" | grep -c '·internal')" "1"
+
+echo "── 영역 ──"
+HOOKS_N="$(jq '[.releases[] | select(.version | ltrimstr("v2.1.") | tonumber | . >= 270 and . <= 275) | .items[] | select(.impact=="user" and .area==["hooks"])] | length' "$CACHE")"
+chk "그 영역 항목만 나온다"          "$(run --area hooks 270..275 | grep -c '· hooks\]')" "$HOOKS_N"
+chk "  다른 영역은 섞이지 않는다"    "$(run --area hooks 270..275 | grep -vc '· hooks\]')" "0"
+chk "찾기와 함께 쓰면 둘 다 맞아야"  "$(run --area remote-control --find '세션 이름' | grep -c "^  $RC ")" "1"
+chk "  다른 영역이면 안 나온다"      "$(code --area hooks --find 'Remote Control 세션 이름')" "1"
+chk "없는 영역은 실패"               "$(code --area hook)" "2"
+chk "  있는 영역을 보여 준다"        "$(err --area hook | grep -c '있는 영역: .*hooks')" "1"
+# 영역이 붙기 전 캐시도 읽힌다 — 걸리지 않을 뿐 찾기는 된다.
+jq 'del(.releases[].items[].area)' "$SRC" > "$TMP/noarea.json"
+chk "영역 없는 항목은 그렇게 표시"   "$(RELEASE_HERALD_CACHE="$TMP/noarea.json" RELEASE_HERALD_STATE="$STATE" "$TMP/lonely/show.sh" --find 'Remote Control 세션 이름' 2>/dev/null | grep -c '영역 없음')" "1"
+
 echo "── 옵션 ──"
 chk "--en 이 원문을 붙인다" "$(run --en "$W0" | grep -c '^       [A-Z]')" "2"
 chk "옵션 순서는 무관"      "$(run "$W0" --en | grep -c '^       [A-Z]')" "2"
 chk "모르는 옵션은 실패"    "$(code --nope)" "2"
 chk "대상 중복도 실패"      "$(code 260 261)" "2"
 chk "--help 는 성공"        "$(code --help)" "0"
+chk "--find 값이 없으면 실패"   "$(code --find)" "2"
+chk "--find 공백만이면 실패"    "$(code --find '   ')" "2"
+chk "--area 뒤 옵션을 값으로 삼키지 않는다" "$(code --area --all)" "2"
+FLAG="$(jq -r '[.releases[].items[] | select(.impact=="user") | .en | scan("--[a-z][a-z-]+")][0]' "$CACHE")"
+# 출력은 ko 만 보이고 맞추기는 ko·en 을 합쳐 하므로, 줄에서 낱말을 찾지 않고 건수를 데이터와 댄다.
+WANT="$(jq --arg f "$FLAG" '[.releases[].items[] | select(.impact=="user" and ((.ko + " " + .en) | ascii_downcase | contains($f)))] | length' "$CACHE")"
+chk "--find 는 플래그 이름도 낱말로 받는다" "$(run --find "$FLAG" | grep -c '^  v')" "$WANT"
 
 echo
 printf '통과 %d · 실패 %d\n' "$PASS" "$FAIL"
