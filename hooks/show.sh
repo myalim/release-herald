@@ -42,8 +42,9 @@ TARGET=""
 FIND=""
 AREA=""
 # 값을 받는 옵션은 다음 토큰을 그대로 값으로 받는다(getopt 관례) — 찾기 낱말이 `--resume` 같은
-# 플래그 이름일 수 있다. 영역 자리에 옵션이 잘못 들어오면 아래 영역 확인이 막는다.
-need_value() { [ $# -ge 2 ] && [ -n "$2" ] && return 0; echo "$1 에는 값이 필요합니다." >&2; exit 2; }
+# 플래그 이름일 수 있다. 영역 자리에 옵션이 잘못 들어오면 아래 영역 확인이 막는다. 공백만 준 값도
+# 빠진 값으로 본다 — 찾기 낱말이 0개면 모든 항목이 맞는다.
+need_value() { [ $# -ge 2 ] && [ -n "${2//[[:space:]]/}" ] && return 0; echo "$1 에는 값이 필요합니다." >&2; exit 2; }
 while [ $# -gt 0 ]; do
   a="$1"
   case "$a" in
@@ -60,32 +61,35 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-if [ -r "$CACHE" ] && [ -r "$FALLBACK" ]; then
-  # 같은 버전은 캐시 쪽을 쓴다(원본보다 늦게 받았을 수 있다). 순서는 생성 계약과 같은 키
-  # (날짜, 버전 정수열)로 다시 세운다 — 캐시가 원본보다 새 릴리스를 가질 수 있어 이어 붙이기만
-  # 하면 최신 우선이 깨지고, 아래 범위 자르기가 그 순서를 딛는다.
-  MERGED="$(mktemp)"
-  trap 'rm -f "$MERGED"' EXIT
-  if jq -s '
-        .[0] + {releases: (
-          ([.[0].releases[].version]) as $have
-          | (.[0].releases + [.[1].releases[] | select(.version as $v | $have | index($v) | not)])
-          | sort_by([.date, (.version | [scan("[0-9]+") | tonumber])]) | reverse )}
-      ' "$CACHE" "$FALLBACK" > "$MERGED" 2>/dev/null; then
-    DATA="$MERGED"; SRC="$CACHE + $FALLBACK"
-  else
-    DATA="$CACHE"; SRC="$CACHE"
-  fi
-elif [ -r "$CACHE" ]; then
-  DATA="$CACHE"; SRC="$CACHE"
-elif [ -r "$FALLBACK" ]; then
-  DATA="$FALLBACK"; SRC="$FALLBACK"
-else
-  echo "요약 데이터가 없습니다 — 캐시도 원본도 못 읽었습니다." >&2
-  echo "  캐시: $CACHE" >&2
-  echo "  받기: ${0%/*}/update-cache.sh --force" >&2
-  exit 1
-fi
+# 소스마다 읽히고 계약 모양인지 먼저 가린다 — 깨진 캐시를 고르면 원본이 답할 것도 "없다" 로
+# 나오거나 jq 오류로 끝난다.
+usable() { [ -r "$1" ] && jq -e '.releases | type == "array"' "$1" >/dev/null 2>&1; }
+SOURCES=()
+usable "$CACHE" && SOURCES+=("$CACHE")
+usable "$FALLBACK" && SOURCES+=("$FALLBACK")
+
+case ${#SOURCES[@]} in
+  2)
+    # 같은 버전은 캐시 쪽을 쓴다(원본보다 늦게 받았을 수 있다). 순서는 생성 계약과 같은 키
+    # (날짜, 버전 정수열)로 다시 세운다 — 캐시가 원본보다 새 릴리스를 가질 수 있어 이어 붙이기만
+    # 하면 최신 우선이 깨지고, 아래 범위 자르기가 그 순서를 딛는다.
+    DATA="$(mktemp)"
+    trap 'rm -f "$DATA"' EXIT
+    jq -s '
+      .[0] + {releases: (
+        ([.[0].releases[].version]) as $have
+        | (.[0].releases + [.[1].releases[] | select(.version as $v | $have | index($v) | not)])
+        | sort_by([.date, (.version | [scan("[0-9]+") | tonumber])]) | reverse )}
+    ' "$CACHE" "$FALLBACK" > "$DATA"
+    SRC="$CACHE + $FALLBACK" ;;
+  1)
+    DATA="${SOURCES[0]}"; SRC="$DATA" ;;
+  *)
+    echo "요약 데이터가 없습니다 — 캐시도 원본도 못 읽었거나 깨졌습니다." >&2
+    echo "  캐시: $CACHE" >&2
+    echo "  받기: ${0%/*}/update-cache.sh --force" >&2
+    exit 1 ;;
+esac
 
 # **통지 = 화면에 떴다가 아니다** — 화면 판정은 릴리스가 아니라 함께 밀린 묶음 단위다. 묶음 전체에
 # `weight 1` 이 없으면 참고 한 줄이나 안내만 뜨고, 묶음의 다른 버전에 `weight 1` 이 있으면
