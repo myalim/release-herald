@@ -12,189 +12,270 @@
           "impact": "user",
           "weight": 1,
           "ko": "관리 머신에서 복합 셸 명령 중첩부의 `deny`·`ask` 규칙이 모드 승인에 밀리던 문제 수정",
-          "en": "Fixed a deny or ask rule on a nested part of a compound shell command not holding over a user-installed mod's approval on managed machines"
+          "en": "Fixed a deny or ask rule on a nested part of a compound shell command not holding over a user-installed mod's approval on managed machines",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "닫히지 않은 `<script>`·중첩 `${` 가 많은 코드 블록에서 터미널이 멈추던 문제 수정",
-          "en": "Fixed the terminal freezing on short code blocks with many unclosed `<script>` tags or deeply nested `${` substitutions"
+          "en": "Fixed the terminal freezing on short code blocks with many unclosed `<script>` tags or deeply nested `${` substitutions",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "심링크를 거친 파일에 `Read` `deny` 규칙이 적용되지 않던 문제 수정",
-          "en": "Fixed `Read` deny rules not applying to files @-mentioned, changed, or selected in the IDE through a symlink"
+          "en": "Fixed `Read` deny rules not applying to files @-mentioned, changed, or selected in the IDE through a symlink",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "other",
           "impact": "user",
           "weight": 1,
           "ko": "[VSCode] 로그아웃이 잦아질 수 있던 2.1.288 의 `claude auth status` 변경 되돌림",
-          "en": "[VSCode] Reverted a 2.1.288 change to `claude auth status` that may have made sign-outs more frequent"
+          "en": "[VSCode] Reverted a 2.1.288 change to `claude auth status` that may have made sign-outs more frequent",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "플러그인 코드 패널에서 큰 파일이 열리는 속도 개선",
-          "en": "Improved how quickly large files open in a plugin code pane by laying the highlighted view out once at its final width"
+          "en": "Improved how quickly large files open in a plugin code pane by laying the highlighted view out once at its final width",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "로컬 폴더 마켓플레이스 플러그인이 `plugin list`·`eval`·`update` 에 낡은 상태로 보이던 문제 수정",
-          "en": "Fixed `plugin list`, `plugin eval` and `plugin update` showing a stale copy of a plugin installed from a local folder marketplace, and hot reload for a symlinked `--plugin-dir`"
+          "en": "Fixed `plugin list`, `plugin eval` and `plugin update` showing a stale copy of a plugin installed from a local folder marketplace, and hot reload for a symlinked `--plugin-dir`",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "업그레이드 후 첫 세션에서 설치된 모드가 로드되지 않던 문제 수정",
-          "en": "Fixed installed mods not loading in the first session after an upgrade"
+          "en": "Fixed installed mods not loading in the first session after an upgrade",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "전체화면 백그라운드 작업 대화상자에서 플러그인 줄이 낡은 상태로 남던 문제 수정",
-          "en": "Fixed a plugin's rows above the prompt showing a stale row while the Background tasks dialog was open in fullscreen"
+          "en": "Fixed a plugin's rows above the prompt showing a stale row while the Background tasks dialog was open in fullscreen",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "localhost·대문자 호스트·`file:` 링크에서 플러그인 패널이 아무것도 안 그리던 문제 수정",
-          "en": "Fixed plugin panes drawing nothing when a link used a localhost address, an `@` in its path, an uppercase host or a `file:` path"
+          "en": "Fixed plugin panes drawing nothing when a link used a localhost address, an `@` in its path, an uppercase host or a `file:` path",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "사용자 설치 플러그인이 조직 관리 MCP 서버의 로그인 도구 설명을 바꿀 수 있던 문제 수정",
-          "en": "Fixed a user-installed plugin being able to rewrite the descriptions of an organization-managed MCP server's sign-in tools"
+          "en": "Fixed a user-installed plugin being able to rewrite the descriptions of an organization-managed MCP server's sign-in tools",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "터미널이 모르는 테두리 스타일의 Box 를 플러그인이 그리면 실행 시 멈추던 문제 수정",
-          "en": "Fixed a freeze or forced quit at launch when a plugin drew a Box with a border style the terminal does not know"
+          "en": "Fixed a freeze or forced quit at launch when a plugin drew a Box with a border style the terminal does not know",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "플러그인 화면 핸들러의 비동기 예외로 감독·백그라운드 세션이 종료되던 문제 수정",
-          "en": "Fixed supervised and background sessions ending when a plugin's on-screen handler threw asynchronously"
+          "en": "Fixed supervised and background sessions ending when a plugin's on-screen handler threw asynchronously",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "높이가 없는 플러그인 영역이 계속 커질 때 세션이 종료되던 문제 수정",
-          "en": "Fixed sessions ending with an interface error when a plugin region with no height kept growing"
+          "en": "Fixed sessions ending with an interface error when a plugin region with no height kept growing",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "샌드박스 자동 허용 시 환경변수 접두어 뒤 명령에 Bash `deny`·`ask` 규칙이 누락되던 문제 수정",
-          "en": "Fixed Bash deny and ask rules missing a command behind an environment variable prefix with an expanded value (e.g. `TZ=\"$HOME\" rm -rf build`) when the sandbox auto-allows commands"
+          "en": "Fixed Bash deny and ask rules missing a command behind an environment variable prefix with an expanded value (e.g. `TZ=\"$HOME\" rm -rf build`) when the sandbox auto-allows commands",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "샌드박스 자동 허용 시 변수 대입이 앞서면 Bash `deny`·`ask` 규칙이 건너뛰어지던 문제 수정",
-          "en": "Fixed a Bash deny or ask rule being skipped under sandbox auto-allow when a bare variable assignment came before the command"
+          "en": "Fixed a Bash deny or ask rule being skipped under sandbox auto-allow when a bare variable assignment came before the command",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "마켓플레이스 매니페스트가 같이 있으면 `claude plugin validate` 가 건너뛰던 문제 수정",
-          "en": "Fixed `claude plugin validate` skipping the plugin when the folder also holds a marketplace manifest"
+          "en": "Fixed `claude plugin validate` skipping the plugin when the folder also holds a marketplace manifest",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 1,
           "ko": "팀메이트용 `agent.spawn` 과 `$.agent.list()` 의 idle·waiting 상태 추가",
-          "en": "Added `agent.spawn` for teammates, one agent id across plugin hook events, and idle and waiting states in `$.agent.list()`"
+          "en": "Added `agent.spawn` for teammates, one agent id across plugin hook events, and idle and waiting states in `$.agent.list()`",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "모드 `ui.render` 훅이 쓴 값으로 줄이 예외를 던져 세션이 종료되던 문제 수정",
-          "en": "Fixed sessions ending with \"unrecoverable interface error\" when a value a mod's `ui.render` hook wrote made a row throw while drawn; the engine now draws its own row instead"
+          "en": "Fixed sessions ending with \"unrecoverable interface error\" when a value a mod's `ui.render` hook wrote made a row throw while drawn; the engine now draws its own row instead",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "탭·이스케이프·C1 제어문자·CRLF 가 섞인 텍스트가 아래 줄을 덮어 그리던 문제 수정",
-          "en": "Fixed text with a tab, a stray escape and a C1 control, or a short text with a tab and CRLF line endings, drawing over the rows below it"
+          "en": "Fixed text with a tab, a stray escape and a C1 control, or a short text with a tab and CRLF line endings, drawing over the rows below it",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "모드 패널·밴드의 우측 정렬 내용이 닫기 표시·`[-]` 아래 겹쳐 그려지던 문제 수정",
-          "en": "Fixed right-aligned content in a mod's pane or band drawing under the close mark or `[-]`, which now also keep one column in from the terminal's edge"
+          "en": "Fixed right-aligned content in a mod's pane or band drawing under the close mark or `[-]`, which now also keep one column in from the terminal's edge",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "모드 `Client` 실패가 주변 영역까지 함께 내리던 문제 수정, 이제 `ui.fault` 발생",
-          "en": "Fixed a mod's `Client` that fails while drawn taking down everything the mod drew around it; it now fails alone and raises `ui.fault`"
+          "en": "Fixed a mod's `Client` that fails while drawn taking down everything the mod drew around it; it now fails alone and raises `ui.fault`",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "`claude plugin validate` 가 Anthropic 마켓플레이스 플러그인을 실패 처리하던 문제 수정",
-          "en": "Fixed `claude plugin validate` failing an Anthropic marketplace's own plugin and listing a clean `plugin.json` in `--json`"
+          "en": "Fixed `claude plugin validate` failing an Anthropic marketplace's own plugin and listing a clean `plugin.json` in `--json`",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "그리기에 실패한 모드 밴드가 아래 카드를 잠시 밀어내던 문제 수정",
-          "en": "Fixed a mod's band that fails to draw briefly telling the cards under it to step aside"
+          "en": "Fixed a mod's band that fails to draw briefly telling the cards under it to step aside",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "실패한 플러그인 컴포넌트가 사유를 `Error` 나 공백으로 표시하던 문제 수정",
-          "en": "Fixed a failed plugin component showing `Error` or nothing as its reason when the failure carried no message"
+          "en": "Fixed a failed plugin component showing `Error` or nothing as its reason when the failure carried no message",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "모드 밴드·패널 그리기 실패 메시지에 모드 이름과 미표시 사실 명시",
-          "en": "Improved the line a mod's author sees when its band or pane fails to draw: it names the mod and says nothing was drawn"
+          "en": "Improved the line a mod's author sees when its band or pane fails to draw: it names the mod and says nothing was drawn",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "닫히지 않은 `<script>` 가 많은 코드 블록에서 공개 아티팩트 페이지가 멈추던 문제 수정",
-          "en": "Fixed published artifact pages freezing or crashing the reader's browser tab on short code blocks with many unclosed `<script>` tags"
+          "en": "Fixed published artifact pages freezing or crashing the reader's browser tab on short code blocks with many unclosed `<script>` tags",
+          "area": [
+            "artifacts"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "터미널 예외 후 모드 `Client` 영역이 세션 내내 실패 상태로 남던 문제 수정",
-          "en": "Fixed a mod's Client region staying failed for the whole session after the terminal threw while drawing it"
+          "en": "Fixed a mod's Client region staying failed for the whole session after the terminal threw while drawing it",
+          "area": [
+            "plugins"
+          ]
         }
       ]
     },
