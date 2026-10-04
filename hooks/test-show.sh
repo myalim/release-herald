@@ -146,8 +146,9 @@ chk "--find 값이 없으면 실패"   "$(code --find)" "2"
 chk "--find 공백만이면 실패"    "$(code --find '   ')" "2"
 chk "--area 뒤 옵션을 값으로 삼키지 않는다" "$(code --area --all)" "2"
 FLAG="$(jq -r '[.releases[].items[] | select(.impact=="user") | .en | scan("--[a-z][a-z-]+")][0]' "$CACHE")"
-HITS="$(run --find "$FLAG")"
-chk "--find 는 플래그 이름도 낱말로 받는다" "$([ -n "$HITS" ] && grep -vc -- "$FLAG" <<<"$HITS")" "0"
+# 출력은 ko 만 보이고 맞추기는 ko·en 을 합쳐 하므로, 줄에서 낱말을 찾지 않고 건수를 데이터와 댄다.
+WANT="$(jq --arg f "$FLAG" '[.releases[].items[] | select(.impact=="user" and ((.ko + " " + .en) | ascii_downcase | contains($f)))] | length' "$CACHE")"
+chk "--find 는 플래그 이름도 낱말로 받는다" "$(run --find "$FLAG" | grep -c '^  v')" "$WANT"
 
 echo
 printf '통과 %d · 실패 %d\n' "$PASS" "$FAIL"
