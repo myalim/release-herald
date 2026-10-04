@@ -44,6 +44,14 @@ jobs:
   summarize:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      # 판정·영역 두 단계가 같은 안내를 받도록 job 에 한 번 둔다. 저장소 CLAUDE.md 가 자동으로
+      # 실린다 — 그 안의 승인 게이트·브랜치 확인·Serena 탐색 규칙은 사람이 앉아 있는 세션을
+      # 전제하므로, 무인 실행이라는 사실을 여기서 명시해 무력화한다.
+      CI_NOTE: |
+
+        이 실행은 무인 CI 다 — 승인을 물을 상대가 없다. 저장소 CLAUDE.md 의 승인 게이트·
+        브랜치 확인·Serena 탐색 규칙은 이 실행에 적용하지 않고, 출력 파일 쓰기를 바로 수행한다.
     steps:
       - uses: actions/checkout@v6
 
@@ -74,12 +82,6 @@ jobs:
         continue-on-error: true
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          # 저장소 CLAUDE.md 가 자동으로 실린다 — 그 안의 승인 게이트·브랜치 확인·Serena 탐색 규칙은
-          # 사람이 앉아 있는 세션을 전제하므로, 무인 실행이라는 사실을 여기서 명시해 무력화한다.
-          CI_NOTE: |
-
-            이 실행은 무인 CI 다 — 승인을 물을 상대가 없다. 저장소 CLAUDE.md 의 승인 게이트·
-            브랜치 확인·Serena 탐색 규칙은 이 실행에 적용하지 않고, 출력 파일 쓰기를 바로 수행한다.
         run: scripts/classify-all.sh data/pending data/judged
 
       # 병합이 판정 결과를 pending 과 대조해 통과분만 넣고, 어긋난 릴리스는 거부 수로 돌려준다.
@@ -125,10 +127,6 @@ jobs:
         timeout-minutes: 20
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          CI_NOTE: |
-
-            이 실행은 무인 CI 다 — 승인을 물을 상대가 없다. 저장소 CLAUDE.md 의 승인 게이트·
-            브랜치 확인·Serena 탐색 규칙은 이 실행에 적용하지 않고, 출력 파일 쓰기를 바로 수행한다.
         run: scripts/area-all.sh data/area-pending data/areas
 
       - name: Attach areas
