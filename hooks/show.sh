@@ -17,20 +17,19 @@ FALLBACK="${0%/*}/../data/summaries.json"
 
 usage() {
   cat <<'USAGE'
-지난 릴리스 요약을 골라 본다.
+지난 Claude Code 릴리스 요약을 봅니다.
 
-  show.sh                 릴리스 목록
-  show.sh 260             한 릴리스 (v2.1.260 · 2.1.260 · 260 다 된다)
-  show.sh 257..263        범위 (양끝 포함)
-  show.sh --find 'remote control 이름'
-                          낱말이 모두 든 항목을 최신부터 (ko·en 합쳐, 대소문자 무시)
-  show.sh --area hooks    그 영역 항목을 최신부터
+  /release-herald:show                     릴리스 목록
+  /release-herald:show 260                 한 릴리스 (v2.1.260 · 2.1.260 · 260 모두 됩니다)
+  /release-herald:show 257..263            여러 릴리스 (양끝 포함)
+  /release-herald:show --find 권한 확인    낱말이 모두 든 변경을 최신부터 (요약과 원문, 대소문자 무시)
+  /release-herald:show --area hooks        그 영역의 변경을 최신부터
 
-  --find · --area 는 함께 쓰면 둘 다 맞는 항목만, 버전·범위를 주면 그 안에서만 찾는다.
+  --find 와 --area 를 함께 쓰면 둘 다 맞는 변경만, 버전을 주면 그 안에서만 찾습니다.
 
 옵션
-  --all   impact:internal 항목까지 (기본은 user 만)
-  --en    원문(en) 병기 — ko 는 80자 상한이라 식별자가 잘린다
+  --all   내부 변경까지 함께
+  --en    원문(영어)도 함께 — 요약에서 잘린 옵션 이름을 확인할 때
 USAGE
 }
 
@@ -53,9 +52,9 @@ while [ $# -gt 0 ]; do
     --find)    need_value "$@"; FIND="$2"; shift ;;
     --area)    need_value "$@"; AREA="$2"; shift ;;
     -h|--help) usage; exit 0 ;;
-    -*)        echo "모르는 옵션: $a" >&2; usage >&2; exit 2 ;;
+    -*)        echo "모르는 옵션입니다: $a" >&2; usage >&2; exit 2 ;;
     # 대상을 둘 이상 주면 앞의 것이 조용히 사라진다 — 모르는 옵션과 같게 막는다(범위는 `..`).
-    *)         [ -n "$TARGET" ] && { echo "대상은 하나만 지정합니다 — 범위는 257..263" >&2; exit 2; }
+    *)         [ -n "$TARGET" ] && { echo "버전은 하나만 지정합니다. 여러 릴리스는 257..263 처럼 씁니다." >&2; exit 2; }
                TARGET="$a" ;;
   esac
   shift
@@ -80,14 +79,15 @@ case ${#SOURCES[@]} in
         ([.[0].releases[].version]) as $have
         | (.[0].releases + [.[1].releases[] | select(.version as $v | $have | index($v) | not)])
         | sort_by([.date, (.version | [scan("[0-9]+") | tonumber])]) | reverse )}
-    ' "$CACHE" "$FALLBACK" > "$DATA"
-    SRC="$CACHE + $FALLBACK" ;;
+    ' "$CACHE" "$FALLBACK" > "$DATA" ;;
   1)
-    DATA="${SOURCES[0]}"; SRC="$DATA" ;;
+    DATA="${SOURCES[0]}" ;;
   *)
-    echo "요약 데이터가 없습니다 — 캐시도 원본도 못 읽었거나 깨졌습니다." >&2
-    echo "  캐시: $CACHE" >&2
-    echo "  받기: ${0%/*}/update-cache.sh --force" >&2
+    echo "요약을 읽지 못했습니다. 잠시 뒤 새 세션을 열면 다시 받습니다." >&2
+    if [ -n "${RELEASE_HERALD_DEBUG:-}" ]; then
+      echo "  캐시: $CACHE" >&2
+      echo "  받기: ${0%/*}/update-cache.sh --force" >&2
+    fi
     exit 1 ;;
 esac
 
@@ -114,20 +114,21 @@ JQ_DEFS='
 
 # ── 목록 ────────────────────────────────────────────────────────────
 if [ -z "$TARGET" ] && [ -z "$FIND" ] && [ -z "$AREA" ]; then
-  jq -r --arg last "$LAST" --arg src "$SRC" "$JQ_DEFS"'
+  jq -r --arg last "$LAST" "$JQ_DEFS"'
     .releases as $r
-    | "요약 \($r|length)개 — \($src)",
+    | "릴리스 \($r|length)개 · 최신순",
       "",
       ( $r[]
         | ([.items[] | select(.impact == "user")] | length) as $u
         | ([.items[] | select(.impact == "user" and .weight == 1)] | length) as $w
         | "  " + (.version | pad)
           + .date
-          + "   user \($u) · 화면 \($w)"
-          + (if .version == $last then "   ← 여기까지 통지됨" else "" end)
+          + "   주요 \($w) / 전체 \($u)"
+          + (if .version == $last then "   ← 마지막으로 알린 버전" else "" end)
       ),
       "",
-      "  화면 0 = weight 1 이 없는 릴리스 — 함께 밀린 버전에도 없으면 참고 한 줄이나 안내만 뜬다 (묶음 전체가 user 0 이면 침묵)."
+      "  주요: 세션 시작 화면에서 알리는 변경 · 전체: 사용자에게 의미 있는 변경 전부",
+      "  자세히: /release-herald:show \($r[0].version | split(".")[-1]) · 찾기: /release-herald:show --find 낱말"
   ' "$DATA"
   exit 0
 fi
@@ -144,8 +145,7 @@ if [ -n "$FROM" ]; then
     .releases as $r | [$from, $to] | unique[] | select(. as $q | $r | idx($q) == null)
   ' "$DATA" | head -1)"
   if [ -n "$MISSING" ]; then
-    echo "'$MISSING' 에 해당하는 릴리스가 데이터에 없습니다." >&2
-    echo "  목록: ${0##*/} (인자 없이)" >&2
+    echo "'$MISSING' 에 해당하는 릴리스 요약이 없습니다. 목록은 /release-herald:show 로 봅니다." >&2
     exit 1
   fi
 fi
@@ -159,7 +159,7 @@ if [ -n "$FIND" ] || [ -n "$AREA" ]; then
   if [ -n "$AREA" ]; then
     AREAS="$(jq -r '[.releases[].items[].area[]?] | unique[]' "$DATA")"
     if ! grep -qxF -- "$AREA" <<<"$AREAS"; then
-      echo "'$AREA' 영역이 데이터에 없습니다." >&2
+      echo "'$AREA' 영역이 없습니다." >&2
       echo "  있는 영역: $(paste -sd' ' - <<<"$AREAS")" >&2
       exit 2
     fi
@@ -176,13 +176,13 @@ if [ -n "$FIND" ] || [ -n "$AREA" ]; then
     | ((.ko + " " + .en) | ascii_downcase) as $text
     | select(all($words[]; . as $w | $text | contains($w)))
     | "  " + ($rel.version | pad)
-      + "[w\(.weight)" + (if .impact == "internal" then "·internal" else "" end)
-      + " · " + ((.area // ["영역 없음"]) | join(",")) + "] "
+      + "[" + ((.area // ["영역 없음"]) | join(","))
+      + (if .impact == "internal" then " · 내부" else "" end) + "] "
       + .ko + (if $en then "\n" + (" " * 13) + .en else "" end)
   ' "$DATA")"
   if [ -z "$OUT" ]; then
-    echo "맞는 항목이 없습니다${FIND:+ — 낱말: $FIND}${AREA:+ — 영역: $AREA}." >&2
-    $ALL || echo "  internal 항목까지 보려면 --all" >&2
+    echo "맞는 변경이 없습니다${FIND:+ (낱말: $FIND)}${AREA:+ (영역: $AREA)}." >&2
+    $ALL || echo "  내부 변경까지 찾으려면 --all 을 붙입니다." >&2
     exit 1
   fi
   printf '%s\n' "$OUT"
@@ -196,27 +196,27 @@ jq -r --arg from "$FROM" --arg to "$TO" --argjson all "$ALL" --argjson en "$EN" 
 
   .releases | pick($from; $to)
   | . as $rel
-  | ( [ "## \($rel.version)   \($rel.date)", "   \($rel.url)", "" ]
+  | ( [ "\($rel.version) · \($rel.date)", "\($rel.url)", "" ]
 
       + ( [$rel.items[] | select(.impact == "user" and .weight == 1)] as $w1
           | if ($w1 | length) == 0
-            then [ "  화면 대상 (weight 1) — 없음" ]
-            else [ "  화면 대상 (weight 1)" ] + [ $w1[] | line(.; "") ]
+            then [ "  주요 변경 없음" ]
+            else [ "  주요 변경" ] + [ $w1[] | line(.; "") ]
             end )
       + [ "" ]
 
       + ( [$rel.items[] | select(.impact == "user" and .weight != 1)]
           | sort_by(.weight) as $rest
           | if ($rest | length) == 0 then []
-            else [ "  그 밖의 user 항목" ]
-                 + [ $rest[] | line(.; "[w\(.weight)] ") ] + [ "" ]
+            else [ "  그 밖의 변경" ]
+                 + [ $rest[] | line(.; "") ] + [ "" ]
             end )
 
       + ( if $all then
             ( [$rel.items[] | select(.impact == "internal")] | sort_by(.weight) as $int
               | if ($int | length) == 0 then []
-                else [ "  internal" ]
-                     + [ $int[] | line(.; "[w\(.weight)] ") ] + [ "" ]
+                else [ "  내부 변경" ]
+                     + [ $int[] | line(.; "") ] + [ "" ]
                 end )
           else [] end )
     )[]
