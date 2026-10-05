@@ -134,21 +134,21 @@ RESULT=$(jq -r --arg last "$LAST" --arg running "$RUNNING" --argjson fresh "$FRE
           # 체감 항목이 하나도 없으면 침묵한다 — 새 버전이 있다는 사실만으로는 띄울 이유가 아니다.
           if ($user | length) == 0 then ""
           else
-            "[release-herald] \($head)\n"
+            # 머리의 "주요 변경" 은 그것을 띄울 때만 붙인다 — 바로 아래 "주요 변경은 없습니다" 와 부딪힌다.
+            "[release-herald] \($head)" + (if ($shown | length) > 0 then " 주요 변경" else "" end) + "\n"
             + ( if ($shown | length) > 0 then
                   # 최신 릴리스부터 채워 상한에서 자른다. $new 가 최신 우선이라 순서가 이미 그렇다.
                   ([ $shown[0:$max][] | "  · \(.ko)" ] | join("\n"))
                   # 잘렸다는 사실을 숨기지 않는다 — 숨기면 "중요한 게 안 뜸" 과 구분되지 않는다.
                   # 남은 것은 컨텍스트에 있으므로 물어보는 경로로 잇는다.
-                  + (if ($shown | length) > $max then "\n  … 외 \(($shown | length) - $max)건 — 물어보면 답합니다" else "" end)
+                  + (if ($shown | length) > $max then "\n  … 주요 변경 \(($shown | length) - $max)건이 더 있습니다. 물어보시면 답해 드립니다." else "" end)
                 # **weight 1 이 묶음 전체에서 0건일 때만 아래로 내려간다.** 그대로 침묵하면 통지 기록은
                 # 소진되는데 화면이 비어, 체감 항목이 있던 릴리스가 세션 시작에 다시는 안 뜬다.
                 # 보충은 한 줄까지다 — 게이트를 2 까지 넓히면 단일 릴리스의 분량 수렴이 깨진다.
                 # 여럿이면 최신 버전의 첫 항목을 고른다. 한 릴리스 안의 항목끼리는 선후가 없어
                 # 문구에 "최신" 을 쓰지 않는다.
-                elif $n2 == 0 then "  주요 변경 사항이 없습니다. 세부 내역은 물어보시면 답해 드립니다."
-                elif $n2 == 1 then "  주요 변경 사항은 없습니다. 참고할 만한 변경은 다음과 같습니다.\n  · \($second[0].ko)"
-                else "  주요 변경 사항은 없습니다. 참고할 만한 변경 \($n2)건 중 1건입니다.\n  · \($second[0].ko)"
+                elif $n2 == 0 then "  주요 변경은 없습니다. 세부 내역은 물어보시면 답해 드립니다."
+                else "  주요 변경은 없습니다. 눈여겨볼 만한 변경 하나를 소개합니다.\n  · \($second[0].ko)"
                 end )
             + "\n  \($new[0].url)"
           end

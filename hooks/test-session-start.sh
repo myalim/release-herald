@@ -41,8 +41,10 @@ W3="$TMP/w3.json"; jq '.releases = [.releases[] | select(.version=="v2.1.250" or
 W0="$TMP/w0.json"; jq '.releases[0].items |= map(.impact = "internal")' "$W3" > "$W0"
 W2A="$TMP/w2a.json"; jq '.releases = [.releases[] | select(.version=="v2.1.276" or .version=="v2.1.275")]' "$CACHE" > "$W2A"
 W2B="$TMP/w2b.json"; jq '.releases = [.releases[] | select(.version=="v2.1.258" or .version=="v2.1.257")]' "$CACHE" > "$W2B"
-# 여러 버전이 함께 밀렸는데 어느 버전에도 weight 1 이 없는 묶음. 실제 데이터에서는 그런 버전이
-# 이웃하지 않으므로 둘을 골라 붙인다 — 보충이 묶음 단위로 세고 최신 버전의 항목을 고르는지 본다.
+# 기록이 v2.1.257 이면 밀린 묶음(v2.1.276 · v2.1.258)의 어느 버전에도 weight 1 이 없다. 실제 데이터에서는
+# 그런 버전이 이웃하지 않으므로 골라 붙인다 — 여러 버전이 밀려도 보충이 한 줄이고 최신 버전의 항목을
+# 고르는지 본다. 그 묶음에서는 머리에 "주요 변경" 이 붙지 않는다(v2.1.257 은 weight 1 이 있어, 기록이
+# 그보다 앞이면 붙는다).
 W2M="$TMP/w2m.json"; jq '.releases = [.releases[] | select(.version=="v2.1.276" or .version=="v2.1.258" or .version=="v2.1.257")]' "$CACHE" > "$W2M"
 # 미통지가 한 릴리스뿐인 경로. **버전을 고정 지정한다** — 최신 두 개로 만들면 봇이 릴리스를
 # 추가할 때마다 대상이 바뀌지만, 과거 릴리스의 항목은 더 변하지 않는다.
@@ -104,7 +106,7 @@ echo v2.1.247 > "$STATE"
 OUT="$(run "$CACHE")"
 chk "미통지분 있음 → 출력"      "$(printf '%s' "$OUT" | jq -e 'has("systemMessage")' >/dev/null && echo y || echo n)" "y"
 chk "  화면 8줄 상한"           "$(printf '%s' "$OUT" | jq -r .systemMessage | grep -c '·')" "8"
-chk "  잘림을 숨기지 않음"       "$(printf '%s' "$OUT" | jq -r .systemMessage | grep -c '외 .*건')" "1"
+chk "  잘림을 숨기지 않음"       "$(printf '%s' "$OUT" | jq -r .systemMessage | grep -c '주요 변경 .*건이 더 있습니다')" "1"
 chk "  기록 갱신"               "$(cat "$STATE")" "$LATEST"
 chk "같은 버전 재실행 → 침묵"    "$(len "$(run "$CACHE")")" "0"
 
@@ -123,19 +125,19 @@ echo "── weight 1 이 0건인 묶음의 보충 ──"
 sysmsg() { run "$1" | jq -r '.systemMessage // ""'; }
 echo v2.1.248 > "$STATE"
 OUT="$(sysmsg "$W3")"
-chk "weight 3 뿐 → 안내 한 줄"      "$(printf '%s' "$OUT" | grep -c '주요 변경 사항이 없습니다')" "1"
+chk "weight 3 뿐 → 안내 한 줄"      "$(printf '%s' "$OUT" | grep -c '주요 변경은 없습니다. 세부 내역은')" "1"
 chk "  항목은 띄우지 않음"          "$(printf '%s' "$OUT" | grep -c '·')" "0"
 echo v2.1.275 > "$STATE"
 OUT="$(sysmsg "$W2A")"
 chk "weight 2 하나 → 그 한 줄"      "$(printf '%s' "$OUT" | grep -c '·')" "1"
-chk "  보충임을 밝힘"               "$(printf '%s' "$OUT" | grep -c '참고할 만한 변경은 다음과 같습니다')" "1"
+chk "  보충임을 밝힘"               "$(printf '%s' "$OUT" | grep -c '눈여겨볼 만한 변경 하나를 소개합니다')" "1"
 echo v2.1.257 > "$STATE"
 OUT="$(sysmsg "$W2B")"
 chk "weight 2 여럿 → 한 줄만"       "$(printf '%s' "$OUT" | grep -c '·')" "1"
-chk "  몇 건 중인지 밝힘"           "$(printf '%s' "$OUT" | grep -c '2건 중 1건입니다')" "1"
+chk "  보충임을 밝힘(여럿)"         "$(printf '%s' "$OUT" | grep -c '눈여겨볼 만한 변경 하나를 소개합니다')" "1"
 echo v2.1.257 > "$STATE"
 OUT="$(sysmsg "$W2M")"
-chk "여러 버전이 밀려도 묶음으로 셈"  "$(printf '%s' "$OUT" | grep -c '3건 중 1건입니다')" "1"
+chk "여러 버전이 밀려도 한 줄만"      "$(printf '%s' "$OUT" | grep -c '·')" "1"
 chk "  최신 버전의 항목을 고름"       "$(printf '%s' "$OUT" | grep -c 'ANTHROPIC_BASE_URL')" "1"
 # 보충 줄도 컨텍스트에 있어야 한다 — 아래 불변식 절은 weight 1 경로만 밟으므로 여기서 따로 본다.
 echo v2.1.257 > "$STATE"
@@ -145,7 +147,7 @@ CTX="$(printf '%s' "$OUT" | jq -r '.hookSpecificOutput.additionalContext')"
 chk "  보충 줄도 컨텍스트에 있음"     "$(has "$SUP" "$CTX")" "y"
 # 묶음 안 다른 릴리스에 weight 1 이 있으면 보충하지 않는다 — 판정 단위가 릴리스가 아니라 묶음이다.
 echo v2.1.275 > "$STATE"
-chk "묶음에 weight 1 이 있으면 보충 없음" "$(sysmsg "$CACHE" | grep -c '주요 변경 사항')" "0"
+chk "묶음에 weight 1 이 있으면 보충 없음" "$(sysmsg "$CACHE" | grep -c '주요 변경은 없습니다')" "0"
 
 echo "── 실행 버전까지만 통지 ──"
 # W2M 은 v2.1.276 · v2.1.258 · v2.1.257 순서다 — 실행을 v2.1.258 에 두면 v2.1.276 이 "아직 안 받음" 이다.
@@ -173,7 +175,7 @@ rm -f "$STATE"
 AI_AGENT=$A258 run "$W2M" >/dev/null
 chk "최초 설치 기준선은 실행 버전"     "$(cat "$STATE")" "v2.1.258"
 echo v2.0.0 > "$STATE"
-chk "기록이 캐시 밖이면 실행 버전부터 취함" "$(AI_AGENT=$A258 head1)" "[release-herald] Claude Code v2.1.257 → v2.1.258 (2개 버전)"
+chk "기록이 캐시 밖이면 실행 버전부터 취함" "$(AI_AGENT=$A258 head1)" "[release-herald] Claude Code v2.1.257 → v2.1.258 (2개 버전) 주요 변경"
 
 echo "── 불변식 ──"
 echo v2.1.247 > "$STATE"
@@ -224,7 +226,7 @@ chk "화면 줄 수 상한이 반영됨" \
   "$(RELEASE_HERALD_MAX_LINES=3 run "$CACHE" | jq -r .systemMessage | grep -c '·')" "3"
 echo v2.1.247 > "$STATE"
 chk "  상한을 바꿔도 잘림은 알림"  \
-  "$(RELEASE_HERALD_MAX_LINES=3 run "$CACHE" | jq -r .systemMessage | grep -c '외 .*건')" "1"
+  "$(RELEASE_HERALD_MAX_LINES=3 run "$CACHE" | jq -r .systemMessage | grep -c '주요 변경 .*건이 더 있습니다')" "1"
 echo v2.0.0 > "$STATE"
 chk "캐시 밖 기록의 취할 개수가 반영됨" \
   "$(RELEASE_HERALD_FRESH_LIMIT=1 run "$CACHE" | jq -r .systemMessage | grep -c '개 버전')" "0"
