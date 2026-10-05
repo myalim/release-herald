@@ -1,0 +1,24 @@
+# 플러그인 버전을 올리는 릴리스 PR 을 만든다 — main 에 쌓인 feat·fix 커밋을 보고 `plugin.json` 의 version 과
+# CHANGELOG 를 함께 고친다. 그 PR 을 merge 해야 버전이 올라가고 사용자가 업데이트를 받는다.
+#
+# 버전을 손으로 올리지 않는 이유는 플러그인의 업데이트 판정이다 — version 을 고정해 두면 그 문자열이 바뀔 때만
+# 사용자에게 새 코드가 가고, 올리기를 잊으면 사용자가 옛 코드에 머문다. 반대로 version 을 비우면 커밋마다
+# 새 버전이 되어, 요약 봇의 데이터 커밋(chore)까지 플러그인 업데이트로 보인다.
+name: release-please
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json

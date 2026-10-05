@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/myalim/release-herald/schema/summaries.schema.json",
-  "title": "release-digest summaries",
-  "description": "요약 생성기와 표시 훅 사이의 유일한 접점. 생성 주체가 수동에서 CI 로 바뀌어도 이 계약은 그대로다. 배열 정렬·weight 의미 등 이 파일로 표현되지 않는 계약은 SPEC 4절이 갖는다.",
+  "title": "release-herald summaries",
+  "description": "요약 생성기와 표시 훅 사이의 유일한 접점. 생성 주체가 수동에서 CI 로 바뀌어도 이 계약은 그대로다. 이 파일로 표현되지 않는 계약이 하나 있다 — releases 는 최신 우선이고, 훅은 버전 대소가 아니라 배열 안 위치로 통지를 판정한다. 그 순서는 scripts/build.py 의 검증이 지킨다.",
   "type": "object",
   "required": ["schema", "generated", "releases"],
   "additionalProperties": false,
@@ -64,7 +64,7 @@
         },
         "impact": {
           "enum": ["user", "internal"],
-          "description": "사용자 화면에 띄울지 가르는 판단. kind 로 대신할 수 없다 — 한 접두어 안에 보안 수정과 특정 환경 한정 버그가 함께 들어 있다. 판정 기준은 SPEC 1절이 갖는다."
+          "description": "사용자 화면에 띄울지 가르는 판단. kind 로 대신할 수 없다 — 한 접두어 안에 보안 수정과 특정 환경 한정 버그가 함께 들어 있다. 판정 기준은 prompts/classify.md 가 갖는다."
         },
         "weight": {
           "type": "integer",

@@ -1,0 +1,17 @@
+{
+  "description": "세션 시작에 새 릴리스 요약을 띄운다 — 갱신을 기다리므로 timeout 이 그 대기의 상한이다(오프라인에서 세션 시작이 묶이지 않게)",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\"",
+            "timeout": 3
+          }
+        ]
+      }
+    ]
+  }
+}

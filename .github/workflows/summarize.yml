@@ -26,10 +26,18 @@ on:
     #
     # 주기를 좁힐 수 있는 것은 **헛도는 실행이 싸기 때문이다** — 판정 대기와 영역 없는 릴리스가
     # 둘 다 0이면 CLI 를 내려받지도 않고 10초에 끝난다. 영역을 채우는 동안은 실행마다 영역 판정을
-    # 상한만큼 묻는다(아래 Collect untagged releases). 놓쳐도 유실은 없다(atom 이 9일 창) — 이건
-    # 지연 문제지 누락 문제가 아니다.
+    # 상한만큼 묻는다(아래 Collect untagged releases). 놓쳐도 다음 실행이 따라잡는다(atom 은
+    # 최근 10개, 대략 9일치) — 이건 지연 문제지 누락 문제가 아니다.
     - cron: '0 */3 * * *'
   workflow_dispatch:
+    inputs:
+      # 경보는 실제로 멈춰야만 밟히는 경로라, 감시 job 이 실패를 본 것처럼 만들어 이슈 생성과
+      # 멘션 알림 도달을 확인한다. 예약 실행에는 입력이 없어 항상 실제 결과를 본다.
+      simulate:
+        description: 감시 job 에 실패를 흉내 낸다 (경보 경로 확인용)
+        type: choice
+        options: [none, failure]
+        default: none
 
 permissions:
   contents: write
@@ -45,9 +53,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
-      # 판정·영역 두 단계가 같은 안내를 받도록 job 에 한 번 둔다. 저장소 CLAUDE.md 가 자동으로
-      # 실린다 — 그 안의 승인 게이트·브랜치 확인·Serena 탐색 규칙은 사람이 앉아 있는 세션을
-      # 전제하므로, 무인 실행이라는 사실을 여기서 명시해 무력화한다.
+      # 판정·영역 두 단계가 같은 안내를 받도록 job 에 한 번 둔다. 저장소 CLAUDE.md 는 자동으로 실린다 —
+      # 승인을 묻는 규칙이 들어오면 판정 세션이 쓰기를 멈추고 0 으로 끝나 조용히 아무것도 안 남으므로,
+      # 무인 실행임을 명시해 막는다.
       CI_NOTE: |
 
         이 실행은 무인 CI 다 — 승인을 물을 상대가 없다. 저장소 CLAUDE.md 의 승인 게이트·
@@ -72,8 +80,8 @@ jobs:
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       # 판정이 죽어도 이 job 을 멈추지 않는다 — 이미 나온 판정분까지 함께 버리면 정체가 생기고,
-      # 원본 atom 이 9일 창이라 그 사이 릴리스가 사라진다. 대신 이 step 은 빨강으로
-      # 남고, 마지막 게이트가 그 outcome 을 다시 본다.
+      # 원본 atom 이 최근 10개만 담아 그 사이 릴리스가 피드에서 빠지면 생성기가 되찾지 못한다.
+      # 대신 이 step 은 빨강으로 남고, 마지막 게이트가 그 outcome 을 다시 본다.
       #
       # **릴리스마다 한 번씩 부른다** — 통짜로 맡기면 `Write` 누적 재작성으로 턴이 소진된다.
       - name: Classify and translate
@@ -157,3 +165,29 @@ jobs:
         run: |
           echo "판정이 실패했거나 거부된 릴리스·영역을 못 붙인 릴리스가 있다 — 위 Classify·Merge·Tag areas·Attach areas 단계 로그를 볼 것" >&2
           exit 1
+
+  # 생성이 멈춘 것을 저자에게 이슈로 알린다 — 판정은 scripts/watch-pipeline.sh 가 갖는다.
+  # 요약 job 이 실패해도 돌아야 하므로 always() 이고, 권한은 이 job 에만 이슈 쓰기를 준다.
+  # 예약 실행 자체가 안 도는 멈춤은 여기서 못 잡는다(이 job 도 함께 멈춘다) — 저장소 밖에서 본다.
+  watch:
+    needs: summarize
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      # 요약 job 이 방금 push 한 커밋까지 보려면 트리거 시점 커밋이 아니라 브랜치 끝을 받는다.
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Watch pipeline
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESULT: ${{ inputs.simulate == 'failure' && 'failure' || needs.summarize.result }}
+          REPO: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: scripts/watch-pipeline.sh

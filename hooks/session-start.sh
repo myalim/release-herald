@@ -9,21 +9,12 @@
 # 안 뜨는 편이 낫다. 그래서 진단 경로를 함께 둔다(RELEASE_HERALD_DEBUG) — 그것 없이는
 # "안 뜨는 게 정상 침묵인지 고장인지" 를 가릴 수단이 없어 개발 중 디버깅이 불가능해진다.
 #
-# 등록 (~/.claude/settings.json) — matcher 는 startup|clear 다.
-# resume·compact 에서 다시 뜨면 같은 릴리스를 하루에 몇 번씩 보게 된다:
-#   {
-#     "hooks": {
-#       "SessionStart": [
-#         { "matcher": "startup|clear",
-#           "hooks": [{ "type": "command", "timeout": 3,
-#                       "command": "/절대경로/release-herald/hooks/session-start.sh" }] }
-#       ]
-#     }
-#   }
+# 등록은 플러그인의 hooks/hooks.json 이 한다 — matcher 는 startup|clear 이고 timeout 은 3초다.
+# resume·compact 에서 다시 뜨면 같은 릴리스를 하루에 몇 번씩 보게 된다.
 
 # 캐시와 통지 기록은 성격이 다르므로 자리를 나눈다 — 캐시는 지워져도 다음 갱신에 복구되지만,
 # 통지 기록이 지워지면 과거 릴리스가 다시 쏟아진다. 둘 다 **저장소 밖**에 둔다: 코드와 같은
-# 자리에 두면 P3 에서 플러그인으로 옮길 때 이력이 끊긴다.
+# 자리에 두면 플러그인이 업데이트될 때마다 설치 경로가 바뀌어 이력이 끊긴다.
 CACHE="${RELEASE_HERALD_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/release-herald/summaries.json}"
 STATE="${RELEASE_HERALD_STATE:-${XDG_STATE_HOME:-$HOME/.local/state}/release-herald/notified}"
 
@@ -49,20 +40,21 @@ command -v jq >/dev/null 2>&1 || { dbg "jq 없음 — 침묵"; exit 0; }
 # 실사용에서 되돌렸다. 배너가 통지의 자리인 이상 갱신은 그 앞에 와야 한다.
 #
 # **대기를 감당할 수 있는 것은 쿨다운 때문이다** — 캐시가 신선하면 갱신기가 네트워크로 나가지
-# 않고 즉시 끝나므로, 실제로 기다리는 것은 쿨다운이 풀린 첫 세션뿐이다(실측 0.6초, 그중 2/3 이
-# GitHub API 응답 시간이라 줄일 여지가 없다).
+# 않고 즉시 끝나므로, 실제로 기다리는 것은 쿨다운이 풀린 첫 세션뿐이다. 그때의 비용은 받는 양이
+# 정하고, 원본이 그대로면 갱신기가 조건부 요청(304)으로 받지 않고 끝낸다.
 #
-# **상한은 훅 설정의 `timeout` 이 건다**(위 등록 예시) — 초과하면 하네스가 훅을 취소하고 출력을
+# **상한은 훅 등록의 `timeout` 이 건다**(hooks/hooks.json) — 초과하면 하네스가 훅을 취소하고 출력을
 # 버리므로 결과는 침묵이다. 여기서 타임아웃을 구현하지 않는 것은 bash 3.2 로 그것을 하려면
-# 폴링 `sleep` 이 포크를 무더기로 무는데, 하네스가 이미 같은 일을 하기 때문이다.
+# 폴링 `sleep` 이 포크를 무더기로 무는데, 하네스가 이미 같은 일을 하기 때문이다. 갱신기는 그보다
+# 짧게 받기(curl)에 시간 상한을 따로 걸어, 취소되기 전에 스스로 끝나 락·임시 파일을 정리한다.
 UPDATER="${RELEASE_HERALD_UPDATER:-${0%/*}/update-cache.sh}"
 if [ -z "${RELEASE_HERALD_NO_UPDATE:-}" ] && [ -x "$UPDATER" ]; then
-  # **진단은 성패를 갈라 적는다** — 배너가 "이번 세션에 갱신이 돌았나" 에 걸리게 된 뒤로,
-  # 이 줄이 "왜 새 릴리스가 안 떴나" 를 설명하는 유일한 자리다. 무조건 "완료" 라고 적으면
-  # 오프라인·락 점유·계약 불일치가 정상 갱신과 구분되지 않는다(침묵 사유를 가르는 아래 규칙과 같은 축).
+  # **진단 중에는 갱신기의 진단 줄을 그대로 흘린다** — 배너가 "이번 세션에 갱신이 돌았나" 에 걸리게
+  # 된 뒤로 그 줄이 "왜 새 릴리스가 안 떴나" 를 설명하는 유일한 자리다. 갱신기는 실패를 흡수해 늘
+  # 0 으로 끝나므로 오프라인·락 점유·계약 불일치는 종료코드가 아니라 그 줄로 갈린다.
   if [ -n "${RELEASE_HERALD_DEBUG:-}" ]; then
-    "$UPDATER" >/dev/null           # 진단 중에는 갱신기의 stderr 를 그대로 흘린다
-    dbg "갱신기 종료코드 $?: $UPDATER"
+    "$UPDATER" >/dev/null
+    dbg "갱신기 실행: $UPDATER"
   else
     "$UPDATER" >/dev/null 2>&1
   fi
