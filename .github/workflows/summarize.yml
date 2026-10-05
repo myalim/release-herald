@@ -30,6 +30,14 @@ on:
     # 지연 문제지 누락 문제가 아니다.
     - cron: '0 */3 * * *'
   workflow_dispatch:
+    inputs:
+      # 경보는 실제로 멈춰야만 밟히는 경로라, 감시 job 이 실패를 본 것처럼 만들어 이슈 생성과
+      # 멘션 알림 도달을 확인한다. 예약 실행에는 입력이 없어 항상 실제 결과를 본다.
+      simulate:
+        description: 감시 job 에 실패를 흉내 낸다 (경보 경로 확인용)
+        type: choice
+        options: [none, failure]
+        default: none
 
 permissions:
   contents: write
@@ -157,3 +165,29 @@ jobs:
         run: |
           echo "판정이 실패했거나 거부된 릴리스·영역을 못 붙인 릴리스가 있다 — 위 Classify·Merge·Tag areas·Attach areas 단계 로그를 볼 것" >&2
           exit 1
+
+  # 생성이 멈춘 것을 저자에게 이슈로 알린다 — 판정은 scripts/watch-pipeline.sh 가 갖는다.
+  # 요약 job 이 실패해도 돌아야 하므로 always() 이고, 권한은 이 job 에만 이슈 쓰기를 준다.
+  # 예약 실행 자체가 안 도는 멈춤은 여기서 못 잡는다(이 job 도 함께 멈춘다) — 저장소 밖에서 본다.
+  watch:
+    needs: summarize
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      # 요약 job 이 방금 push 한 커밋까지 보려면 트리거 시점 커밋이 아니라 브랜치 끝을 받는다.
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Watch pipeline
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESULT: ${{ inputs.simulate == 'failure' && 'failure' || needs.summarize.result }}
+          REPO: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: scripts/watch-pipeline.sh
