@@ -37,9 +37,10 @@ REPO="${RELEASE_HERALD_REPO:-myalim/release-herald}"
 # 공개 저장소의 raw 경로에서 인증 없이 받는다 — 설치한 사람에게 `gh` 로그인을 요구하지 않기 위해서다.
 # raw 는 ETag·304 를 지원하고(조건부 요청이 그대로 선다) CDN 캐시가 5분이다. 인증 없는 요청에는
 # 요청자(IP) 단위 횟수 제한이 걸리지만 쿨다운이 사용자당 시간 1회로 묶는다 — 걸려도 실패는 무음이다.
-# 받는 경로를 여기 한 곳에 모아 둔다 — 서빙 위치가 바뀌면 이 URL 만 바뀐다.
+# 서빙 위치가 바뀌면 이 URL 한 줄만 바뀐다.
 REF="${RELEASE_HERALD_REF:-main}"
 SRC_PATH="${RELEASE_HERALD_SRC_PATH:-data/summaries.json}"
+SRC_URL="https://raw.githubusercontent.com/$REPO/$REF/$SRC_PATH"
 
 dbg() { [ -n "${RELEASE_HERALD_DEBUG:-}" ] && printf '[release-herald/update] %s\n' "$*" >&2; return 0; }
 
@@ -106,13 +107,11 @@ if [ -z "$FORCE" ] && [ -s "$ETAG_FILE" ] \
   [ -n "$PREV_ETAG" ] && COND=(-H "If-None-Match: $PREV_ETAG")
 fi
 
-# -i 로 상태 줄과 헤더를 함께 받는다. curl 은 4xx·5xx 에도 0 으로 끝나므로 종료코드로는
-# "안 바뀜"·"못 받음"·"받음" 이 갈리지 않는다 — 상태 줄로 가른다. 헤더와 본문 사이 빈 줄은 "\r"
-# 하나이고, 상태 줄 끝의 CR 은 떼고 비교한다. 프록시를 거치면 CONNECT 응답 헤더가 앞에 한 벌 더
-# 붙어 상태 줄을 가로채므로 빼고 받는다. bash 3.2 는 set -u 에서 빈 배열 전개를 unbound 로 죽이므로
-# ${arr[@]+...} 형태로 편다.
-curl -sS -i --suppress-connect-headers ${COND[@]+"${COND[@]}"} \
-   "https://raw.githubusercontent.com/$REPO/$REF/$SRC_PATH" > "$RESP" 2>/dev/null
+# -i 로 헤더째 받는다. curl 은 4xx·5xx 에도 0 으로 끝나 종료코드로는 갈리지 않아 상태 줄로 가른다.
+# 프록시의 CONNECT 응답이 상태 줄을 가로채지 않게 빼고 받는다. 시간 상한은 훅 등록의 timeout(3초)보다
+# 짧게 걸어, 네트워크가 멈춰도 이 스크립트가 먼저 끝나 정리(락·임시 파일)를 마친다.
+curl -sS -i --suppress-connect-headers --connect-timeout 1 --max-time 2 ${COND[@]+"${COND[@]}"} \
+   "$SRC_URL" > "$RESP" 2>/dev/null
 STATUS=""
 [ -s "$RESP" ] && read -r _ STATUS _ < "$RESP"
 STATUS="${STATUS%$'\r'}"
@@ -134,7 +133,7 @@ awk 'f { print; next } /^\r?$/ { f = 1 }' "$RESP" > "$TMP" 2>/dev/null
 NEW_ETAG=$(awk '/^\r?$/ { exit } tolower($0) ~ /^etag:/ { sub(/^[^:]*:[ \t]*/, ""); sub(/\r$/, ""); print; exit }' "$RESP" 2>/dev/null)
 
 # ── 검증 ────────────────────────────────────────────────────────────
-# 받은 것이 요약 파일이 맞는지 본다. 원격의 에러는 200 이 아닌 코드로 오지만, 프록시나 로그인 페이지가 200 으로 HTML 을 주는 경우까지 막으려면
+# 받은 것이 요약 파일이 맞는지 본다. 프록시나 로그인 페이지가 200 으로 HTML 을 주는 경우까지 막으려면
 # 내용을 봐야 한다. **깨진 것을 캐시에 넣는 것이 안 받는 것보다 나쁘다** — 훅은 캐시를
 # 신뢰하고 읽는다.
 if ! jq -e "$CONTRACT" "$TMP" >/dev/null 2>&1; then
@@ -157,7 +156,8 @@ if mv -f "$TRIM" "$CACHE" 2>/dev/null; then
   if [ -n "$NEW_ETAG" ]; then
     atomic_write "$ETAG_FILE" "$NEW_ETAG"
   fi
-  dbg "갱신 완료: $(jq -r '.releases | length' "$CACHE" 2>/dev/null)개 릴리스 (원본 ref=$REF)"
+  # 진단이 꺼져 있으면 개수 세기(jq 한 번)를 건너뛴다 — 명령 치환은 dbg 가 버려도 실행된다.
+  [ -n "${RELEASE_HERALD_DEBUG:-}" ] && dbg "갱신 완료: $(jq -r '.releases | length' "$CACHE" 2>/dev/null)개 릴리스 (원본 ref=$REF)"
 else
   dbg "교체 실패"
 fi
