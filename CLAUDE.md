@@ -50,8 +50,8 @@
 
 이 프로젝트가 `workspace` 규약에 넣는 값이다.
 
-- 모드: branch mode
-- 작업 트리 자리: 없음
+- 모드: WT mode
+- 작업 트리 자리: `.claude/worktrees/{작업}` · `feature/{작업}`
 - 적재 예외: `.claude/settings.local.json` 의 `block-main-edit` 훅 인자
 - default 브랜치로의 merge: squash
 - 원격 브랜치: merge 시 자동 삭제 꺼짐
