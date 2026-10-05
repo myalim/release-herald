@@ -79,7 +79,16 @@ LAST=""
 # 2>/dev/null 로는 막히지 않고, 최초 설치(기록 없음)에서 그 메시지가 그대로 샌다.
 [ -r "$STATE" ] && read -r LAST < "$STATE"
 LAST="${LAST//[[:space:]]/}"
-dbg "캐시=$CACHE 기록=${LAST:-<없음>}"
+
+# 실행 중인 버전 — 통지는 여기까지만 한다(아직 안 받은 릴리스를 띄우면 기록만 소진된다).
+# **`AI_AGENT` 에서 읽는다** — Claude Code 가 자기 버전 상수로 `claude-code_2-1-288_harness` 를
+# 만들어 넣는다. `versions/` 디렉터리는 설치된 버전이라 쓰지 않는다(세션 시작과 같은 순간에
+# 새 바이너리가 깔린다). 문서화된 변수가 아니라 형태가 다르면 빈 값으로 둔다.
+RUNNING=""
+case "${AI_AGENT:-}" in
+  claude-code_*_*) RUNNING="${AI_AGENT#claude-code_}"; RUNNING="v${RUNNING%%_*}"; RUNNING="${RUNNING//-/.}" ;;
+esac
+dbg "캐시=$CACHE 기록=${LAST:-<없음>} 실행=${RUNNING:-<모름>}"
 
 # 판정과 분배를 jq 한 번으로 끝낸다. 원격에서 온 문자열은 여기서만 다뤄지고 셸 평가 경로에
 # 들어가지 않는다 — 요약 문자열이 곧 명령이 되지 않도록.
@@ -90,27 +99,32 @@ dbg "캐시=$CACHE 기록=${LAST:-<없음>}"
 # 수렴하는데, 정상 침묵(미통지분 없음)과 고장(계약 불일치)이 같은 빈 출력이면 진단이
 # 거짓말을 한다 — 실제로 "미통지분 없음" 을 "캐시가 깨졌다" 로 보고한 적이 있고, 그것이
 # 원인을 엉뚱한 곳에서 찾게 만들었다.
-RESULT=$(jq -r --arg last "$LAST" --argjson fresh "$FRESH_LIMIT" --argjson max "$MAX_LINES" '
+RESULT=$(jq -r --arg last "$LAST" --arg running "$RUNNING" --argjson fresh "$FRESH_LIMIT" --argjson max "$MAX_LINES" '
   # 스키마 가드 — 모르는 계약 버전이면 에러가 아니라 침묵이다.
   if (.schema != 1) then "SCHEMA", "", "" else
 
   .releases as $r
-  # 마지막 통지 버전과 **문자열이 같은** 원소의 인덱스를 찾아 그 앞을 취한다.
+  # 마지막 통지 버전과 **문자열이 같은** 원소의 인덱스를 찾아 그 앞을 취한다(위 끝은 아래 $top).
   # 그래서 버전 대소 비교가 설계에서 사라진다 — v2.1.9 > v2.1.10 이 되어 통지가 조용히
   # 멈추는 함정이 성립할 자리가 없다.
-  | ([range(0; $r|length) | select($r[.].version == $last)] | first) as $i
+  | ($r | map(.version)) as $vs
+  | ($vs | index($last)) as $i
+  # 통지 범위의 위 끝 — 실행 버전도 같은 방식으로 찾는다. 캐시에 없으면(빈 값 포함) 0 이라
+  # 예전과 같다. 실행 버전이 보관 범위보다 오래된 경우도 여기 들어 아직 안 받은 것을 띄운다.
+  | (($vs | index($running)) // 0) as $top
   | (
       # 기록이 아예 없다 = 최초 설치. 과거를 소급 통지하지 않고 기준선만 세운다.
       if ($last == "") then []
       # 기록은 있는데 캐시에 없다 = 통지가 파일의 보관 범위보다 오래됐다.
-      elif ($i == null) then $r[0:$fresh]
-      else $r[0:$i]
+      elif ($i == null) then $r[$top:$top + $fresh]
+      # 기록이 실행 버전보다 새면 끝이 시작보다 앞이라 빈 구간이 된다 — 이미 알린 것이다.
+      else $r[$top:$i]
       end
     ) as $new
 
   | if ($new | length) == 0 then
       # 미통지분 없음. 기록은 최초 설치일 때만 세운다(기준선).
-      if ($last == "" and ($r|length) > 0) then "BASE", $r[0].version, ""
+      if ($last == "" and ($r|length) > 0) then "BASE", $r[$top].version, ""
       else "NONE", "", "" end
     else
       # impact:internal 은 여기서 걷힌다 — 양쪽 채널 어디에도 가지 않는다.
@@ -205,13 +219,15 @@ esac
 if [ -n "$NEWVER" ]; then
   # 단조 증가 가드 — 두 세션이 동시에 켜지면 양쪽 다 떠도 무해하지만 기록이 **되돌아가서는**
   # 안 된다. 쓰기 직전 현재 값을 다시 읽어, 그것이 내 캐시에 없으면 상대가 더 새 캐시를
-  # 봤다는 뜻이므로 물러난다. 있으면 그 인덱스는 0 이상이고 내가 쓰는 것은 인덱스 0 이라
-  # 항상 같거나 더 최신이다.
+  # 봤다는 뜻이므로 물러난다. 있으면 인덱스를 내가 쓸 값과 견준다 — 내가 쓰는 것은 인덱스 0
+  # 이 아니라 실행 버전의 인덱스라서, 더 새 버전을 실행하는 세션이 먼저 쓴 값은 내 캐시에
+  # 있으면서도 내 값보다 앞선다. 그것을 덮으면 기록이 되돌아간다.
   CUR=""
   [ -r "$STATE" ] && read -r CUR < "$STATE"
   CUR="${CUR//[[:space:]]/}"
   if [ -n "$CUR" ] && [ "$CUR" != "$LAST" ] &&
-     ! jq -e --arg v "$CUR" '[.releases[].version] | index($v) != null' "$CACHE" >/dev/null 2>&1; then
+     ! jq -e --arg c "$CUR" --arg n "$NEWVER" '[.releases[].version] | index($c) as $ci
+       | ($ci != null and $ci >= index($n))' "$CACHE" >/dev/null 2>&1; then
     dbg "기록이 그 사이 더 새 값($CUR)으로 바뀜 — 갱신 물러남"
   else
     STATE_DIR="${STATE%/*}"

@@ -22,6 +22,8 @@ command -v jq >/dev/null 2>&1 || { echo "jq 가 필요합니다"; exit 2; }
 # 갱신은 끈다 — 테스트가 실제 네트워크를 치고 사용자의 진짜 캐시를 갈아치우면
 # 그것은 검증이 아니라 부작용이다.
 export RELEASE_HERALD_NO_UPDATE=1
+# 실행 버전도 끈다 — Claude Code 안에서 돌리면 그 세션의 `AI_AGENT` 가 물려 들어와 기대값이 갈린다.
+unset AI_AGENT
 
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
@@ -145,6 +147,34 @@ chk "  보충 줄도 컨텍스트에 있음"     "$(has "$SUP" "$CTX")" "y"
 echo v2.1.275 > "$STATE"
 chk "묶음에 weight 1 이 있으면 보충 없음" "$(sysmsg "$CACHE" | grep -c '주요 변경 사항')" "0"
 
+echo "── 실행 버전까지만 통지 ──"
+# W2M 은 v2.1.276 · v2.1.258 · v2.1.257 순서다 — 실행을 v2.1.258 에 두면 v2.1.276 이 "아직 안 받음" 이다.
+A258=claude-code_2-1-258_harness
+A276=claude-code_2-1-276_harness
+head1() { sysmsg "$W2M" | head -1; }
+BOTH="[release-herald] Claude Code v2.1.258 → v2.1.276 (2개 버전)"
+echo v2.1.257 > "$STATE"
+OUT="$(AI_AGENT=$A258 run "$W2M")"
+chk "실행보다 새 릴리스는 빼고 띄움"   "$(printf '%s' "$OUT" | jq -r .systemMessage | head -1)" "[release-herald] Claude Code v2.1.258"
+chk "  컨텍스트에도 싣지 않음"         "$(has "v2.1.276" "$(printf '%s' "$OUT" | jq -r .hookSpecificOutput.additionalContext)")" "n"
+chk "  기록은 실행 버전까지"           "$(cat "$STATE")" "v2.1.258"
+chk "받은 뒤의 세션에서 뜸"            "$(AI_AGENT=$A276 head1)" "[release-herald] Claude Code v2.1.276"
+chk "  기록이 따라 올라감"             "$(cat "$STATE")" "v2.1.276"
+# 기록이 실행 버전보다 새다 = 고치기 전에 이미 알렸거나 다른 세션이 새 버전으로 먼저 열었다.
+echo v2.1.276 > "$STATE"
+chk "기록이 실행보다 새면 침묵"        "$(len "$(AI_AGENT=$A258 run "$W2M")")" "0"
+chk "  기록을 되돌리지 않음"           "$(cat "$STATE")" "v2.1.276"
+# 실행 버전이 캐시에 없으면(캐시가 늦다 · 값이 엉뚱하다) 예전 판정 그대로다.
+echo v2.1.257 > "$STATE"
+chk "실행 버전이 캐시에 없으면 예전대로" "$(AI_AGENT=claude-code_9-9-999_harness head1)" "$BOTH"
+echo v2.1.257 > "$STATE"
+chk "형태가 다른 값도 예전대로"        "$(AI_AGENT=unknown head1)" "$BOTH"
+rm -f "$STATE"
+AI_AGENT=$A258 run "$W2M" >/dev/null
+chk "최초 설치 기준선은 실행 버전"     "$(cat "$STATE")" "v2.1.258"
+echo v2.0.0 > "$STATE"
+chk "기록이 캐시 밖이면 실행 버전부터 취함" "$(AI_AGENT=$A258 head1)" "[release-herald] Claude Code v2.1.257 → v2.1.258 (2개 버전)"
+
 echo "── 불변식 ──"
 echo v2.1.247 > "$STATE"
 OUT="$(run "$CACHE")"
@@ -162,18 +192,26 @@ echo "── 단조 증가 가드 ──"
 # 지연은 훅의 "기록 읽기 → 쓰기" 사이를 노린다. 실측에서 그 구간이 5~25ms 였다.
 OLDCACHE="$TMP/old.json"
 jq '.releases = [.releases[] | select(.version < "v2.1.258")]' "$CACHE" > "$OLDCACHE"
-GUARD=0
-for d in 0.005 0.010 0.015 0.020; do
-  echo v2.1.252 > "$STATE"
-  RELEASE_HERALD_CACHE="$OLDCACHE" RELEASE_HERALD_STATE="$STATE" RELEASE_HERALD_DEBUG=1 \
-    "$HOOK" >/dev/null 2>"$TMP/guard.log" &
-  gpid=$!
-  sleep "$d"
-  echo v2.1.261 > "$STATE"      # 더 새 캐시를 본 세션이 먼저 썼다고 가정
-  wait $gpid
-  grep -q "물러남" "$TMP/guard.log" && GUARD=$((GUARD+1))
-done
-chk "경합에서 기록이 되돌아가지 않음" "$([ "$GUARD" -gt 0 ] && echo y || echo n)" "y"
+# race <캐시> <시작 기록> <끼어드는 기록> — 지연마다 한 번씩 돌려 한 번이라도 물러났으면 y.
+# AI_AGENT 는 호출 앞에 붙여 넘긴다.
+race() {
+  local d n=0
+  for d in 0.005 0.010 0.015 0.020; do
+    echo "$2" > "$STATE"
+    RELEASE_HERALD_CACHE="$1" RELEASE_HERALD_STATE="$STATE" RELEASE_HERALD_DEBUG=1 \
+      "$HOOK" >/dev/null 2>"$TMP/guard.log" &
+    gpid=$!
+    sleep "$d"
+    echo "$3" > "$STATE"
+    wait $gpid
+    grep -q "물러남" "$TMP/guard.log" && n=$((n+1))
+  done
+  [ "$n" -gt 0 ] && echo y || echo n
+}
+# 더 새 캐시를 본 세션이 먼저 썼다.
+chk "경합에서 기록이 되돌아가지 않음" "$(race "$OLDCACHE" v2.1.252 v2.1.261)" "y"
+# 같은 캐시를 보면서 실행 버전만 다른 경합 — 상대가 쓴 값이 내 캐시에 있는 경우다(이유는 훅의 가드 주석).
+chk "  실행 버전이 더 새 세션의 기록도 되돌리지 않음" "$(AI_AGENT=$A258 race "$W2M" v2.1.257 v2.1.276)" "y"
 # **가드가 창을 좁힐 뿐 없애지는 못한다** — 읽기와 쓰기 사이(실측 30ms 부근)에 끼어들면
 # 그대로 통과한다. 파일 상태에 원자적 비교-교체가 없어서이고, 최악의 결과가 "이미 본
 # 릴리스가 한 번 더 뜸" 이라 수용한다. 그 사실을 여기 남겨 다음 사람이 완전 방어로 읽지 않게 한다.
