@@ -3,9 +3,9 @@
 #
 # 이 스크립트는 **표시 여부를 판단하지 않는다.** 무엇을 띄울지는 세션 시작 훅이 캐시를 읽고
 # 정하고, 여기는 "원본 → 로컬 캐시" 이관과 실패 흡수만 맡는다. 그 경계 덕에 갱신 방식이
-# 바뀌어도(개인 훅의 gh, 공개 뒤의 curl) 표시 계층은 영향권 밖이다.
+# 바뀌어도(개인 훅 시절의 인증 gh, 공개 뒤의 인증 없는 curl) 표시 계층은 영향권 밖이다.
 #
-# 모든 실패는 무음이다 — 오프라인·인증 만료·깨진 응답 어느 쪽이든 기존 캐시를 그대로 두고
+# 모든 실패는 무음이다 — 오프라인·요청 수 제한·깨진 응답 어느 쪽이든 기존 캐시를 그대로 두고
 # 조용히 끝낸다. 갱신이 늦는 것은 "안 뜸" 으로 나타날 뿐 세션을 방해하지 않는다.
 #
 # **훅이 기다리므로 여기 걸리는 시간이 곧 세션 시작 지연이다.** 그 상한은 이 스크립트가 아니라
@@ -34,8 +34,10 @@ COOLDOWN="${RELEASE_HERALD_COOLDOWN:-3600}"   # 1시간
 KEEP="${RELEASE_HERALD_CACHE_KEEP:-8}"
 
 REPO="${RELEASE_HERALD_REPO:-myalim/release-herald}"
-# 저장소가 아직 private 이라 인증이 붙는 gh 로 받는다. 공개되면 이 한 줄이 curl 로 바뀌고
-# 아래 검증·자르기·교체는 그대로다 — 그래서 받는 경로를 여기 한 곳에 모아 둔다.
+# 공개 저장소의 raw 경로에서 인증 없이 받는다 — 설치한 사람에게 `gh` 로그인을 요구하지 않기 위해서다.
+# raw 는 ETag·304 를 지원하고(조건부 요청이 그대로 선다) CDN 캐시가 5분이다. 인증 없는 요청에는
+# 요청자(IP) 단위 횟수 제한이 걸리지만 쿨다운이 사용자당 시간 1회로 묶는다 — 걸려도 실패는 무음이다.
+# 받는 경로를 여기 한 곳에 모아 둔다 — 서빙 위치가 바뀌면 이 URL 만 바뀐다.
 REF="${RELEASE_HERALD_REF:-main}"
 SRC_PATH="${RELEASE_HERALD_SRC_PATH:-data/summaries.json}"
 
@@ -45,7 +47,7 @@ FORCE=""
 [ "${1:-}" = "--force" ] && FORCE=1
 
 command -v jq >/dev/null 2>&1 || { dbg "jq 없음"; exit 0; }
-command -v gh >/dev/null 2>&1 || { dbg "gh 없음"; exit 0; }
+command -v curl >/dev/null 2>&1 || { dbg "curl 없음"; exit 0; }
 
 # ── 쿨다운 ──────────────────────────────────────────────────────────
 # 시각을 파일에 숫자로 적는다 — stat 의 옵션이 macOS 와 Linux 에서 갈리므로 그것에 기대지 않는다.
@@ -104,13 +106,13 @@ if [ -z "$FORCE" ] && [ -s "$ETAG_FILE" ] \
   [ -n "$PREV_ETAG" ] && COND=(-H "If-None-Match: $PREV_ETAG")
 fi
 
-# -i 로 상태 줄과 헤더를 함께 받는다. **gh 는 304 를 실패(종료코드 1)로 내므로** 종료코드만으로는
-# "안 바뀜" 과 "못 받음" 이 갈리지 않는다 — 상태 줄로 가른다. 상태 줄은 LF, 헤더 줄은 CRLF 로
-# 끝나고, 헤더와 본문 사이 빈 줄은 "\r" 하나다. 상태 줄에 사유구가 빠지면 코드에 CR 이 붙을 수
-# 있어 떼고 비교한다. bash 3.2 는 set -u 에서 빈 배열 전개를 unbound 로 죽이므로 ${arr[@]+...}
-# 형태로 편다.
-gh api -i "repos/$REPO/contents/$SRC_PATH?ref=$REF" \
-   -H "Accept: application/vnd.github.raw" ${COND[@]+"${COND[@]}"} > "$RESP" 2>/dev/null
+# -i 로 상태 줄과 헤더를 함께 받는다. curl 은 4xx·5xx 에도 0 으로 끝나므로 종료코드로는
+# "안 바뀜"·"못 받음"·"받음" 이 갈리지 않는다 — 상태 줄로 가른다. 헤더와 본문 사이 빈 줄은 "\r"
+# 하나이고, 상태 줄 끝의 CR 은 떼고 비교한다. 프록시를 거치면 CONNECT 응답 헤더가 앞에 한 벌 더
+# 붙어 상태 줄을 가로채므로 빼고 받는다. bash 3.2 는 set -u 에서 빈 배열 전개를 unbound 로 죽이므로
+# ${arr[@]+...} 형태로 편다.
+curl -sS -i --suppress-connect-headers ${COND[@]+"${COND[@]}"} \
+   "https://raw.githubusercontent.com/$REPO/$REF/$SRC_PATH" > "$RESP" 2>/dev/null
 STATUS=""
 [ -s "$RESP" ] && read -r _ STATUS _ < "$RESP"
 STATUS="${STATUS%$'\r'}"
@@ -122,7 +124,7 @@ if [ "$STATUS" = "304" ]; then
   exit 0
 fi
 if [ "$STATUS" != "200" ]; then
-  dbg "받기 실패 (오프라인·인증 만료·경로 없음 · 상태 ${STATUS:-없음})"
+  dbg "받기 실패 (오프라인·요청 수 제한·경로 없음 · 상태 ${STATUS:-없음})"
   exit 0
 fi
 
@@ -132,8 +134,7 @@ awk 'f { print; next } /^\r?$/ { f = 1 }' "$RESP" > "$TMP" 2>/dev/null
 NEW_ETAG=$(awk '/^\r?$/ { exit } tolower($0) ~ /^etag:/ { sub(/^[^:]*:[ \t]*/, ""); sub(/\r$/, ""); print; exit }' "$RESP" 2>/dev/null)
 
 # ── 검증 ────────────────────────────────────────────────────────────
-# 받은 것이 요약 파일이 맞는지 본다. 인증이 만료되면 gh 가 JSON 형태의 에러 본문을 200 이
-# 아닌 코드와 함께 주지만, 프록시나 로그인 페이지가 200 으로 HTML 을 주는 경우까지 막으려면
+# 받은 것이 요약 파일이 맞는지 본다. 원격의 에러는 200 이 아닌 코드로 오지만, 프록시나 로그인 페이지가 200 으로 HTML 을 주는 경우까지 막으려면
 # 내용을 봐야 한다. **깨진 것을 캐시에 넣는 것이 안 받는 것보다 나쁘다** — 훅은 캐시를
 # 신뢰하고 읽는다.
 if ! jq -e "$CONTRACT" "$TMP" >/dev/null 2>&1; then
