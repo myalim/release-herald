@@ -112,7 +112,7 @@ chk "internal 은 기본으로 안 보인다" "$(run "$INT" | grep -c '^  intern
 chk "--all 이면 보인다"              "$(run --all "$INT" | grep -c '^  internal')" "1"
 
 echo "── 찾기 ──"
-RC="v2.1.268"   # "Remote Control 세션 이름" 으로 찾혀야 하는 항목이 있는 릴리스 (PRD 의 예)
+RC="v2.1.268"   # "Remote Control 세션 이름" 으로 찾혀야 하는 항목이 있는 릴리스 (이 기능을 만든 실제 사례)
 chk "낱말이 모두 든 항목이 버전과 함께 나온다" "$(run --find 'Remote Control 세션 이름' | grep -c "^  $RC ")" "1"
 chk "  대소문자를 가리지 않는다"     "$(run --find 'remote control 세션 이름' | grep -c "^  $RC ")" "1"
 chk "  낱말 하나라도 없으면 안 나온다" "$(code --find 'Remote Control 세션 이름 없는낱말쀍')" "1"

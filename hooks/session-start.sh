@@ -23,7 +23,7 @@
 
 # 캐시와 통지 기록은 성격이 다르므로 자리를 나눈다 — 캐시는 지워져도 다음 갱신에 복구되지만,
 # 통지 기록이 지워지면 과거 릴리스가 다시 쏟아진다. 둘 다 **저장소 밖**에 둔다: 코드와 같은
-# 자리에 두면 P3 에서 플러그인으로 옮길 때 이력이 끊긴다.
+# 자리에 두면 플러그인이 업데이트될 때마다 설치 경로가 바뀌어 이력이 끊긴다.
 CACHE="${RELEASE_HERALD_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/release-herald/summaries.json}"
 STATE="${RELEASE_HERALD_STATE:-${XDG_STATE_HOME:-$HOME/.local/state}/release-herald/notified}"
 

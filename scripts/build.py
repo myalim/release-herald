@@ -2,7 +2,7 @@
 """releases.atom 에서 요약 재료를 뽑고, 완성된 summaries.json 을 계약과 대조한다.
 
 이 스크립트는 파이프라인의 **양끝**만 맡는다 — 가운데(한국어 요약·impact·weight 판정)는
-LLM 이 채운다. P1 에서는 그 단계가 수동이고 P3 에서 CI 호출로 바뀌는데, 경계가
+LLM 이 채운다. 처음에는 그 단계를 손으로 했고 지금은 CI 가 판정기를 부르는데, 경계가
 schema/summaries.schema.json 이라 주체가 바뀌어도 이 스크립트는 그대로다.
 
 의존성은 표준 라이브러리뿐이다.
@@ -44,7 +44,8 @@ def strip_html(fragment: str) -> str:
     """<li> 안의 HTML 을 읽을 수 있는 평문으로 만든다.
 
     <code> 만 백틱으로 살린다 — 옵션명·플래그·이벤트명이 그 안에 들어 있고, 그것이
-    Claude 가 나중에 정확히 짚어야 할 식별자다(PRD F2). 나머지 태그는 버린다.
+    Claude 가 나중에 정확히 짚어야 할 식별자다(화면에서 잘린 항목을 물으면 이것으로 답한다).
+    나머지 태그는 버린다.
     """
     s = re.sub(r"<code>(.*?)</code>", r"`\1`", fragment, flags=re.S)
     s = re.sub(r"<[^>]+>", "", s)
@@ -108,7 +109,7 @@ def extract(url: str) -> dict:
             {"version": version, "date": updated, "url": href, "items": items}
         )
 
-    # atom 이 최신 우선으로 주지만 그것에 기대지 않는다 — 정렬이 계약이고(SPEC 4절),
+    # atom 이 최신 우선으로 주지만 그것에 기대지 않는다 — 정렬이 훅과의 계약이고(훅이 배열 안 위치로 통지를 판정한다),
     # 그 계약을 지키는 책임이 생성기에 있다. sort 가 안정 정렬이라 같은 날짜는 피드 순서를
     # 그대로 유지한다.
     releases.sort(key=lambda r: r["date"], reverse=True)
@@ -230,7 +231,7 @@ def merge(pending_file: Path, judged_dir: Path, summaries: Path) -> tuple:
     끝내 저자에게는 침묵하지 않는다.
 
     쓰기는 **검증을 통과한 뒤 원자적으로** 한다. 이 파일이 훅과의 유일한 접점이라 미검증
-    상태나 부분 상태로 존재해서는 안 된다(SPEC 불변식).
+    상태나 부분 상태로 존재해서는 안 된다.
 
     돌려주는 것은 (거부 사유 목록, 병합한 버전 목록) — 커밋 메시지가 그 목록을 제목에 쓴다.
     영역은 여기서 다루지 않는다 — 병합 뒤 `attach_areas` 가 영역 없는 릴리스 전부를 대상으로 붙인다.
@@ -433,7 +434,7 @@ def _check(obj, spec, defs, path, errs):
 def _order_key(release: dict) -> tuple:
     """정렬 검증 전용 키. 버전은 문자열이 아니라 정수 튜플로 비교한다.
 
-    훅의 통지 판정에는 버전 대소 비교가 없고(인덱스로 찾는다 — SPEC 4절) 여기서도 되살리지
+    훅의 통지 판정에는 버전 대소 비교가 없고(배열 안 위치로 찾는다) 여기서도 되살리지
     않는다. 이 비교는 그 인덱스 판정이 딛는 **순서 자체**를 생성 시점에 확인하는 용도이고,
     정수 튜플이라 v2.1.9 > v2.1.10 이 되는 문자열 비교의 함정도 없다.
     """
@@ -478,12 +479,12 @@ def validate_data(data: dict, label: str = "summaries") -> list:
     if not isinstance(releases, list) or not all(isinstance(r, dict) for r in releases):
         return errs
 
-    # 정렬은 JSON Schema 로 표현되지 않아 계약이 SPEC 4절에 있다 — 훅이 인덱스로 판정하므로
+    # 정렬은 JSON Schema 로 표현되지 않아 여기서 검증한다 — 훅이 배열 안 위치로 판정하므로
     # 이 순서가 깨지면 통지가 조용히 어긋난다. 날짜만 보면 같은 날 두 릴리스의 역전을 놓치는데,
     # 원본 피드에 같은 날짜 쌍이 실제로 있고 그 역전이 곧 통지 누락이다.
     keys = [_order_key(r) for r in releases]
     if keys != sorted(keys, reverse=True):
-        errs.append("releases: 최신 우선 정렬이 아님 (SPEC 4절 계약)")
+        errs.append("releases: 최신 우선 정렬이 아님 (훅이 배열 위치로 통지를 판정한다)")
 
     # 훅은 통지 기록과 일치하는 **첫** 원소를 찾으므로, 중복이 있으면 미통지 구간이 잘린다.
     seen = set()
