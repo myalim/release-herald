@@ -1,0 +1,9 @@
+{
+  "name": "release-herald",
+  "displayName": "Release Herald",
+  "version": "0.1.0",
+  "description": "Claude Code 새 릴리스를 세션 시작에 한국어 요약으로 띄우고, Claude 도 같은 순간에 전문을 알게 한다",
+  "author": { "name": "myalim" },
+  "repository": "https://github.com/myalim/release-herald",
+  "keywords": ["release-notes", "changelog", "korean", "session-start"]
+}

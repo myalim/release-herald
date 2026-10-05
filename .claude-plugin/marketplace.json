@@ -1,0 +1,12 @@
+{
+  "name": "release-herald",
+  "owner": { "name": "myalim" },
+  "description": "Claude Code 릴리스 노트를 한국어로 요약해 세션 시작에 알리는 플러그인",
+  "plugins": [
+    {
+      "name": "release-herald",
+      "source": "./",
+      "description": "Claude Code 새 릴리스를 세션 시작에 한국어 요약으로 띄우고, Claude 도 같은 순간에 전문을 알게 한다"
+    }
+  ]
+}
