@@ -29,8 +29,9 @@ cat > "$TMP/bin/gh" <<'EOF'
 printf '%s ' "$@" | tr '\n' ' ' >> "$FAKE/log"; echo >> "$FAKE/log"
 case "$1 $2" in
   "api repos/"*)   [ -f "$FAKE/upstream_fail" ] && exit 1; cat "$FAKE/upstream" ;;
-  "issue list")    cat "$FAKE/open" 2>/dev/null ;;
-  "issue view")    cat "$FAKE/last" 2>/dev/null ;;
+  "issue list")    [ -f "$FAKE/list_fail" ] && exit 1; cat "$FAKE/open" 2>/dev/null ;;
+  "issue view")    [ -f "$FAKE/view_fail" ] && exit 1; cat "$FAKE/last" 2>/dev/null ;;
+  "issue create")  [ -f "$FAKE/create_fail" ] && exit 1 ;;
 esac
 exit 0
 EOF
@@ -102,6 +103,26 @@ setup "" "" "v2 $(iso $((NOW - 5*DAY)))"
 touch "$FAKE/upstream_fail"
 run success
 chk "이슈 생성 없음" "$(calls 'issue create')" 0
+
+echo "열린 이슈 조회 실패 — 열린 이슈 없음으로 읽어 중복 이슈를 열지 않는다"
+setup "" "" "v1 $(iso $((NOW - 5*DAY)))"
+touch "$FAKE/list_fail"
+run failure; rc=$?
+chk "이슈 생성 없음" "$(calls 'issue create')" 0
+chk "실행은 실패로 끝난다" "$rc" 1
+
+echo "이슈 표식 조회 실패 — 같은 경보 댓글을 쌓지 않는다"
+setup 7 failure "v1 $(iso $((NOW - 5*DAY)))"
+touch "$FAKE/view_fail"
+run failure; rc=$?
+chk "댓글 없음" "$(calls 'issue comment')" 0
+chk "실행은 실패로 끝난다" "$rc" 1
+
+echo "이슈 생성 실패 — 경보를 못 냈는데 초록으로 끝나지 않는다"
+setup "" "" "v1 $(iso $((NOW - 5*DAY)))"
+touch "$FAKE/create_fail"
+run failure; rc=$?
+chk "실행은 실패로 끝난다" "$rc" 1
 
 echo
 echo "통과 $PASS · 실패 $FAIL"
