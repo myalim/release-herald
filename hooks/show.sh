@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 지난 릴리스 요약을 골라 본다 — 세션 시작 화면이 놓친 것을 오너가 직접 확인하는 경로.
+# 지난 릴리스 요약을 골라 본다 — 세션 시작 화면이 놓친 것을 사용자가 직접 확인하는 경로.
 # 사용법은 --help.
 #
 # **게이트를 걸지 않는 것이 이 도구의 존재 이유다** — 화면(`weight 1`)에서 잘린 것을 보러
@@ -9,8 +9,8 @@
 
 set -u
 
-# 캐시가 정본이다 — 플러그인으로 나가면 저장소가 없다. 다만 캐시는 최신 몇 개만 담으므로
-# (update-cache.sh 의 KEEP) 옆에 원본이 있으면 캐시에 없는 릴리스를 원본에서 채운다.
+# 캐시가 정본이다 — 플러그인에 실린 data/ 는 설치·업데이트 시점의 사본이라 최신이 아니다. 다만
+# 캐시는 최신 몇 개만 담으므로(update-cache.sh 의 KEEP) 캐시에 없는 오래된 릴리스는 그 사본에서 채운다.
 CACHE="${RELEASE_HERALD_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/release-herald/summaries.json}"
 STATE="${RELEASE_HERALD_STATE:-${XDG_STATE_HOME:-$HOME/.local/state}/release-herald/notified}"
 FALLBACK="${0%/*}/../data/summaries.json"
