@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/myalim/release-herald/compare/v0.1.0...v0.1.1) (2026-10-05)
+
+
+### Bug Fixes
+
+* 조회와 세션 시작 화면의 내부 용어를 사용자 문구로 정돈 ([#16](https://github.com/myalim/release-herald/issues/16)) ([ca2f13d](https://github.com/myalim/release-herald/commit/ca2f13d6ebd90478c29eeb9654befea2eb0331d6))
+
 ## 0.1.0 (2026-10-05)
 
 
