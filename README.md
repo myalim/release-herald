@@ -55,7 +55,7 @@ Claude Code 세션에서 다음 명령을 실행합니다.
 
 | 명령 | 설명 |
 | --- | --- |
-| `/release-herald:show` | 릴리스 목록 (최신 10개, 이전 것은 범위로 조회) |
+| `/release-herald:show` | 릴리스 목록 (최신 10개, 이전 것은 찾기나 버전으로 조회) |
 | `/release-herald:show 288` | 특정 릴리스의 변경 전체 (주요 변경과 그 밖의 변경) |
 | `/release-herald:show 280..289` | 버전 범위 |
 | `/release-herald:show --find 훅 출력` | 모든 낱말을 포함한 변경 (최신순) |

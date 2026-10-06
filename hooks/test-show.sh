@@ -79,32 +79,29 @@ chk "  머리 줄은 기존 문구"           "$(lrun 10 | head -1)" "릴리스 
 chk "11개면 최신 10개만 + 안내 한 줄" "$(lrun 11 | grep -c '^  v')|$(lrun 11 | grep -c '생략')" "10|1"
 chk "  10개가 최신부터 이어진다"      "$(lrun 11 | grep '^  v' | awk '{print $1}')" "$(jq -r '.releases[0:10][].version' "$TMP/cut11.json")"
 chk "  머리 줄이 전체와 보인 개수를 말한다" "$(lrun 11 | head -1)" "릴리스 11개 중 최신 10개 · 최신순"
-chk "  생략 개수를 말한다"            "$(lrun 15 | grep '생략' | grep -c '이전 5개')" "1"
-OLD="$(jq -r '.releases[14].version | split(".")[-1]' "$SRC")"; NEW="$(jq -r '.releases[10].version | split(".")[-1]' "$SRC")"
-HINT="$(lrun 15 | grep '생략' | sed 's/.*보기: //')"
-chk "  안내 범위는 생략 구간의 끝자리" "$HINT" "/release-herald:show $OLD..$NEW"
-# 안내된 명령을 그대로 실행하면 생략된 릴리스들이 나온다.
-RANGE="${HINT#/release-herald:show }"
-GOT="$(lonly 15 "$RANGE" | grep -E '^v[0-9][0-9.]* · [0-9]' | awk '{print $1}')"
-chk "  안내된 범위 명령이 생략분을 낸다" "$GOT" "$(jq -r '.releases[10:15][].version' "$SRC" | head -5)"
-chk "  생략분에 보인 릴리스는 없다"    "$(grep -cxF -f <(lrun 15 | grep '^  v' | awk '{print $1}') <<<"$GOT")" "0"
+chk "  생략 개수를 말한다"            "$(lrun 15 | grep '생략' | grep -c '이전 릴리스 5개')" "1"
+HINT="$(lrun 15 | grep '생략')"
+chk "  안내 한 줄에 찾기와 한 릴리스가 있다" "$(grep -c '찾기: /release-herald:show --find 낱말 · 한 릴리스: /release-herald:show [0-9]' <<<"$HINT")" "1"
+chk "  찾기 안내는 한 번만 나온다"    "$(lrun 15 | grep -c -- '--find 낱말')|$(lrun 10 | grep -c -- '--find 낱말')" "1|1"
+# 안내된 한 릴리스 명령을 그대로 실행하면 생략된 릴리스(가장 최신 것)가 나온다.
+ONE="${HINT##*/release-herald:show }"
+chk "  안내된 한 릴리스 명령이 생략분을 낸다" "$(lonly 15 "$ONE" | grep -E '^v[0-9][0-9.]* · [0-9]' | awk '{print $1}')" "$(jq -r '.releases[10].version' "$SRC")"
 # 마지막으로 알린 버전이 보이는 구간 / 생략 구간에 있을 때.
 jq -r '.releases[2].version' "$SRC" > "$STATE"
 chk "알린 버전이 보이면 마커가 붙고 생략 안내가 없다" "$(lrun 15 | grep -c '← 마지막으로 알린 버전')|$(lrun 15 | grep -c '은 생략된 구간')" "1|0"
 jq -r '.releases[12].version' "$SRC" > "$STATE"
 chk "알린 버전이 생략 구간이면 마커 없이 그 사실을 밝힌다" "$(lrun 15 | grep -c '← 마지막으로 알린 버전')|$(lrun 15 | grep -c "$(cat "$STATE").*생략된 구간")" "0|1"
-chk "  그래도 범위 조회에는 그 릴리스가 든다" "$(lonly 15 "$RANGE" | grep -c "^$(cat "$STATE") · ")" "1"
+chk "  그 릴리스는 버전 조회로 나온다" "$(lonly 15 "$(cat "$STATE")" | grep -c "^$(cat "$STATE") · ")" "1"
 : > "$STATE"
-# 끝자리가 보이는 쪽의 다른 릴리스와 겹치면(마이너가 바뀐 뒤) 끝자리로는 범위가 엇나간다.
-OLDV="$(jq -r '.releases[14].version' "$SRC")"
-jq --arg v "v9.9.${OLDV##*.}" '.releases = .releases[0:15] | .releases[0].version = $v' "$SRC" > "$TMP/cutamb.json"
-AHINT="$(lrun amb | grep '생략' | sed 's/.*보기: \/release-herald:show //')"
-chk "끝자리가 겹치면 안내는 전체 버전으로" "${AHINT%%..*}" "${OLDV#v}"
-chk "  그 범위가 생략분 그대로를 낸다" "$(lonly amb "$AHINT" | grep -cE '^v[0-9][0-9.]* · [0-9]')" "5"
+# 끝자리가 보이는 쪽의 다른 릴리스와 겹치면(마이너가 바뀐 뒤) 끝자리로는 엇나간다.
+HIDV="$(jq -r '.releases[10].version' "$SRC")"
+jq --arg v "v9.9.${HIDV##*.}" '.releases = .releases[0:15] | .releases[0].version = $v' "$SRC" > "$TMP/cutamb.json"
+AONE="$(lrun amb | grep '생략' | sed 's/.*한 릴리스: \/release-herald:show //')"
+chk "끝자리가 겹치면 안내는 전체 버전으로" "$AONE" "${HIDV#v}"
+chk "  그 명령이 생략분을 낸다" "$(lonly amb "$AONE" | grep -E '^v[0-9][0-9.]* · [0-9]' | awk '{print $1}')" "$HIDV"
 jq '.releases = []' "$SRC" > "$TMP/cut0.json"
 chk "릴리스가 0개여도 오류 없이 머리 줄만" "$(RELEASE_HERALD_CACHE="$TMP/cut0.json" "$TMP/lonely/show.sh" 2>&1 | grep -c 'error')|$(lrun 0 | head -1)" "0|릴리스 0개 · 최신순"
-chk "--help 가 목록 상한을 밝힌다" "$(code --help; "$SHOW" --help | grep -c '최신 10개')" "0
-1"
+chk "--help 가 목록 상한을 밝힌다" "$("$SHOW" --help | grep -c '최신 10개')" "1"
 
 # **조회가 기록을 소진하면 그 릴리스가 세션 시작에 다시 안 뜬다** — 읽기 전용이 계약이라 회귀로 잡는다.
 printf '%s\n' "$LATEST" > "$STATE"

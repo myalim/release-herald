@@ -21,7 +21,7 @@ usage() {
   cat <<'USAGE'
 지난 Claude Code 릴리스 요약을 봅니다.
 
-  /release-herald:show                     릴리스 목록 (최신 10개 — 이전 것은 범위로 봅니다)
+  /release-herald:show                     릴리스 목록 (최신 10개 — 이전 것은 찾기나 버전으로 봅니다)
   /release-herald:show 260                 한 릴리스 (v2.1.260 · 2.1.260 · 260 모두 됩니다)
   /release-herald:show 257..263            여러 릴리스 (양끝 포함)
   /release-herald:show --find 권한 확인    낱말이 모두 든 변경을 최신부터 (요약과 원문, 대소문자 무시)
@@ -117,10 +117,10 @@ JQ_DEFS='
 # ── 목록 ────────────────────────────────────────────────────────────
 if [ -z "$TARGET" ] && [ -z "$FIND" ] && [ -z "$AREA" ]; then
   # 목록은 최신 LIST_MAX 개만 보인다 — 릴리스가 쌓일수록 목록이 화면을 채워 정작 최근 것이 밀린다.
-  # 생략분은 이미 있는 범위 조회로 보게 안내한다(새 옵션 없음). 자르기는 배열 위치로 한다.
+  # 생략분은 찾기와 한 릴리스 조회로 보게 안내한다(범위로 안내하면 출력이 너무 길다). 자르기는 배열 위치로 한다.
   jq -r --arg last "$LAST" --argjson max "$LIST_MAX" "$JQ_DEFS"'
     # 안내 명령에 쓸 짧은 버전 — 끝자리가 더 최신의 다른 릴리스와 겹치면(마이너가 바뀐 뒤)
-    # 범위 조회가 그쪽을 집으므로 v 를 뗀 전체 버전으로 쓴다.
+    # 조회가 그쪽을 집으므로 v 를 뗀 전체 버전으로 쓴다.
     def short($i): (.[$i].version | split(".")[-1]) as $t
       | if idx($t) == $i then $t else (.[$i].version | ltrimstr("v")) end;
     .releases as $r
@@ -139,7 +139,7 @@ if [ -z "$TARGET" ] && [ -z "$FIND" ] && [ -z "$AREA" ]; then
       ),
       ( if ($hidden | length) == 0 then empty
         else "",
-             "  이전 \($hidden|length)개는 생략했습니다 — 보기: /release-herald:show \($r | short(($r|length) - 1))..\($r | short($max))",
+             "  이전 릴리스 \($hidden|length)개는 생략했습니다 · 찾기: /release-herald:show --find 낱말 · 한 릴리스: /release-herald:show \($r | short($max))",
              # 마지막으로 알린 버전이 생략 구간에 있으면 본문에 마커가 없다 — 그 사실을 따로 밝힌다.
              ( [$hidden[] | select(.version == $last)] | first
                | if . == null then empty
@@ -149,6 +149,7 @@ if [ -z "$TARGET" ] && [ -z "$FIND" ] && [ -z "$AREA" ]; then
       "  주요: 세션 시작 화면에서 알리는 변경 · 전체: 사용자에게 의미 있는 변경 전부",
       # 릴리스가 0개면 가리킬 버전이 없다 — 이 줄을 빼야 jq 가 오류로 멈추지 않는다.
       ( if ($r | length) == 0 then empty
+        elif ($hidden | length) > 0 then "  자세히: /release-herald:show \($r | short(0))"
         else "  자세히: /release-herald:show \($r | short(0)) · 찾기: /release-herald:show --find 낱말" end )
   ' "$DATA"
   exit 0
