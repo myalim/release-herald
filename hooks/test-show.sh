@@ -25,6 +25,7 @@ STATE="$TMP/state"
 # 대신 과거 릴리스를 고정 지정한다(그 항목은 더 변하지 않는다).
 LATEST="$(jq -r '.releases[0].version' "$CACHE")"
 COUNT="$(jq -r '.releases | length' "$CACHE")"
+SHOWN=$(( COUNT > 10 ? 10 : COUNT ))   # 목록 모드는 최신 10개만 보인다
 W0="v2.1.258"    # user 항목은 있는데 weight 1 이 0건 — 화면이 침묵하던 형태
 INT="v2.1.260"   # impact:internal 항목이 있는 릴리스
 
@@ -45,7 +46,7 @@ echo "── 데이터 선택 ──"
 mkdir -p "$TMP/pkg/hooks" "$TMP/pkg/data"
 cp "$SHOW" "$TMP/pkg/hooks/"; cp "$SRC" "$TMP/pkg/data/summaries.json"
 chk "캐시가 없으면 옆의 원본으로 내려간다" \
-  "$(RELEASE_HERALD_CACHE=/nonexistent/x.json "$TMP/pkg/hooks/show.sh" 2>/dev/null | grep -c '^  v')" "$(jq '.releases | length' "$SRC")"
+  "$(RELEASE_HERALD_CACHE=/nonexistent/x.json "$TMP/pkg/hooks/show.sh" 2>/dev/null | grep -c '^  v')" "$SHOWN"
 
 mkdir -p "$TMP/lonely"; cp "$SHOW" "$TMP/lonely/"
 RELEASE_HERALD_CACHE=/nonexistent/x.json "$TMP/lonely/show.sh" >/dev/null 2>&1
@@ -58,12 +59,49 @@ chk "  왜 없는지 말한다" \
   "$(RELEASE_HERALD_CACHE=/nonexistent/x.json "$TMP/lonely/show.sh" 2>&1 >/dev/null | grep -c '읽지 못했습니다')" "1"
 
 echo "── 목록 ──"
-chk "릴리스마다 한 줄" "$(run | grep -c '^  v')" "$COUNT"
+chk "릴리스마다 한 줄 (최대 10)" "$(run | grep -c '^  v')" "$SHOWN"
 printf '%s\n' "$LATEST" > "$STATE"
 chk "통지 기록 마커는 그 버전에만" "$(run | grep -c '← 마지막으로 알린 버전')" "1"
 chk "  마커가 기록된 버전에 붙는다" "$(run | grep '← 마지막으로 알린 버전' | grep -c "$LATEST")" "1"
 : > "$STATE"
 chk "기록이 없으면 마커도 없다" "$(run | grep -c '← 마지막으로 알린 버전')" "0"
+
+echo "── 목록 자르기 ──"
+# 경계는 데이터를 잘라 만든다 — 정확히 10개 · 11개 · 그 이하.
+lcut() { jq --argjson n "$1" '.releases = .releases[0:$n]' "$SRC" > "$TMP/cut$1.json"; }
+lrun() { RELEASE_HERALD_CACHE="$TMP/cut$1.json" RELEASE_HERALD_STATE="$STATE" "$TMP/lonely/show.sh" 2>/dev/null; }
+lonly() { RELEASE_HERALD_CACHE="$TMP/cut$1.json" RELEASE_HERALD_STATE="$STATE" "$TMP/lonely/show.sh" "${@:2}" 2>/dev/null; }
+: > "$STATE"
+lcut 9; lcut 10; lcut 11; lcut 15
+chk "9개면 전부, 안내 줄 없음"       "$(lrun 9 | grep -c '^  v')|$(lrun 9 | grep -c '생략')" "9|0"
+chk "정확히 10개면 전부, 안내 줄 없음" "$(lrun 10 | grep -c '^  v')|$(lrun 10 | grep -c '생략')" "10|0"
+chk "  머리 줄은 기존 문구"           "$(lrun 10 | head -1)" "릴리스 10개 · 최신순"
+chk "11개면 최신 10개만 + 안내 한 줄" "$(lrun 11 | grep -c '^  v')|$(lrun 11 | grep -c '생략')" "10|1"
+chk "  10개가 최신부터 이어진다"      "$(lrun 11 | grep '^  v' | awk '{print $1}')" "$(jq -r '.releases[0:10][].version' "$TMP/cut11.json")"
+chk "  머리 줄이 전체와 보인 개수를 말한다" "$(lrun 11 | head -1)" "릴리스 11개 중 최신 10개 · 최신순"
+chk "  생략 개수를 말한다"            "$(lrun 15 | grep '생략' | grep -c '이전 릴리스 5개')" "1"
+HINT="$(lrun 15 | grep '생략')"
+chk "  안내 한 줄에 찾기와 한 릴리스가 있다" "$(grep -c '찾기: /release-herald:show --find 낱말 · 한 릴리스: /release-herald:show [0-9]' <<<"$HINT")" "1"
+chk "  찾기 안내는 한 번만 나온다"    "$(lrun 15 | grep -c -- '--find 낱말')|$(lrun 10 | grep -c -- '--find 낱말')" "1|1"
+# 안내된 한 릴리스 명령을 그대로 실행하면 생략된 릴리스(가장 최신 것)가 나온다.
+ONE="${HINT##*/release-herald:show }"
+chk "  안내된 한 릴리스 명령이 생략분을 낸다" "$(lonly 15 "$ONE" | grep -E '^v[0-9][0-9.]* · [0-9]' | awk '{print $1}')" "$(jq -r '.releases[10].version' "$SRC")"
+# 마지막으로 알린 버전이 보이는 구간 / 생략 구간에 있을 때.
+jq -r '.releases[2].version' "$SRC" > "$STATE"
+chk "알린 버전이 보이면 마커가 붙고 생략 안내가 없다" "$(lrun 15 | grep -c '← 마지막으로 알린 버전')|$(lrun 15 | grep -c '은 생략된 구간')" "1|0"
+jq -r '.releases[12].version' "$SRC" > "$STATE"
+chk "알린 버전이 생략 구간이면 마커 없이 그 사실을 밝힌다" "$(lrun 15 | grep -c '← 마지막으로 알린 버전')|$(lrun 15 | grep -c "$(cat "$STATE").*생략된 구간")" "0|1"
+chk "  그 릴리스는 버전 조회로 나온다" "$(lonly 15 "$(cat "$STATE")" | grep -c "^$(cat "$STATE") · ")" "1"
+: > "$STATE"
+# 끝자리가 보이는 쪽의 다른 릴리스와 겹치면(마이너가 바뀐 뒤) 끝자리로는 엇나간다.
+HIDV="$(jq -r '.releases[10].version' "$SRC")"
+jq --arg v "v9.9.${HIDV##*.}" '.releases = .releases[0:15] | .releases[0].version = $v' "$SRC" > "$TMP/cutamb.json"
+AONE="$(lrun amb | grep '생략' | sed 's/.*한 릴리스: \/release-herald:show //')"
+chk "끝자리가 겹치면 안내는 전체 버전으로" "$AONE" "${HIDV#v}"
+chk "  그 명령이 생략분을 낸다" "$(lonly amb "$AONE" | grep -E '^v[0-9][0-9.]* · [0-9]' | awk '{print $1}')" "$HIDV"
+jq '.releases = []' "$SRC" > "$TMP/cut0.json"
+chk "릴리스가 0개여도 오류 없이 머리 줄만" "$(RELEASE_HERALD_CACHE="$TMP/cut0.json" "$TMP/lonely/show.sh" 2>&1 | grep -c 'error')|$(lrun 0 | head -1)" "0|릴리스 0개 · 최신순"
+chk "--help 가 목록 상한을 밝힌다" "$("$SHOW" --help | grep -c '최신 10개')" "1"
 
 # **조회가 기록을 소진하면 그 릴리스가 세션 시작에 다시 안 뜬다** — 읽기 전용이 계약이라 회귀로 잡는다.
 printf '%s\n' "$LATEST" > "$STATE"
@@ -76,7 +114,8 @@ jq '.releases = .releases[0:3]' "$SRC" > "$TMP/short.json"
 prun() { RELEASE_HERALD_CACHE="$1" RELEASE_HERALD_STATE="$STATE" "$PKG" "${@:2}" 2>/dev/null; }
 chk "캐시에 없는 버전도 원본에서 찾는다" "$(prun "$TMP/short.json" "$W0" | grep -c "^$W0 · ")" "1"
 LIST="$(prun "$TMP/short.json")"
-chk "목록은 둘을 합친 개수"             "$(grep -c '^  v' <<<"$LIST")" "$COUNT"
+chk "목록은 둘을 합친 뒤 10개로 자른다" "$(grep -c '^  v' <<<"$LIST")" "$SHOWN"
+chk "  머리 줄은 합친 전체 개수를 말한다" "$(head -1 <<<"$LIST" | grep -c "$COUNT")" "1"
 chk "  내부 경로를 드러내지 않는다"     "$(grep -cE "summaries.json|$TMP" <<<"$LIST")" "0"
 jq --arg v "$W0" '(.releases[] | select(.version == $v) | .items[0].ko) = "캐시판"' "$SRC" > "$TMP/edited.json"
 chk "같은 버전은 캐시를 쓴다"           "$(prun "$TMP/edited.json" --all "$W0" | grep -c '캐시판')" "1"
