@@ -14,12 +14,14 @@ set -u
 CACHE="${RELEASE_HERALD_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/release-herald/summaries.json}"
 STATE="${RELEASE_HERALD_STATE:-${XDG_STATE_HOME:-$HOME/.local/state}/release-herald/notified}"
 FALLBACK="${0%/*}/../data/summaries.json"
+# 목록 모드가 보이는 릴리스 수 — --help 문구와 test-show.sh 가 같은 값을 적는다.
+LIST_MAX=10
 
 usage() {
   cat <<'USAGE'
 지난 Claude Code 릴리스 요약을 봅니다.
 
-  /release-herald:show                     릴리스 목록
+  /release-herald:show                     릴리스 목록 (최신 10개 — 이전 것은 범위로 봅니다)
   /release-herald:show 260                 한 릴리스 (v2.1.260 · 2.1.260 · 260 모두 됩니다)
   /release-herald:show 257..263            여러 릴리스 (양끝 포함)
   /release-herald:show --find 권한 확인    낱말이 모두 든 변경을 최신부터 (요약과 원문, 대소문자 무시)
@@ -114,11 +116,20 @@ JQ_DEFS='
 
 # ── 목록 ────────────────────────────────────────────────────────────
 if [ -z "$TARGET" ] && [ -z "$FIND" ] && [ -z "$AREA" ]; then
-  jq -r --arg last "$LAST" "$JQ_DEFS"'
+  # 목록은 최신 LIST_MAX 개만 보인다 — 릴리스가 쌓일수록 목록이 화면을 채워 정작 최근 것이 밀린다.
+  # 생략분은 이미 있는 범위 조회로 보게 안내한다(새 옵션 없음). 자르기는 배열 위치로 한다.
+  jq -r --arg last "$LAST" --argjson max "$LIST_MAX" "$JQ_DEFS"'
+    # 안내 명령에 쓸 짧은 버전 — 끝자리가 더 최신의 다른 릴리스와 겹치면(마이너가 바뀐 뒤)
+    # 범위 조회가 그쪽을 집으므로 v 를 뗀 전체 버전으로 쓴다.
+    def short($i): (.[$i].version | split(".")[-1]) as $t
+      | if idx($t) == $i then $t else (.[$i].version | ltrimstr("v")) end;
     .releases as $r
-    | "릴리스 \($r|length)개 · 최신순",
+    | ($r[0:$max]) as $shown
+    | ($r[$max:]) as $hidden
+    | (if ($hidden | length) == 0 then "릴리스 \($r|length)개 · 최신순"
+       else "릴리스 \($r|length)개 중 최신 \($shown|length)개 · 최신순" end),
       "",
-      ( $r[]
+      ( $shown[]
         | ([.items[] | select(.impact == "user")] | length) as $u
         | ([.items[] | select(.impact == "user" and .weight == 1)] | length) as $w
         | "  " + (.version | pad)
@@ -126,9 +137,19 @@ if [ -z "$TARGET" ] && [ -z "$FIND" ] && [ -z "$AREA" ]; then
           + "   주요 \($w) / 전체 \($u)"
           + (if .version == $last then "   ← 마지막으로 알린 버전" else "" end)
       ),
+      ( if ($hidden | length) == 0 then empty
+        else "",
+             "  이전 \($hidden|length)개는 생략했습니다 — 보기: /release-herald:show \($r | short(($r|length) - 1))..\($r | short($max))",
+             # 마지막으로 알린 버전이 생략 구간에 있으면 본문에 마커가 없다 — 그 사실을 따로 밝힌다.
+             ( [$hidden[] | select(.version == $last)] | first
+               | if . == null then empty
+                 else "  마지막으로 알린 버전(\(.version))은 생략된 구간에 있습니다" end )
+        end ),
       "",
       "  주요: 세션 시작 화면에서 알리는 변경 · 전체: 사용자에게 의미 있는 변경 전부",
-      "  자세히: /release-herald:show \($r[0].version | split(".")[-1]) · 찾기: /release-herald:show --find 낱말"
+      # 릴리스가 0개면 가리킬 버전이 없다 — 이 줄을 빼야 jq 가 오류로 멈추지 않는다.
+      ( if ($r | length) == 0 then empty
+        else "  자세히: /release-herald:show \($r | short(0)) · 찾기: /release-herald:show --find 낱말" end )
   ' "$DATA"
   exit 0
 fi
