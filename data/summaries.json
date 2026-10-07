@@ -12,392 +12,560 @@
           "impact": "user",
           "weight": 1,
           "ko": "Claude Haiku 5.5 (`claude-haiku-5-5`) 추가 — API 기본 Haiku 모델 교체",
-          "en": "Added Claude Haiku 5.5 (`claude-haiku-5-5`), now the default Haiku model on the Anthropic API — 1M context, $0.10/$0.50 per Mtok ($0.50/$2.50 for prompts over 100K)"
+          "en": "Added Claude Haiku 5.5 (`claude-haiku-5-5`), now the default Haiku model on the Anthropic API — 1M context, $0.10/$0.50 per Mtok ($0.50/$2.50 for prompts over 100K)",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 2,
           "ko": "`subagentStatusLine` 페이로드에 `agentType` 추가 — 커스텀 subagent 타입 구분",
-          "en": "Added `agentType` to the `subagentStatusLine` payload, so scripts can tell custom subagent types apart"
+          "en": "Added `agentType` to the `subagentStatusLine` payload, so scripts can tell custom subagent types apart",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 2,
           "ko": "mod `$.tool.register` 에 `isDeferred` 추가 — 도구 스키마 즉시 노출",
-          "en": "Added `isDeferred` to `$.tool.register` for mods: `false` lists the tool's schema in the prompt from the start instead of behind tool search"
+          "en": "Added `isDeferred` to `$.tool.register` for mods: `false` lists the tool's schema in the prompt from the start instead of behind tool search",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "컨텍스트 압축 전 작업을 되돌리거나 다시 하던 문제 수정",
-          "en": "Fixed Claude sometimes treating its own last actions before a context compaction as done after it, and retracting or redoing finished work"
+          "en": "Fixed Claude sometimes treating its own last actions before a context compaction as done after it, and retracting or redoing finished work",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "HTTP MCP 연결이 보낸 요청을 모두 쌓던 메모리 누수 수정",
-          "en": "Fixed a memory leak where an HTTP MCP connection kept every request it had sent until it closed"
+          "en": "Fixed a memory leak where an HTTP MCP connection kept every request it had sent until it closed",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`←` 백그라운드 전환 시 전송한 메시지가 사라지던 문제 수정",
-          "en": "Fixed a message sent while Claude was working being lost when `←` moved the session to the background; if a queued message can't move, `←` now stays put and says so"
+          "en": "Fixed a message sent while Claude was working being lost when `←` moved the session to the background; if a queued message can't move, `←` now stays put and says so",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`/model` 노력 수준 선택이 양 끝에서 순환해 기본값이 바뀌던 문제 수정",
-          "en": "Fixed `/model` effort ←/→ wrapping past the highest or lowest level, which could accidentally save Low as a model's default effort"
+          "en": "Fixed `/model` effort ←/→ wrapping past the highest or lowest level, which could accidentally save Low as a model's default effort",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "`/tui` 가 `--chrome` 연결을 끊고 `--no-chrome` 을 무시하던 문제 수정",
-          "en": "Fixed `/tui` disconnecting Claude in Chrome in a session started with `--chrome`, and ignoring `--no-chrome`"
+          "en": "Fixed `/tui` disconnecting Claude in Chrome in a session started with `--chrome`, and ignoring `--no-chrome`",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`SendMessage` 가 없는 세션에서도 그 도구 사용을 안내하던 문제 수정",
-          "en": "Fixed Claude being told to continue or message subagents with `SendMessage` in sessions, including resumed ones, where a host, a permission rule or a `--tools` list removed that tool"
+          "en": "Fixed Claude being told to continue or message subagents with `SendMessage` in sessions, including resumed ones, where a host, a permission rule or a `--tools` list removed that tool",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "subagent 의 도구 목록 누락을 세션 전체 비활성으로 알리던 문제 수정",
-          "en": "Fixed subagents and `--agent` sessions being told a built-in tool was disabled for the whole session when only their own tool list left it out"
+          "en": "Fixed subagents and `--agent` sessions being told a built-in tool was disabled for the whole session when only their own tool list left it out",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "claude.ai 동기화 스킬의 설명 변경이 모델에 늦게 반영되던 문제 수정",
-          "en": "Fixed a claude.ai-synced skill's edited description sometimes not reaching the model until a new conversation or `/clear`"
+          "en": "Fixed a claude.ai-synced skill's edited description sometimes not reaching the model until a new conversation or `/clear`",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`claude logs`·`daemon` 명령이 로그인 만료 시 로그아웃시키던 문제 수정",
-          "en": "Fixed `claude logs`, `stop`, `kill`, `rm` and `claude daemon status`, `stop`, `uninstall` sometimes signing you out when your login had expired or was about to"
+          "en": "Fixed `claude logs`, `stop`, `kill`, `rm` and `claude daemon status`, `stop`, `uninstall` sometimes signing you out when your login had expired or was about to",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "세션 폴더 읽기 실패 후 푸터의 agents 개수가 사라지던 문제 수정",
-          "en": "Fixed the footer's agents count disappearing after a momentary failure to read the sessions folder (for example, too many open files)"
+          "en": "Fixed the footer's agents count disappearing after a momentary failure to read the sessions folder (for example, too many open files)",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "커스텀 에이전트 이름이 시작 시·완료 후 표시되지 않던 문제 수정",
-          "en": "Fixed a custom agent named `worker` being shown as \"Agent\" when it starts, and the agent detail dialog's title losing the agent type once the agent finishes"
+          "en": "Fixed a custom agent named `worker` being shown as \"Agent\" when it starts, and the agent detail dialog's title losing the agent type once the agent finishes",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "Artifact 도구 기록 줄이 잠시 경로 없음으로 표시되던 문제 수정",
-          "en": "Fixed the Artifact tool's transcript row briefly reading `Artifact(\"(unprintable path)\")` while a publish call was still streaming in"
+          "en": "Fixed the Artifact tool's transcript row briefly reading `Artifact(\"(unprintable path)\")` while a publish call was still streaming in",
+          "area": [
+            "artifacts"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "Linux 에서 `/ultrareview` 업로드가 일부 저장소를 거부하던 문제 수정",
-          "en": "Fixed the `/ultrareview` upload on Linux wrongly refusing some repositories, such as one inside another checkout, over a settings file that \"could not be parsed\" while a sandboxed command was running"
+          "en": "Fixed the `/ultrareview` upload on Linux wrongly refusing some repositories, such as one inside another checkout, over a settings file that \"could not be parsed\" while a sandboxed command was running",
+          "area": [
+            "code-review"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`/ultrareview` 거부 메시지가 git 인덱스를 깨뜨릴 명령을 안내하던 문제 수정",
-          "en": "Fixed the `/ultrareview` upload's refusal over split-index files advising a git command that could leave git unable to read its index"
+          "en": "Fixed the `/ultrareview` upload's refusal over split-index files advising a git command that could leave git unable to read its index",
+          "area": [
+            "code-review"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "Remote Control·클라우드 긴 세션에서 응답 스트리밍이 끊기던 문제 수정",
-          "en": "Fixed replies in very long Remote Control and cloud sessions that could still appear a block at a time instead of streaming in"
+          "en": "Fixed replies in very long Remote Control and cloud sessions that could still appear a block at a time instead of streaming in",
+          "area": [
+            "remote-control"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "Remote Control 이 자격증명 복구마다 세션 기록을 다시 올리던 문제 수정",
-          "en": "Fixed Remote Control uploading a session's starting history again after every credential recovery"
+          "en": "Fixed Remote Control uploading a session's starting history again after every credential recovery",
+          "area": [
+            "remote-control"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "`claude remote-control` 세션에서 PushNotification 이 비활성으로 표시되던 문제 수정",
-          "en": "Fixed PushNotification reporting \"Remote Control inactive\" in sessions started with `claude remote-control`"
+          "en": "Fixed PushNotification reporting \"Remote Control inactive\" in sessions started with `claude remote-control`",
+          "area": [
+            "remote-control"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "플러그인 훅 워커 재시작 중 mod 의 `classic.*` 훅이 건너뛰어지던 문제 수정",
-          "en": "Fixed a mod's hooks on `classic.*` events being skipped while the plugin hooks worker restarts, which left settings hooks to answer without them"
+          "en": "Fixed a mod's hooks on `classic.*` events being skipped while the plugin hooks worker restarts, which left settings hooks to answer without them",
+          "area": [
+            "hooks"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`claude plugin test` 가 `$.session.append` mod 에서 실패하던 문제 수정",
-          "en": "Fixed `claude plugin test` failing for mods that call `$.session.append`; tests can read the appended rows back with the new `mock.session`"
+          "en": "Fixed `claude plugin test` failing for mods that call `$.session.append`; tests can read the appended rows back with the new `mock.session`",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "Docker Desktop 설치 Mac 에서 `claude plugin eval` 이 Bash 실행을 거부하던 문제 수정",
-          "en": "Fixed `claude plugin eval` refusing every Bash-granting run on Macs with Docker Desktop (links under `~/.docker/bin`); the refusal now names which part of a credential store held the link"
+          "en": "Fixed `claude plugin eval` refusing every Bash-granting run on Macs with Docker Desktop (links under `~/.docker/bin`); the refusal now names which part of a credential store held the link",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "`desktop` 정책의 브라우저 키 설정 시 앱 게이트웨이가 시작되지 않던 문제 수정",
-          "en": "Fixed the Claude apps gateway refusing to start when a `desktop` policy sets Claude Desktop's built-in browser keys, such as `builtinBrowserEnabled`"
+          "en": "Fixed the Claude apps gateway refusing to start when a `desktop` policy sets Claude Desktop's built-in browser keys, such as `builtinBrowserEnabled`",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "`claude agents` 의 bypass 권한 동의가 백그라운드 세션에서 무시되던 문제 수정",
-          "en": "Fixed `claude agents` offering bypass permissions that background sessions then ignored when consent was saved only in `.claude/settings.local.json` or a `--settings` file; it now asks for consent first, and a session that ignores bypass shows a short notice that stays"
+          "en": "Fixed `claude agents` offering bypass permissions that background sessions then ignored when consent was saved only in `.claude/settings.local.json` or a `--settings` file; it now asks for consent first, and a session that ignores bypass shows a short notice that stays",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`←` 가 미입력 텍스트·대기 질문이 있어도 세션을 백그라운드로 보내던 문제 수정",
-          "en": "Fixed `←` backgrounding a session after 10 seconds while the prompt held unsent text (it now cancels the move) or a question was waiting for your answer"
+          "en": "Fixed `←` backgrounding a session after 10 seconds while the prompt held unsent text (it now cancels the move) or a question was waiting for your answer",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "권한 프롬프트의 Esc·거부가 턴을 멈추지 못하던 문제 수정",
-          "en": "Fixed Esc, or No without feedback, on a permission prompt not stopping the turn when `←` had just been pressed to move the session to the background"
+          "en": "Fixed Esc, or No without feedback, on a permission prompt not stopping the turn when `←` had just been pressed to move the session to the background",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "세션 폴더를 읽지 못할 때 agents 화면이 자리표시 행으로 바뀌던 문제 수정",
-          "en": "Fixed the agents view briefly replacing the session list with placeholder rows when the sessions folder could not be read (for example, too many open files)"
+          "en": "Fixed the agents view briefly replacing the session list with placeholder rows when the sessions folder could not be read (for example, too many open files)",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "Bash 로 파일을 볼 때 경로별 규칙·중첩 CLAUDE.md 가 적용되지 않던 문제 수정",
-          "en": "Fixed path-scoped rules and nested CLAUDE.md files not loading when Claude views a file with a single-file cat, head, tail, sed -n or grep command in the Bash tool instead of the Read tool"
+          "en": "Fixed path-scoped rules and nested CLAUDE.md files not loading when Claude views a file with a single-file cat, head, tail, sed -n or grep command in the Bash tool instead of the Read tool",
+          "area": [
+            "memory-context"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "붙여넣은 텍스트가 직접 입력한 것처럼 전송되던 문제 수정",
-          "en": "Fixed pasted text that begins and ends with the same words sometimes being sent to Claude as if it had been typed"
+          "en": "Fixed pasted text that begins and ends with the same words sometimes being sent to Claude as if it had been typed",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "붙여넣기 직후 악센트 입력 시 스킬 이름이 입력으로 처리되던 문제 수정",
-          "en": "Fixed a skill name in pasted text being treated as typed when an accent typed or pasted right after the paste merged into its last letter"
+          "en": "Fixed a skill name in pasted text being treated as typed when an accent typed or pasted right after the paste merged into its last letter",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "`/feedback` 전송 중 Ctrl+O·Ctrl+Z 로 취소가 불가능해지던 문제 수정",
-          "en": "Fixed `/feedback` returning to the drafts list after Ctrl+O or Ctrl+Z while a report was sending, leaving the send impossible to cancel"
+          "en": "Fixed `/feedback` returning to the drafts list after Ctrl+O or Ctrl+Z while a report was sending, leaving the send impossible to cancel",
+          "area": [
+            "other"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`claude purge` 가 삭제 실패 시 조용히 멈추던 문제 수정 — 이제 exit 1",
-          "en": "Fixed `claude purge` stopping silently (exit 0, or a hang in a terminal) when a file or folder could not be deleted; it now deletes the rest, lists what it could not delete, and exits 1"
+          "en": "Fixed `claude purge` stopping silently (exit 0, or a hang in a terminal) when a file or folder could not be deleted; it now deletes the rest, lists what it could not delete, and exits 1",
+          "area": [
+            "runtime"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "keybindings.json 검사에서 공백 키 오류·`ctrl+ k` 경고 처리 수정",
-          "en": "Fixed keybindings.json checks: a lone \" \" (space key) is no longer reported as an error, and keys like \"ctrl+ k\" now get a warning"
+          "en": "Fixed keybindings.json checks: a lone \" \" (space key) is no longer reported as an error, and keys like \"ctrl+ k\" now get a warning",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "vim 모드 `>>`·`<<` 에서 커서가 줄 끝을 넘어가던 문제 수정",
-          "en": "Fixed vim mode `>>` and `<<` on a line of only spaces leaving the cursor past the end of the line, where a following `x` deleted nothing"
+          "en": "Fixed vim mode `>>` and `<<` on a line of only spaces leaving the cursor past the end of the line, where a following `x` deleted nothing",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "vim 모드 Visual 줄 삭제 후 커서 위치와 `.` 반복 동작 수정",
-          "en": "Fixed vim mode: after deleting whole lines in Visual mode (`V` then `d`) the cursor lands on the first non-blank, and `.` after it acts on the cursor's line"
+          "en": "Fixed vim mode: after deleting whole lines in Visual mode (`V` then `d`) the cursor lands on the first non-blank, and `.` after it acts on the cursor's line",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "Windows: 명령 중단이 같은 PID 의 무관한 프로세스를 종료하던 문제 수정",
-          "en": "Windows: Fixed stopping a status line, hook, or shell command sometimes terminating an unrelated process that had been given the same process ID"
+          "en": "Windows: Fixed stopping a status line, hook, or shell command sometimes terminating an unrelated process that had been given the same process ID",
+          "area": [
+            "runtime"
+          ]
         },
         {
           "kind": "other",
           "impact": "user",
           "weight": 1,
           "ko": "auto 모드에서 거부가 결과 전체를 덮는다던 2.1.281 변경 되돌림",
-          "en": "Reverted the auto mode denial message change from 2.1.281 that told Claude a denial covers the outcome, not only the exact command"
+          "en": "Reverted the auto mode denial message change from 2.1.281 that told Claude a denial covers the outcome, not only the exact command",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "other",
           "impact": "user",
           "weight": 1,
           "ko": "컨테이너 재시작으로 `/loop` 깨우기를 잃은 세션 복구(2.1.290) 되돌림",
-          "en": "Reverted the 2.1.290 fix for cloud sessions staying asleep after a container restart lost a pending `/loop` wakeup or scheduled task; Claude is no longer told, and the session stays asleep"
+          "en": "Reverted the 2.1.290 fix for cloud sessions staying asleep after a container restart lost a pending `/loop` wakeup or scheduled task; Claude is no longer told, and the session stays asleep",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "improved",
           "impact": "internal",
           "weight": 3,
           "ko": "Team·Enterprise 조직의 정책·관리 설정 초기 로딩 개선",
-          "en": "Improved startup for Team and Enterprise organizations: policy and managed settings are fetched earlier, and a stalled request is retried after 3 seconds"
+          "en": "Improved startup for Team and Enterprise organizations: policy and managed settings are fetched earlier, and a stalled request is retried after 3 seconds",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "Claude in Chrome 이 탭 응답 지연 시 동작을 거부하는 경우 감소",
-          "en": "Improved Claude in Chrome: fewer page actions are refused when the browser is slow to report its tabs"
+          "en": "Improved Claude in Chrome: fewer page actions are refused when the browser is slow to report its tabs",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "다중 조직 시 Claude in Chrome 연결 실패 안내 메시지 개선",
-          "en": "Improved the Claude in Chrome message in cloud sessions when the browser can't be reached: if you belong to more than one organization, it now says the extension must be signed in to the same one, and how to change that"
+          "en": "Improved the Claude in Chrome message in cloud sessions when the browser can't be reached: if you belong to more than one organization, it now says the extension must be signed in to the same one, and how to change that",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "Bash 편집 diff 안내에 다른 프로세스의 쓰기 가능성 명시",
-          "en": "Improved the Bash edit diff note to say the listed files changed while the command ran, which can include writes by other processes"
+          "en": "Improved the Bash edit diff note to say the listed files changed while the command ran, which can include writes by other processes",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "아티팩트가 라이브러리를 2주 이상 지난 정확한 버전으로 고정",
-          "en": "Improved artifacts: Claude pins libraries to exact versions two weeks old or older"
+          "en": "Improved artifacts: Claude pins libraries to exact versions two weeks old or older",
+          "area": [
+            "artifacts"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "claude.ai 스킬 동기화 확인 주기를 10분에서 약 40분으로 변경",
-          "en": "Changed claude.ai skill syncing to check for changes about every 40 minutes, instead of every 10, while no session is in use"
+          "en": "Changed claude.ai skill syncing to check for changes about every 40 minutes, instead of every 10, while no session is in use",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 3,
           "ko": "에이전트·MCP 서버 목록에서 비ASCII 이름을 ASCII 뒤로 정렬",
-          "en": "Changed the order of agent lists and of MCP servers announced to the model: names with non-ASCII characters now sort after ASCII names"
+          "en": "Changed the order of agent lists and of MCP servers announced to the model: names with non-ASCII characters now sort after ASCII names",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "changed",
           "impact": "internal",
           "weight": 3,
           "ko": "OpenTelemetry `claude_code.at_mention` 이벤트를 프롬프트당 100개로 제한",
-          "en": "Changed OpenTelemetry `claude_code.at_mention` logging to emit at most 100 agent and 100 MCP-resource events each time a prompt is read"
+          "en": "Changed OpenTelemetry `claude_code.at_mention` logging to emit at most 100 agent and 100 MCP-resource events each time a prompt is read",
+          "area": [
+            "other"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 3,
           "ko": "자체 호스팅 러너 오케스트레이터 폴링 간격을 4~6초 무작위로 변경",
-          "en": "Self-hosted runner: Changed the orchestrator to sleep 4 to 6 seconds between polls instead of a constant 5, so several replicas for one environment stop polling at the same moment"
+          "en": "Self-hosted runner: Changed the orchestrator to sleep 4 to 6 seconds between polls instead of a constant 5, so several replicas for one environment stop polling at the same moment",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "Claude in Slack 이 Enterprise Grid 공유 채널을 미설정으로 알리던 문제 수정",
-          "en": "[Claude Tag] Fixed Claude in Slack saying a workspace isn't set up in Enterprise Grid channels shared across workspaces when Slack labels a message with a workspace that isn't connected"
+          "en": "[Claude Tag] Fixed Claude in Slack saying a workspace isn't set up in Enterprise Grid channels shared across workspaces when Slack labels a message with a workspace that isn't connected",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "채널 설정 변경 시 Claude in Slack 이 작업을 중단하던 문제 수정",
-          "en": "[Claude Tag] Fixed Claude in Slack stopping mid-task in a channel when an admin changed the channel's connectors, plugins, skills or rules; the change now applies once Claude finishes"
+          "en": "[Claude Tag] Fixed Claude in Slack stopping mid-task in a channel when an admin changed the channel's connectors, plugins, skills or rules; the change now applies once Claude finishes",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "Slack 스레드의 루틴 즉시 실행이 별도 실행으로 분리되던 문제 수정",
-          "en": "[Claude Tag] Fixed asking Claude in Slack to run a thread's routine now with extra notes starting a separate run that couldn't post back; the run now continues in that thread"
+          "en": "[Claude Tag] Fixed asking Claude in Slack to run a thread's routine now with extra notes starting a separate run that couldn't post back; the run now continues in that thread",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "Claude Tag 관리 설정에서 Google 커넥터가 모두 연결됨으로 보이던 문제 수정",
-          "en": "[Claude Tag] Fixed an access bundle's Add a connector dialog in Claude Tag admin settings showing every Google connector as connected after one Google sign-in"
+          "en": "[Claude Tag] Fixed an access bundle's Add a connector dialog in Claude Tag admin settings showing every Google connector as connected after one Google sign-in",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "improved",
           "impact": "internal",
           "weight": 3,
           "ko": "Claude Tag 관리 설정에 미연결 Enterprise Grid 와 Connect 버튼 표시",
-          "en": "[Claude Tag] Improved Claude Tag admin settings to list an Enterprise Grid that isn't connected yet, with a Connect button"
+          "en": "[Claude Tag] Improved Claude Tag admin settings to list an Enterprise Grid that isn't connected yet, with a Connect button",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "changed",
           "impact": "internal",
           "weight": 3,
           "ko": "Claude in Slack 이 공지 채널에서 소개 글을 올리지 않도록 변경",
-          "en": "[Claude Tag] Changed Claude in Slack to join announcement channels, where only admins can post, without posting its intro"
+          "en": "[Claude Tag] Changed Claude in Slack to join announcement channels, where only admins can post, without posting its intro",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "changed",
           "impact": "internal",
           "weight": 3,
           "ko": "Claude Tag 채널 규칙 상한을 20개에서 50개로 확대",
-          "en": "[Claude Tag] Changed the limit on channel rules in Claude Tag admin settings from 20 to 50 for each workspace and for the organization-wide Slack page"
+          "en": "[Claude Tag] Changed the limit on channel rules in Claude Tag admin settings from 20 to 50 for each workspace and for the organization-wide Slack page",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "improved",
           "impact": "internal",
           "weight": 3,
           "ko": "Code Review 저장소 추가 실패 목록과 이유 표시",
-          "en": "[Code Review] Improved Code Review's Add a repository dialog to list each repository that couldn't be added and why, such as missing GitHub write access"
+          "en": "[Code Review] Improved Code Review's Add a repository dialog to list each repository that couldn't be added and why, such as missing GitHub write access",
+          "area": [
+            "code-review"
+          ]
         }
       ]
     },
