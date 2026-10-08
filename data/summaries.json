@@ -12,14 +12,20 @@
           "impact": "user",
           "weight": 1,
           "ko": "지시문으로 쓴 `prompt`·`agent` 훅이 차단 대상을 통과시키던 문제 수정",
-          "en": "Fixed `prompt` and `agent` hooks written as instructions (such as \"Block commands that...\") allowing what they should block"
+          "en": "Fixed `prompt` and `agent` hooks written as instructions (such as \"Block commands that...\") allowing what they should block",
+          "area": [
+            "hooks"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "Stop·SubagentStop 의 지시문형 `prompt` 훅 판정 개선 — 조기 중단 감소",
-          "en": "Improved how `prompt` hooks on Stop and SubagentStop written as instructions (such as \"Carry on if the build is broken\") are judged, so Claude is less likely to stop early"
+          "en": "Improved how `prompt` hooks on Stop and SubagentStop written as instructions (such as \"Carry on if the build is broken\") are judged, so Claude is less likely to stop early",
+          "area": [
+            "hooks"
+          ]
         }
       ]
     },
