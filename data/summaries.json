@@ -12,357 +12,510 @@
           "impact": "user",
           "weight": 2,
           "ko": "무인 재시도 모드의 사용 한도 대기 상한 `CLAUDE_CODE_RETRY_WATCHDOG_MAX_USAGE_LIMIT_WAIT_MS` 추가",
-          "en": "Added `CLAUDE_CODE_RETRY_WATCHDOG_MAX_USAGE_LIMIT_WAIT_MS` so unattended retry mode (`CLAUDE_CODE_RETRY_WATCHDOG`) ends a request at a usage limit that resets too far away instead of waiting"
+          "en": "Added `CLAUDE_CODE_RETRY_WATCHDOG_MAX_USAGE_LIMIT_WAIT_MS` so unattended retry mode (`CLAUDE_CODE_RETRY_WATCHDOG`) ends a request at a usage limit that resets too far away instead of waiting",
+          "area": [
+            "runtime"
+          ]
         },
         {
           "kind": "added",
           "impact": "internal",
           "weight": 3,
           "ko": "`claude-api` 스킬에 OpenTelemetry 트레이싱 안내 추가",
-          "en": "Added OpenTelemetry tracing guidance to the `claude-api` skill, including setting up trace destinations with the `ant` CLI"
+          "en": "Added OpenTelemetry tracing guidance to the `claude-api` skill, including setting up trace destinations with the `ant` CLI",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 2,
           "ko": "vim 모드에 괄호 짝으로 이동하는 `%` 모션 추가",
-          "en": "Added the `%` motion to vim mode: jump to the matching bracket, alone or with d/c/y"
+          "en": "Added the `%` motion to vim mode: jump to the matching bracket, alone or with d/c/y",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 2,
           "ko": "mod `Input` 에 여러 줄 입력 필드를 만드는 `rows` 추가",
-          "en": "Added `rows` to a mod's `Input`: a text field of several lines in the terminal, where Enter submits and Shift+Enter or a backslash before Enter starts a new line"
+          "en": "Added `rows` to a mod's `Input`: a text field of several lines in the terminal, where Enter submits and Shift+Enter or a backslash before Enter starts a new line",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "added",
           "impact": "internal",
           "weight": 3,
           "ko": "OpenTelemetry `tool_decision` 에 `classifier_verdict`·`permission_mode` 추가",
-          "en": "Added `classifier_verdict` and `permission_mode` to OpenTelemetry `tool_decision` events, so auto mode classifier decisions can be told apart from permission rules"
+          "en": "Added `classifier_verdict` and `permission_mode` to OpenTelemetry `tool_decision` events, so auto mode classifier decisions can be told apart from permission rules",
+          "area": [
+            "other"
+          ]
         },
         {
           "kind": "added",
           "impact": "internal",
           "weight": 3,
           "ko": "OpenTelemetry `tool_decision` 에 `classifier_category` 추가",
-          "en": "Added `classifier_category` to OpenTelemetry `tool_decision` events, naming the built-in rule a classifier block matched, when `OTEL_LOG_TOOL_DETAILS=1`"
+          "en": "Added `classifier_category` to OpenTelemetry `tool_decision` events, naming the built-in rule a classifier block matched, when `OTEL_LOG_TOOL_DETAILS=1`",
+          "area": [
+            "other"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "`WorktreeCreate` 훅이 만든 워크트리가 확인 없이 삭제되던 문제 수정",
-          "en": "Fixed quitting removing a worktree made by a `WorktreeCreate` hook without asking when it may hold unpushed commits"
+          "en": "Fixed quitting removing a worktree made by a `WorktreeCreate` hook without asking when it may hold unpushed commits",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`fable`·`best` 별칭이 조직에 없는 모델에서 오류 나던 문제 수정",
-          "en": "Fixed the `fable` (and `best`) model alias erroring on the Anthropic API when the newest Fable model is not available to your organization: Claude Code now retries once on the previous Fable model"
+          "en": "Fixed the `fable` (and `best`) model alias erroring on the Anthropic API when the newest Fable model is not available to your organization: Claude Code now retries once on the previous Fable model",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "디스크가 꽉 찼을 때 `/login` 오류로 오인되던 문제 수정",
-          "en": "Fixed a misleading \"Please run /login\" error when a full disk keeps the login from being refreshed; the error now names the disk and says to delete files"
+          "en": "Fixed a misleading \"Please run /login\" error when a full disk keeps the login from being refreshed; the error now names the disk and says to delete files",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "Grep·Glob 이 검색 실패를 결과 없음으로 보고하던 문제 수정",
-          "en": "Fixed Grep and Glob reporting no matches when the search program failed unexpectedly before returning any results; they now return an error saying the search failed"
+          "en": "Fixed Grep and Glob reporting no matches when the search program failed unexpectedly before returning any results; they now return an error saying the search failed",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "워크플로 에이전트가 단계를 건너뛰고도 성공으로 보고되던 문제 수정",
-          "en": "Fixed workflow agents sometimes skipping their step, and the run still reporting success, after reading the harness note that their task text carries no user authority"
+          "en": "Fixed workflow agents sometimes skipping their step, and the run still reporting success, after reading the harness note that their task text carries no user authority",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "PreToolUse 훅이 걸린 환경에서 아티팩트 갱신이 거부되던 문제 수정",
-          "en": "Fixed artifact updates being refused where a PreToolUse hook covers Edit or Write; Claude now edits the file and then republishes instead of changing it in the publish call"
+          "en": "Fixed artifact updates being refused where a PreToolUse hook covers Edit or Write; Claude now edits the file and then republishes instead of changing it in the publish call",
+          "area": [
+            "artifacts"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "인자 이름이 많거나 긴 스킬·명령 호출이 멈추던 문제 수정",
-          "en": "Fixed skills and commands with very many or very long argument names stalling for seconds when invoked; only the first 64 names, each up to 64 characters, are now filled in"
+          "en": "Fixed skills and commands with very many or very long argument names stalling for seconds when invoked; only the first 64 names, each up to 64 characters, are now filled in",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "스킬·명령·훅이 인자 치환에서 메모리를 과도하게 쓰던 문제 수정",
-          "en": "Fixed skills, commands and hooks using very large amounts of memory when their arguments fill many placeholders"
+          "en": "Fixed skills, commands and hooks using very large amounts of memory when their arguments fill many placeholders",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "구형 VTE 터미널에서 폴더 신뢰 프롬프트가 깨지던 문제 수정",
-          "en": "Fixed stray characters such as `>0q` covering the folder trust prompt, and `>4m` before the shell prompt at exit, in terminals built on VTE older than 0.53 such as MATE Terminal on RHEL 8"
+          "en": "Fixed stray characters such as `>0q` covering the folder trust prompt, and `>4m` before the shell prompt at exit, in terminals built on VTE older than 0.53 such as MATE Terminal on RHEL 8",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "일부 iTerm2 에서 시작 시 `GOK` 문자가 보이던 문제 수정",
-          "en": "Fixed stray `GOK` text appearing in the prompt at startup in some versions of iTerm2"
+          "en": "Fixed stray `GOK` text appearing in the prompt at startup in some versions of iTerm2",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "Bedrock 이 아닌데 `awsAuthRefresh` 가 실행되던 문제 수정",
-          "en": "Fixed switching to a model whose name contains `application-inference-profile` running your `awsAuthRefresh` command and delaying model-switch hooks when the provider is not Bedrock"
+          "en": "Fixed switching to a model whose name contains `application-inference-profile` running your `awsAuthRefresh` command and delaying model-switch hooks when the provider is not Bedrock",
+          "area": [
+            "providers"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "짧은 명령이 토큰 갱신 중 끝나면 로그아웃되던 문제 수정",
-          "en": "Fixed sign-in refresh timeouts and unexpected sign-outs after a short command such as `claude auth status` or `claude plugin list` exited in the middle of a token refresh"
+          "en": "Fixed sign-in refresh timeouts and unexpected sign-outs after a short command such as `claude auth status` or `claude plugin list` exited in the middle of a token refresh",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "권한 확인 중 끊긴 도구 호출이 사용자 거부로 보고되던 문제 수정",
-          "en": "Fixed a tool call cut off by a message sent mid-turn during its permission check being reported to the model as rejected by the user"
+          "en": "Fixed a tool call cut off by a message sent mid-turn during its permission check being reported to the model as rejected by the user",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "모델 전환이 확인 없이 요약에 사용량을 쓰던 문제 수정",
-          "en": "Fixed a case where switching to a model with a smaller context window could spend usage credits on a summary by the previous model without asking first"
+          "en": "Fixed a case where switching to a model with a smaller context window could spend usage credits on a summary by the previous model without asking first",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "LLM 게이트웨이 뒤에서 대화가 반복해서 압축되던 문제 수정",
-          "en": "Fixed conversations being compacted over and over, on a model you didn't pick, behind an LLM gateway whose responses name a different model than the one requested"
+          "en": "Fixed conversations being compacted over and over, on a model you didn't pick, behind an LLM gateway whose responses name a different model than the one requested",
+          "area": [
+            "providers"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "느린 환경에서 vim 모드가 Escape 후 INSERT 에 남던 문제 수정",
-          "en": "Fixed vim mode sometimes staying in INSERT after Escape on a slow or busy machine"
+          "en": "Fixed vim mode sometimes staying in INSERT after Escape on a slow or busy machine",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "vim 모드에서 Esc 가 입력한 질문 답변을 버리던 문제 수정",
-          "en": "Fixed Esc discarding a typed AskUserQuestion answer in vim mode: the free-text field now supports vim NORMAL mode, and Esc cancels only from NORMAL"
+          "en": "Fixed Esc discarding a typed AskUserQuestion answer in vim mode: the free-text field now supports vim NORMAL mode, and Esc cancels only from NORMAL",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "Read 가 .xlsm·.parquet 등 바이너리를 텍스트로 읽던 문제 수정",
-          "en": "Fixed the Read tool reading binary files such as .xlsm, .parquet, .epub and .heic as text"
+          "en": "Fixed the Read tool reading binary files such as .xlsm, .parquet, .epub and .heic as text",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "헤더만 있는 넓은 Markdown 표가 아무것도 그리지 않던 문제 수정",
-          "en": "Fixed a Markdown table with only a header row drawing nothing when too wide for the terminal, including in plans on the plan approval card"
+          "en": "Fixed a Markdown table with only a header row drawing nothing when too wide for the terminal, including in plans on the plan approval card",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "`/claude-api` 스킬의 AWS CMEK 외부 키 안내 오류 수정",
-          "en": "Fixed the /claude-api skill saying CMEK external-key endpoints aren't available on Claude Platform on AWS"
+          "en": "Fixed the /claude-api skill saying CMEK external-key endpoints aren't available on Claude Platform on AWS",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`/rewind` 후 스킬이 모델에 더 이상 나열되지 않던 문제 수정",
-          "en": "Fixed skills no longer being listed to the model after using `/rewind`"
+          "en": "Fixed skills no longer being listed to the model after using `/rewind`",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "재개 세션의 압축 줄이 없는 기록에 ctrl+o 를 안내하던 문제 수정",
-          "en": "Fixed the compaction row in a resumed session offering ctrl+o for history that is not loaded; it now says where the earlier messages are saved, and also shows in fullscreen"
+          "en": "Fixed the compaction row in a resumed session offering ctrl+o for history that is not loaded; it now says where the earlier messages are saved, and also shows in fullscreen",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "응답을 중단한 직후 `/clear` 안내가 다시 뜨던 문제 수정",
-          "en": "Fixed the \"new task? /clear to save tokens\" hint coming back right after you interrupt a response"
+          "en": "Fixed the \"new task? /clear to save tokens\" hint coming back right after you interrupt a response",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "플러그인·스킬 훅의 권한 프롬프트에 출처가 없던 문제 수정",
-          "en": "Fixed the permission prompt for a plugin or skill hook's `ask` decision not showing which plugin or skill the hook comes from"
+          "en": "Fixed the permission prompt for a plugin or skill hook's `ask` decision not showing which plugin or skill the hook comes from",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "reftable 저장소에서 `/diff` 가 충돌 상태를 놓치던 문제 수정",
-          "en": "Fixed `/diff` not noticing a conflicted cherry-pick or revert in reftable repositories when one of its git checks timed out or failed"
+          "en": "Fixed `/diff` not noticing a conflicted cherry-pick or revert in reftable repositories when one of its git checks timed out or failed",
+          "area": [
+            "other"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "Bash `cd` 후 워크플로 스크립트가 권한을 다시 묻던 문제 수정",
-          "en": "Fixed workflow scripts asking for permission or being refused when read, edited or re-run after a Bash `cd` in the same session"
+          "en": "Fixed workflow scripts asking for permission or being refused when read, edited or re-run after a Bash `cd` in the same session",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "어두운 ANSI 테마·16색 터미널의 흐린 텍스트 표시 수정",
-          "en": "Fixed dim text on the dark ANSI theme and 16-color terminals: faint inside filled boxes, not faint under selection and search highlights, and list descriptions dimmed like other secondary text"
+          "en": "Fixed dim text on the dark ANSI theme and 16-color terminals: faint inside filled boxes, not faint under selection and search highlights, and list descriptions dimmed like other secondary text",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "mod `$.model.fork` 가 첫 응답 전 `nothing-to-fork` 를 내던 문제 수정",
-          "en": "Fixed a mod's `$.model.fork` returning `nothing-to-fork` when called before the first response of a new Claude Code process had finished, as in `claude -p` runs and cloud sessions"
+          "en": "Fixed a mod's `$.model.fork` returning `nothing-to-fork` when called before the first response of a new Claude Code process had finished, as in `claude -p` runs and cloud sessions",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "전체화면에서 압축 중 화면이 잠깐 멈추던 문제 수정",
-          "en": "Fullscreen mode: Fixed `/compact` and auto-compact briefly freezing the UI while the visible transcript is rebuilt"
+          "en": "Fullscreen mode: Fixed `/compact` and auto-compact briefly freezing the UI while the visible transcript is rebuilt",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 3,
           "ko": "셀프호스트 러너: MCP 제한 설정에서 Slack 세션이 저장소를 못 찾던 문제 수정",
-          "en": "Self-hosted runner: Fixed sessions started from Slack being unable to find or attach a repository when managed settings restrict MCP servers; use `deniedMcpServers` to keep those tools off"
+          "en": "Self-hosted runner: Fixed sessions started from Slack being unable to find or attach a repository when managed settings restrict MCP servers; use `deniedMcpServers` to keep those tools off",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 3,
           "ko": "셀프호스트 러너: 세션 실패가 브랜치 삭제로 보고돼 재시도되지 않던 문제 수정",
-          "en": "Self-hosted runner: Fixed sessions being reported as having a deleted source branch, and not retried, when an unrelated setup or session failure quoted git's missing-ref wording"
+          "en": "Self-hosted runner: Fixed sessions being reported as having a deleted source branch, and not retried, when an unrelated setup or session failure quoted git's missing-ref wording",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 3,
           "ko": "셀프호스트 러너: 종료 중인 세션의 재시도를 로그가 약속하던 문제 수정",
-          "en": "Self-hosted runner: Fixed the log promising a retry of a failed or declined session release for a session that is ending; repeated failures now show a count"
+          "en": "Self-hosted runner: Fixed the log promising a retry of a failed or declined session release for a session that is ending; repeated failures now show a count",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "Windows: 중단된 PowerShell 출력에 `[killed]` 줄이 없던 문제 수정",
-          "en": "Windows: Fixed stopped background PowerShell commands missing the closing `[killed]` line in their output file"
+          "en": "Windows: Fixed stopped background PowerShell commands missing the closing `[killed]` line in their output file",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "작은 컨텍스트 모델로 전환 시 이전 모델이 먼저 요약하도록 개선",
-          "en": "Improved switching to a model with a smaller context window: a conversation too long for the new model is now summarized by the previous model first"
+          "en": "Improved switching to a model with a smaller context window: a conversation too long for the new model is now summarized by the previous model first",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "장시간 subagent 진행 표시의 렌더링 성능 개선",
-          "en": "Improved rendering performance while a long-running subagent works: its progress trail now updates incrementally instead of being reprocessed in full on every render"
+          "en": "Improved rendering performance while a long-running subagent works: its progress trail now updates incrementally instead of being reprocessed in full on every render",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "아티팩트가 모바일 앱의 고정 헤더 위 영역을 칠하도록 개선",
-          "en": "Improved artifacts: pages Claude writes now paint the band above a sticky header, so scrolled text no longer shows there in the mobile apps"
+          "en": "Improved artifacts: pages Claude writes now paint the band above a sticky header, so scrolled text no longer shows there in the mobile apps",
+          "area": [
+            "artifacts"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "mod 질문 다이얼로그 트리가 Markdown·48행까지 담도록 개선",
-          "en": "Improved mods: in VS Code and the desktop and mobile apps, a tree drawn above the question dialog can now hold Markdown and up to 48 rows; the terminal keeps 12 plain rows"
+          "en": "Improved mods: in VS Code and the desktop and mobile apps, a tree drawn above the question dialog can now hold Markdown and up to 48 rows; the terminal keeps 12 plain rows",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "mod 훅 `.catch` 가 훅 자체의 실패·시간초과에만 실행되도록 변경",
-          "en": "Changed a mod hook's `.catch` handler to run only when the hook throws or times out; events raised beneath the hook's own calls now skip that hook without asking its `.catch`"
+          "en": "Changed a mod hook's `.catch` handler to run only when the hook throws or times out; events raised beneath the hook's own calls now skip that hook without asking its `.catch`",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "mod `$.env.set` 이 `{}` 또는 거부 이유로 resolve 하도록 변경",
-          "en": "Changed a mod's `$.env.set` to resolve with `{}` once the variable is set or unset, or with `{ deny }` saying why when the write is not made"
+          "en": "Changed a mod's `$.env.set` to resolve with `{}` once the variable is set or unset, or with `{ deny }` saying why when the write is not made",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "added",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 응답의 LaTeX 수식 렌더링 추가",
-          "en": "[VSCode] Added LaTeX math rendering in Claude's responses, including `$$` and multi-line `\\[ … \\]` blocks and inline `$…$` and `\\(…\\)` math"
+          "en": "[VSCode] Added LaTeX math rendering in Claude's responses, including `$$` and multi-line `\\[ … \\]` blocks and inline `$…$` and `\\(…\\)` math",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "added",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 사용 한도 배너에 \"Get more usage\" 링크 추가",
-          "en": "[VSCode] Added a \"Get more usage\" link to the usage-limit banner for Pro and Max plans in the VS Code and JetBrains panels"
+          "en": "[VSCode] Added a \"Get more usage\" link to the usage-limit banner for Pro and Max plans in the VS Code and JetBrains panels",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 패널을 멈추는 대화가 매번 다시 열리던 문제 수정",
-          "en": "[VSCode] Fixed a conversation that crashes or freezes the panel being reopened on every reload"
+          "en": "[VSCode] Fixed a conversation that crashes or freezes the panel being reopened on every reload",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 긴 사고 중 채팅 패널이 느려지던 문제 수정",
-          "en": "[VSCode] Fixed the chat panel slowing down during long thinking: it no longer re-parses the whole thinking text on every update"
+          "en": "[VSCode] Fixed the chat panel slowing down during long thinking: it no longer re-parses the whole thinking text on every update",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 진단에 규칙 코드 대신 `[object Object]` 가 뜨던 문제 수정",
-          "en": "[VSCode] Fixed diagnostics showing \"[object Object]\" instead of the rule code (e.g. MD013) for some language servers"
+          "en": "[VSCode] Fixed diagnostics showing \"[object Object]\" instead of the rule code (e.g. MD013) for some language servers",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 받아쓰기 미제공 환경에서 오디오 모듈을 불러오던 문제 수정",
-          "en": "[VSCode] Fixed the native dictation audio module being loaded, to check microphone permission, where dictation is not offered (non-claude.ai sign-ins, remote windows)"
+          "en": "[VSCode] Fixed the native dictation audio module being loaded, to check microphone permission, where dictation is not offered (non-claude.ai sign-ins, remote windows)",
+          "area": [
+            "ide-desktop"
+          ]
         }
       ]
     },
