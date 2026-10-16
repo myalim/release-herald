@@ -12,441 +12,630 @@
           "impact": "user",
           "weight": 2,
           "ko": "`CLAUDE_CODE_AUTO_MODE_MODEL` 로 클라이언트 측 auto 모드 분류 모델 지정 추가",
-          "en": "Added `CLAUDE_CODE_AUTO_MODE_MODEL` to choose the model the client-side auto mode classifier uses; it does not change the model for server-side auto mode"
+          "en": "Added `CLAUDE_CODE_AUTO_MODE_MODEL` to choose the model the client-side auto mode classifier uses; it does not change the model for server-side auto mode",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 2,
           "ko": "`/config` 에 유휴 압축을 켜고 끄는 `Idle compaction` 항목 추가",
-          "en": "Added an `Idle compaction` row to `/config` for turning idle compaction off or back on; the notices shown after an idle compaction now say how to turn it off"
+          "en": "Added an `Idle compaction` row to `/config` for turning idle compaction off or back on; the notices shown after an idle compaction now say how to turn it off",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 2,
           "ko": "`/design-sync`·`/design-login` 에 2026-12-14 Claude Design 종료 안내 추가",
-          "en": "Added a notice to `/design-sync` and `/design-login` that standalone Claude Design (claude.ai/design) closes by December 14, 2026"
+          "en": "Added a notice to `/design-sync` and `/design-login` that standalone Claude Design (claude.ai/design) closes by December 14, 2026",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "압축 중 턴 중단 시 \"Prompt is too long\" 오류 수정",
-          "en": "Fixed a \"Prompt is too long\" error when stopping a turn while the conversation was being compacted"
+          "en": "Fixed a \"Prompt is too long\" error when stopping a turn while the conversation was being compacted",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "세션 중 Vertex·Bedrock 전환 후 요청 실패 수정",
-          "en": "Fixed requests failing with \"diagnostics: Extra inputs are not permitted\" after switching to Vertex or Bedrock mid-session"
+          "en": "Fixed requests failing with \"diagnostics: Extra inputs are not permitted\" after switching to Vertex or Bedrock mid-session",
+          "area": [
+            "providers"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "`Read` 의 이미지·파이프 무제한 메모리 적재 수정 — 128MB 초과 거부",
-          "en": "Fixed the Read tool loading an image file of any size, or a pipe or device named like an image, entirely into memory; image sources over 128 MB are now refused"
+          "en": "Fixed the Read tool loading an image file of any size, or a pipe or device named like an image, entirely into memory; image sources over 128 MB are now refused",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "게이트웨이 접두어 Opus 4 모델에서 `/autocompact`·`/effort` 저장 오류 수정",
-          "en": "Fixed `/autocompact` and `/effort` saving to the wrong model when a gateway names Opus 4 or 4.1 with a prefix, such as `anthropic/claude-opus-4-1`"
+          "en": "Fixed `/autocompact` and `/effort` saving to the wrong model when a gateway names Opus 4 or 4.1 with a prefix, such as `anthropic/claude-opus-4-1`",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "`ToolSearch`·압축 후 도구 재적재 시 프롬프트 캐시 미스 수정",
-          "en": "Fixed a prompt cache miss when a tool added mid-session was loaded again through ToolSearch or after compaction"
+          "en": "Fixed a prompt cache miss when a tool added mid-session was loaded again through ToolSearch or after compaction",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`claude plugin` 등 종료 시 설정 쓰기 유실·`.tmp` 잔존 수정",
-          "en": "Fixed `claude plugin` and other subcommands sometimes exiting before a queued settings or config write finished, which could lose the change or leave a `.tmp` file behind"
+          "en": "Fixed `claude plugin` and other subcommands sometimes exiting before a queued settings or config write finished, which could lose the change or leave a `.tmp` file behind",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "reftable 환경에서 마켓플레이스 매번 재클론·버전 `unknown` 수정",
-          "en": "Fixed plugin marketplaces re-cloning on every refresh, and newly installed git plugins showing version \"unknown\", when git defaults to the reftable ref format"
+          "en": "Fixed plugin marketplaces re-cloning on every refresh, and newly installed git plugins showing version \"unknown\", when git defaults to the reftable ref format",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "PowerShell 도구의 플러그인 `bin/` 명령 미인식·빈 검색 오류 수정",
-          "en": "Fixed the PowerShell tool not finding commands in a plugin's `bin/` folder, and reporting an error when a search that finds nothing (rg, grep, findstr, git grep) is piped into `Select-Object` or another formatting cmdlet"
+          "en": "Fixed the PowerShell tool not finding commands in a plugin's `bin/` folder, and reporting an error when a search that finds nothing (rg, grep, findstr, git grep) is piped into `Select-Object` or another formatting cmdlet",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "데스크톱 앱에서 MCP 인증을 없는 설정 경로로 안내하던 문제 수정",
-          "en": "Fixed Claude in the desktop app pointing you to claude.ai settings or `/mcp` to authorize or reconnect an MCP server where that option isn't available"
+          "en": "Fixed Claude in the desktop app pointing you to claude.ai settings or `/mcp` to authorize or reconnect an MCP server where that option isn't available",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "빈 편집 목록 아티팩트 발행 실패·버전 거절 후 잘못된 재시도 수정",
-          "en": "Fixed artifact publishes sometimes failing when Claude sent an empty list of edits, and Claude retrying an artifact update the wrong way after a newer version of the artifact turned it away"
+          "en": "Fixed artifact publishes sometimes failing when Claude sent an empty list of edits, and Claude retrying an artifact update the wrong way after a newer version of the artifact turned it away",
+          "area": [
+            "artifacts"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "OpenTelemetry `tool_decision` 속성 누락·밀림 수정",
-          "en": "Fixed `classifier_category` missing from OpenTelemetry `tool_decision` events for most auto mode classifier blocks, and new `tool_decision` attributes pushing out `tool_use_id`, `tool_source` and `tool_parameters` when `OTEL_LOGRECORD_ATTRIBUTE_COUNT_LIMIT` is low"
+          "en": "Fixed `classifier_category` missing from OpenTelemetry `tool_decision` events for most auto mode classifier blocks, and new `tool_decision` attributes pushing out `tool_use_id`, `tool_source` and `tool_parameters` when `OTEL_LOGRECORD_ATTRIBUTE_COUNT_LIMIT` is low",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "에이전트 목록 이동·접기 후 행이 비어 보이던 문제 수정",
-          "en": "Fixed rows in the agents view staying blank after moving down a long list or folding a section"
+          "en": "Fixed rows in the agents view staying blank after moving down a long list or folding a section",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "미로그인 시 `claude remote-control --help` 사용법 미출력 수정",
-          "en": "Fixed `claude remote-control --help` not printing its usage and exiting when not signed in"
+          "en": "Fixed `claude remote-control --help` not printing its usage and exiting when not signed in",
+          "area": [
+            "remote-control"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "클라우드 세션의 `/design consent`·`/design revoke` 실패 안내 수정",
-          "en": "Fixed `/design consent` and `/design revoke` suggesting `/design-login` when they fail in a cloud session, where it isn't available; the message now points to claude.ai/design/settings"
+          "en": "Fixed `/design consent` and `/design revoke` suggesting `/design-login` when they fail in a cloud session, where it isn't available; the message now points to claude.ai/design/settings",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "MCP 프로토콜 2026-07-28 협상 시 도구 없음·호출 전부 실패 수정",
-          "en": "Fixed MCP servers showing no tools, or every tool call failing, when the server negotiates protocol version 2026-07-28 but omits `resultType`, `ttlMs` or `cacheScope`"
+          "en": "Fixed MCP servers showing no tools, or every tool call failing, when the server negotiates protocol version 2026-07-28 but omits `resultType`, `ttlMs` or `cacheScope`",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "크레딧 과금 모델에서 프롬프트 제안이 크레딧을 소모하던 문제 수정",
-          "en": "Fixed prompt suggestions spending usage credits on models your plan pays for only with credits: they are now skipped after a reply billed to credits"
+          "en": "Fixed prompt suggestions spending usage credits on models your plan pays for only with credits: they are now skipped after a reply billed to credits",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "백틱 URL 이 줄바꿈 시 첫 줄만 클릭되던 문제 수정",
-          "en": "Fixed URLs written in backticks being clickable only on their first row when they wrap; the whole URL is now one link in terminals that support hyperlinks"
+          "en": "Fixed URLs written in backticks being clickable only on their first row when they wrap; the whole URL is now one link in terminals that support hyperlinks",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "`claude plugin details <name>@builtin` 미발견 안내 수정",
-          "en": "Fixed `claude plugin details <name>@builtin` suggesting `claude plugin list`, which never shows built-in plugins, when the plugin isn't found; it now points to `/plugin`"
+          "en": "Fixed `claude plugin details <name>@builtin` suggesting `claude plugin list`, which never shows built-in plugins, when the plugin isn't found; it now points to `/plugin`",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "링크 시작 이모지 폭 계산으로 미리보기·표가 깨지던 문제 수정",
-          "en": "Fixed an emoji that a link starts inside wrapping one column too wide, which hid it in question previews and turned tables into lists"
+          "en": "Fixed an emoji that a link starts inside wrapping one column too wide, which hid it in question previews and turned tables into lists",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "git 2.56 이상에서 잘못된 `.git` 파일로 worktree 생성·재개 실패 수정",
-          "en": "Fixed worktree isolation refusing to create or resume worktrees under git 2.56 or later when a stray `.git` file points at a directory that doesn't exist"
+          "en": "Fixed worktree isolation refusing to create or resume worktrees under git 2.56 or later when a stray `.git` file points at a directory that doesn't exist",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "새 프로세스로 재개된 클라우드 세션의 비용·사용량 초기화 수정",
-          "en": "Fixed a cloud session's cost and usage restarting from zero after the session resumed in a new process"
+          "en": "Fixed a cloud session's cost and usage restarting from zero after the session resumed in a new process",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 3,
           "ko": "self-hosted runner 의 reftable 체크아웃 git fetch 실패 수정",
-          "en": "Self-hosted runner: Fixed git fetches failing with \"bad object refs/heads\" in sessions that reuse a checkout stored in git's reftable format"
+          "en": "Self-hosted runner: Fixed git fetches failing with \"bad object refs/heads\" in sessions that reuse a checkout stored in git's reftable format",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "Windows exFAT·FAT32 드라이브에서 모든 파일 쓰기 거부되던 문제 수정",
-          "en": "Windows: Fixed every file write being refused or asked about for projects on exFAT or FAT32 drives, including in sessions started with `--plugin-dir`"
+          "en": "Windows: Fixed every file write being refused or asked about for projects on exFAT or FAT32 drives, including in sessions started with `--plugin-dir`",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "플러그인 많을 때 시작 시간 개선 — 파일 시스템 호출 대폭 감소",
-          "en": "Improved startup time with many plugins enabled: plugin command and agent files now take far fewer file system calls to load, most of all on Windows"
+          "en": "Improved startup time with many plugins enabled: plugin command and agent files now take far fewer file system calls to load, most of all on Windows",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "auto 모드에서 안전 검사 초과 대화를 전부 거부 대신 압축하도록 개선",
-          "en": "Improved auto mode with the server-side classifier: a conversation too long for the safety check is now compacted, instead of every checked tool call being denied"
+          "en": "Improved auto mode with the server-side classifier: a conversation too long for the safety check is now compacted, instead of every checked tool call being denied",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "LLM 게이트웨이 없는 백그라운드 세션 재개 시 안내 개선",
-          "en": "Improved the message when a background session reopened from another folder has no LLM gateway: it now says why, instead of \"Not logged in\""
+          "en": "Improved the message when a background session reopened from another folder has no LLM gateway: it now says why, instead of \"Not logged in\"",
+          "area": [
+            "providers"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "타사 프로바이더·텔레메트리 끔 등에서 `claude -p` 기본 권한 모드 `default` 로 변경",
-          "en": "Changed `claude -p` and Agent SDK sessions with no permission mode to start in `default` mode on third-party providers, with telemetry off or on a fresh install; `--permission-mode auto` keeps auto"
+          "en": "Changed `claude -p` and Agent SDK sessions with no permission mode to start in `default` mode on third-party providers, with telemetry off or on a fresh install; `--permission-mode auto` keeps auto",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "`claude -p`·SDK·데스크톱·VS Code 에서 fork subagent 기본 켜짐으로 변경",
-          "en": "Changed fork subagents (`subagent_type: \"fork\"`) to be on by default in `claude -p`, the Agent SDK, the desktop app and VS Code, as they already are in the terminal; `CLAUDE_CODE_FORK_SUBAGENT=0` turns them off, and `claude mcp serve` never offers them"
+          "en": "Changed fork subagents (`subagent_type: \"fork\"`) to be on by default in `claude -p`, the Agent SDK, the desktop app and VS Code, as they already are in the terminal; `CLAUDE_CODE_FORK_SUBAGENT=0` turns them off, and `claude mcp serve` never offers them",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "데스크톱 앱·VS Code 의 subagent 백그라운드 실행 기본화 변경",
-          "en": "Changed the desktop app and VS Code to always run the main conversation's subagents in the background, as the terminal does, rather than let Claude choose; a subagent's own Agent calls in `claude -p`, the Agent SDK, the desktop app and VS Code now run in the foreground by default"
+          "en": "Changed the desktop app and VS Code to always run the main conversation's subagents in the background, as the terminal does, rather than let Claude choose; a subagent's own Agent calls in `claude -p`, the Agent SDK, the desktop app and VS Code now run in the foreground by default",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 3,
           "ko": "`← for agents` 푸터 힌트 10초 후 숨김으로 변경",
-          "en": "Changed the `← for agents` footer hint to hide 10 seconds after a session opens; the count of agents waiting on you still shows"
+          "en": "Changed the `← for agents` footer hint to hide 10 seconds after a session opens; the count of agents waiting on you still shows",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "changed",
           "impact": "internal",
           "weight": 3,
           "ko": "Claude in Chrome 지시문 위치를 공유 캐시가 닿는 자리로 변경",
-          "en": "Changed where the Claude in Chrome instructions sit in the system prompt so that new conversations can read them from the shared prompt cache"
+          "en": "Changed where the Claude in Chrome instructions sit in the system prompt so that new conversations can read them from the shared prompt cache",
+          "area": [
+            "memory-context"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "프롬프트·에이전트 훅의 동일 이벤트 동시 실행 12개 제한 변경",
-          "en": "Changed prompt and agent hooks so that at most 12 of one event run at a time; the rest wait their turn"
+          "en": "Changed prompt and agent hooks so that at most 12 of one event run at a time; the rest wait their turn",
+          "area": [
+            "hooks"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 3,
           "ko": "`/feedback` 차단 안내를 GitHub 이슈 안내로 변경",
-          "en": "Changed the message shown when your organization's policy turns off `/feedback`: it now points to GitHub issues instead of an organization admin"
+          "en": "Changed the message shown when your organization's policy turns off `/feedback`: it now points to GitHub issues instead of an organization admin",
+          "area": [
+            "other"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "VS Code: 스트리밍 중 미닫힌 코드 블록 뒤 텍스트 표시 수정",
-          "en": "[VSCode] Fixed text after an unclosed code block in a list showing as plain text while a reply streams, then turning into code"
+          "en": "[VSCode] Fixed text after an unclosed code block in a list showing as plain text while a reply streams, then turning into code",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "VS Code: 쿼리 문자열 있는 MCP 서버 로그인 페이지 오류 수정",
-          "en": "[VSCode] Fixed MCP server sign-in from the panel opening a broken authorization page when the server URL contains a query string"
+          "en": "[VSCode] Fixed MCP server sign-in from the panel opening a broken authorization page when the server URL contains a query string",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "VS Code: 브라우저 연결 불가 시 `@browser` 배너 오표시 수정",
-          "en": "[VSCode] Fixed the `@browser` banner saying \"Browser connected\" when no browser with the Claude extension can be reached"
+          "en": "[VSCode] Fixed the `@browser` banner saying \"Browser connected\" when no browser with the Claude extension can be reached",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 2,
           "ko": "클라우드 세션: 루틴 실행 미시작 사유 배너 추가",
-          "en": "[Cloud sessions] Added a banner on a routine's page that says why its last run didn't start, such as your organization reaching its limit on concurrent cloud sessions"
+          "en": "[Cloud sessions] Added a banner on a routine's page that says why its last run didn't start, such as your organization reaching its limit on concurrent cloud sessions",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "클라우드 세션: 최신 외 메시지의 \"Rewind to here\" 실패 수정",
-          "en": "[Cloud sessions] Fixed \"Rewind to here\" failing on every message except the newest in cloud sessions; self-hosted runners need Claude Code v2.1.246 or later"
+          "en": "[Cloud sessions] Fixed \"Rewind to here\" failing on every message except the newest in cloud sessions; self-hosted runners need Claude Code v2.1.246 or later",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "클라우드 세션: 충돌 PR 상태가 준비로 되돌아가던 문제 수정",
-          "en": "[Cloud sessions] Fixed the pull request status bar in cloud sessions flipping a pull request with merge conflicts back to ready while GitHub rechecked it"
+          "en": "[Cloud sessions] Fixed the pull request status bar in cloud sessions flipping a pull request with merge conflicts back to ready while GitHub rechecked it",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "클라우드 세션: 중단·보관된 루틴 실행 상태 오표시 수정",
-          "en": "[Cloud sessions] Fixed routine runs showing as Completed after their cloud session stopped unexpectedly, and as Cancelled when archived before they started, instead of failed"
+          "en": "[Cloud sessions] Fixed routine runs showing as Completed after their cloud session stopped unexpectedly, and as Cancelled when archived before they started, instead of failed",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "클라우드 세션: 저장소 이름 변경 후 diff 누락·로드 실패 수정",
-          "en": "[Cloud sessions] Fixed the diff view in cloud sessions missing changes or failing to load after the session's GitHub repository was renamed or moved"
+          "en": "[Cloud sessions] Fixed the diff view in cloud sessions missing changes or failing to load after the session's GitHub repository was renamed or moved",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "클라우드 세션: 실패한 예약 루틴이 처음부터 재실행되던 문제 수정",
-          "en": "[Cloud sessions] Fixed a scheduled routine run that failed partway being run again from the start an hour or more later, which could repeat work such as posting the same report twice"
+          "en": "[Cloud sessions] Fixed a scheduled routine run that failed partway being run again from the start an hour or more later, which could repeat work such as posting the same report twice",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "클라우드 세션: 다른 기기에서 보낸 메시지 미표시 수정",
-          "en": "[Cloud sessions] Fixed an open cloud session sometimes not showing messages sent from another device until you reloaded the page or clicked away and back"
+          "en": "[Cloud sessions] Fixed an open cloud session sometimes not showing messages sent from another device until you reloaded the page or clicked away and back",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "클라우드 세션: 시작 실패 오류 메시지 개선",
-          "en": "[Cloud sessions] Improved the error shown when a cloud session fails to start: it now says \"Connection lost\" or \"Server error\" instead of \"Something went wrong\""
+          "en": "[Cloud sessions] Improved the error shown when a cloud session fails to start: it now says \"Connection lost\" or \"Server error\" instead of \"Something went wrong\"",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "Remote Control: 오프라인 후 subagent 창이 멈춰 있던 문제 수정",
-          "en": "[Remote Control] Fixed a subagent's pane spinning forever in a Remote Control session after your computer goes offline; it now says Remote Control is disconnected"
+          "en": "[Remote Control] Fixed a subagent's pane spinning forever in a Remote Control session after your computer goes offline; it now says Remote Control is disconnected",
+          "area": [
+            "remote-control"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "Claude Tag: Slack 답변 후 \"is thinking…\" 유지되던 문제 수정",
-          "en": "[Claude Tag] Fixed \"is thinking…\" staying up under a mention in a Slack channel or DM after Claude answered it by editing one of its earlier messages"
+          "en": "[Claude Tag] Fixed \"is thinking…\" staying up under a mention in a Slack channel or DM after Claude answered it by editing one of its earlier messages",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "Claude Tag: Slack 코드 블록 URL 이 꺾쇠로 감싸이던 문제 수정",
-          "en": "[Claude Tag] Fixed URLs in code blocks under a numbered or bulleted step of Claude's Slack replies being wrapped in angle brackets, which broke copied commands"
+          "en": "[Claude Tag] Fixed URLs in code blocks under a numbered or bulleted step of Claude's Slack replies being wrapped in angle brackets, which broke copied commands",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "Claude Tag: Slack 첨부 HEIC·SVG·TIFF·BMP 미전달 수정",
-          "en": "[Claude Tag] Fixed HEIC, SVG, TIFF and BMP images attached in Slack never reaching Claude; they now arrive as files in its working files, like other file types"
+          "en": "[Claude Tag] Fixed HEIC, SVG, TIFF and BMP images attached in Slack never reaching Claude; they now arrive as files in its working files, like other file types",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "Claude Tag: 신규 채널 관리자 Slack 접근 권한 수정",
-          "en": "[Claude Tag] Fixed new channel managers losing access to Claude in Slack in organizations that restrict Claude Tag by role; the manager role now also grants Claude Tag in Slack"
+          "en": "[Claude Tag] Fixed new channel managers losing access to Claude in Slack in organizations that restrict Claude Tag by role; the manager role now also grants Claude Tag in Slack",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "Claude Tag: 같은 호스트 커스텀 커넥터가 하나로 묶이던 문제 수정",
-          "en": "[Claude Tag] Fixed custom connectors whose MCP servers share one host showing as a single connector in Claude Tag admin settings; each server is now its own connector"
+          "en": "[Claude Tag] Fixed custom connectors whose MCP servers share one host showing as a single connector in Claude Tag admin settings; each server is now its own connector",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "Claude Tag: Slack 조회 지연 시 DM 누락 수정 — 재시도 추가",
-          "en": "[Claude Tag] Fixed Claude in Slack sometimes answering a direct message with \"DMs are temporarily unavailable\" and dropping it when a single Slack lookup stalled; it now retries first"
+          "en": "[Claude Tag] Fixed Claude in Slack sometimes answering a direct message with \"DMs are temporarily unavailable\" and dropping it when a single Slack lookup stalled; it now retries first",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "Claude Tag: Enterprise Grid DM 의 워크스페이스 선택 수정",
-          "en": "[Claude Tag] Fixed direct messages with Claude on a Slack Enterprise Grid ignoring Slack's workspace dropdown; they now run under the connected workspace you last opened Claude in"
+          "en": "[Claude Tag] Fixed direct messages with Claude on a Slack Enterprise Grid ignoring Slack's workspace dropdown; they now run under the connected workspace you last opened Claude in",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "Claude Tag: 채널 지출 한도 안내의 담당자·링크 수정",
-          "en": "[Claude Tag] Fixed Claude in Slack's notice for a channel's monthly spend limit saying a channel manager can raise it; it now names an organization owner and links the usage page"
+          "en": "[Claude Tag] Fixed Claude in Slack's notice for a channel's monthly spend limit saying a channel manager can raise it; it now names an organization owner and links the usage page",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "Claude Tag: Slack 링크가 뒤 서식 문자를 삼키던 문제 수정",
-          "en": "[Claude Tag] Fixed links in Claude's Slack replies absorbing the closing bold or italic marks, or full-width punctuation, right after them, which broke the link and the formatting"
+          "en": "[Claude Tag] Fixed links in Claude's Slack replies absorbing the closing bold or italic marks, or full-width punctuation, right after them, which broke the link and the formatting",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "improved",
           "impact": "internal",
           "weight": 3,
           "ko": "Claude Tag: 관리 설정 저장소 검색 범위 개선",
-          "en": "[Claude Tag] Improved repository search in Claude Tag admin settings to cover up to 100 connected GitHub accounts and find private repositories past the first 5,000 of a GitHub App install"
+          "en": "[Claude Tag] Improved repository search in Claude Tag admin settings to cover up to 100 connected GitHub accounts and find private repositories past the first 5,000 of a GitHub App install",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "improved",
           "impact": "internal",
           "weight": 3,
           "ko": "Claude Tag: 관리 설정 Add place 즉시 입력 반영 개선",
-          "en": "[Claude Tag] Improved Add place in Claude Tag admin settings to list a channel you type or paste right away, instead of only after your organization's full channel list has loaded"
+          "en": "[Claude Tag] Improved Add place in Claude Tag admin settings to list a channel you type or paste right away, instead of only after your organization's full channel list has loaded",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "improved",
           "impact": "internal",
           "weight": 3,
           "ko": "Claude Tag: 관리 설정 Add > Domain 즉시 사용 개선",
-          "en": "[Claude Tag] Improved Add > Domain on a workspace's or channel's page in Claude Tag admin settings to be available once that page loads, not only after every channel has loaded"
+          "en": "[Claude Tag] Improved Add > Domain on a workspace's or channel's page in Claude Tag admin settings to be available once that page loads, not only after every channel has loaded",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "changed",
           "impact": "internal",
           "weight": 3,
           "ko": "Claude Tag: 관리 설정을 4개 탭 구성으로 변경",
-          "en": "[Claude Tag] Changed Claude Tag admin settings to organize Claude's access into four tabs: Bundles, Connectors, Skills and plugins, and Channels"
+          "en": "[Claude Tag] Changed Claude Tag admin settings to organize Claude's access into four tabs: Bundles, Connectors, Skills and plugins, and Channels",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "changed",
           "impact": "internal",
           "weight": 3,
           "ko": "Claude Tag: 조직 설정 역할 페이지 그룹화 변경",
-          "en": "[Claude Tag] Changed the Roles page in organization settings to group the roles created for Claude Tag channel managers in a collapsed section below your organization's own roles"
+          "en": "[Claude Tag] Changed the Roles page in organization settings to group the roles created for Claude Tag channel managers in a collapsed section below your organization's own roles",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "Code Review: GitHub 연결 후 설정 재개 위치 수정",
-          "en": "[Code Review] Fixed Code Review setup not resuming after you leave to connect GitHub; back in admin settings, it now reopens at the repository picker"
+          "en": "[Code Review] Fixed Code Review setup not resuming after you leave to connect GitHub; back in admin settings, it now reopens at the repository picker",
+          "area": [
+            "code-review"
+          ]
         }
       ]
     },
