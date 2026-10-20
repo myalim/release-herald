@@ -12,266 +12,380 @@
           "impact": "user",
           "weight": 1,
           "ko": "`sandbox.allowNestedUserNamespaces` 추가 — 샌드박스 파일 보호 우회 허용",
-          "en": "Added `sandbox.allowNestedUserNamespaces` so sandboxed commands on Linux can create user namespaces (Chromium, rootless podman); this lets them get around the sandbox's file protections"
+          "en": "Added `sandbox.allowNestedUserNamespaces` so sandboxed commands on Linux can create user namespaces (Chromium, rootless podman); this lets them get around the sandbox's file protections",
+          "area": [
+            "sandbox"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 2,
           "ko": "`CLAUDE_CODE_RETRY_WATCHDOG_USAGE_LIMIT_RECHECK_MS` 추가 — 제한 해제 재확인",
-          "en": "Added `CLAUDE_CODE_RETRY_WATCHDOG_USAGE_LIMIT_RECHECK_MS` so unattended retry mode (`CLAUDE_CODE_RETRY_WATCHDOG`) notices a usage limit that was lifted before its reset"
+          "en": "Added `CLAUDE_CODE_RETRY_WATCHDOG_USAGE_LIMIT_RECHECK_MS` so unattended retry mode (`CLAUDE_CODE_RETRY_WATCHDOG`) notices a usage limit that was lifted before its reset",
+          "area": [
+            "runtime"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 2,
           "ko": "Vertex·Bedrock·게이트웨이에서 tool search 거부 시 전체 요청 실패 수정 (2.1.304 회귀)",
-          "en": "Fixed every request failing on Vertex, Bedrock and other providers when the endpoint or a gateway rejects tool search, and behind gateways with ToolSearch disallowed or left out of `--tools` (a 2.1.304 regression): Claude Code now retries without it"
+          "en": "Fixed every request failing on Vertex, Bedrock and other providers when the endpoint or a gateway rejects tool search, and behind gateways with ToolSearch disallowed or left out of `--tools` (a 2.1.304 regression): Claude Code now retries without it",
+          "area": [
+            "providers"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "모델명 대소문자·`[1m]` 차이로 `/effort`·`/autocompact` 설정 미적용 수정",
-          "en": "Fixed `/effort` and `/autocompact` settings not applying when the model name differed from a `modelOverrides` value by letter case or a `[1m]` tag"
+          "en": "Fixed `/effort` and `/autocompact` settings not applying when the model name differed from a `modelOverrides` value by letter case or a `[1m]` tag",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "베어 저장소 worktree 가 기본 브랜치 아닌 로컬 HEAD 에서 시작하던 문제 수정",
-          "en": "Fixed new worktrees in a bare repository sometimes starting from local HEAD instead of the default branch, and unchanged subagent worktrees sometimes not being cleaned up"
+          "en": "Fixed new worktrees in a bare repository sometimes starting from local HEAD instead of the default branch, and unchanged subagent worktrees sometimes not being cleaned up",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "디스크 꽉 찼을 때 Bash 오류가 `ENOSPC` 경로만 보이던 문제 수정",
-          "en": "Fixed Bash commands on a full disk failing with a raw `ENOSPC` file path: the error now says the disk is full and that nothing ran"
+          "en": "Fixed Bash commands on a full disk failing with a raw `ENOSPC` file path: the error now says the disk is full and that nothing ran",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "클라우드 세션·SDK 가 넘긴 MCP 서버가 동명 설정으로 교체되던 문제 수정",
-          "en": "Fixed an MCP server passed by a cloud session or by the SDK's `setMcpServers` being replaced later in the session by a same-named server from your own settings"
+          "en": "Fixed an MCP server passed by a cloud session or by the SDK's `setMcpServers` being replaced later in the session by a same-named server from your own settings",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "서브에이전트가 폴백 모델로 바뀐 뒤 모델명을 잘못 말하던 문제 수정",
-          "en": "Fixed Claude naming the wrong model for a subagent's work after the subagent switched to a fallback model"
+          "en": "Fixed Claude naming the wrong model for a subagent's work after the subagent switched to a fallback model",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "컴팩션이 가장 오래된 메시지를 빠뜨린 사실을 Claude 에게 알리지 않던 문제 수정",
-          "en": "Fixed cloud sessions and teammates not telling Claude when a compaction had to leave the oldest messages out of its summary to fit"
+          "en": "Fixed cloud sessions and teammates not telling Claude when a compaction had to leave the oldest messages out of its summary to fit",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "예약 Cowork 세션이 subagent WebFetch URL 승인을 5분씩 기다리던 문제 수정",
-          "en": "Fixed more cases of scheduled Cowork cloud sessions waiting five minutes for each subagent whose WebFetch needed a URL approval that nobody was there to give"
+          "en": "Fixed more cases of scheduled Cowork cloud sessions waiting five minutes for each subagent whose WebFetch needed a URL approval that nobody was there to give",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "Workflow 재개가 완료된 `pipeline()`·`parallel()` 에이전트를 다시 실행하던 문제 수정",
-          "en": "Fixed Workflow resume re-running already-completed `pipeline()` and `parallel()` agents instead of serving them from the run's journal"
+          "en": "Fixed Workflow resume re-running already-completed `pipeline()` and `parallel()` agents instead of serving them from the run's journal",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "Remote Control 로 대화 전환 후 `/resume` 에 빈 항목이 남던 문제 수정",
-          "en": "Fixed Remote Control leaving empty \"(session)\" entries in `/resume` after switching conversations with `/resume`"
+          "en": "Fixed Remote Control leaving empty \"(session)\" entries in `/resume` after switching conversations with `/resume`",
+          "area": [
+            "remote-control"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "좁은 터미널에서 `/usage` 행이 잘리던 문제 수정",
-          "en": "Fixed `/usage` rows being cut off in narrow terminals"
+          "en": "Fixed `/usage` rows being cut off in narrow terminals",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "시작 경고가 로고 위 원문으로 뜨던 문제 수정 — 디버그 로그로 이동",
-          "en": "Fixed startup warnings printing as raw text above the logo: they now go to the debug log, and permission rules that restrict nothing show as warning rows under the banner"
+          "en": "Fixed startup warnings printing as raw text above the logo: they now go to the debug log, and permission rules that restrict nothing show as warning rows under the banner",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "스크린 리더 모드 수정 — 검색창 라벨, 강조 텍스트 단어 내 공백 제거",
-          "en": "Fixed screen reader mode: search boxes now say \"Search:\" instead of a symbol VoiceOver read as \"telephone recorder\", and highlighted prompt text, such as Ctrl+R search matches and \"ultrathink\", no longer has spaces inside words"
+          "en": "Fixed screen reader mode: search boxes now say \"Search:\" instead of a symbol VoiceOver read as \"telephone recorder\", and highlighted prompt text, such as Ctrl+R search matches and \"ultrathink\", no longer has spaces inside words",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 3,
           "ko": "셀프호스트 러너: `TERM` 설정 시 시작 스크립트 실패 수정 (2.1.300 회귀)",
-          "en": "Self-hosted runner: Fixed a start script that shares only its stdout with the runner or orchestrator failing with `Resource temporarily unavailable` when `TERM` is set (a 2.1.300 regression)"
+          "en": "Self-hosted runner: Fixed a start script that shares only its stdout with the runner or orchestrator failing with `Resource temporarily unavailable` when `TERM` is set (a 2.1.300 regression)",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 3,
           "ko": "셀프호스트 러너: `GIT_CONFIG` 경유 자격증명 설정 시 저장소 접근 실패 수정",
-          "en": "Self-hosted runner: Fixed repository access failing since 2.1.296 when a git credential helper or askpass program reads its settings through `GIT_CONFIG`"
+          "en": "Self-hosted runner: Fixed repository access failing since 2.1.296 when a git credential helper or askpass program reads its settings through `GIT_CONFIG`",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 3,
           "ko": "셀프호스트 러너: 백그라운드 러너의 spawn 훅이 타임아웃으로 보고되던 문제 수정",
-          "en": "Self-hosted runner: Fixed the orchestrator reporting a spawn-runner hook as timed out when a runner it started in the background kept its output open"
+          "en": "Self-hosted runner: Fixed the orchestrator reporting a spawn-runner hook as timed out when a runner it started in the background kept its output open",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "`/usage` 경고를 원인별 한 줄 해결책으로 바꾸고 `f` 로 일괄 적용 추가",
-          "en": "Improved `/usage`: each warning is now a one-line fix that names its source, and `f` applies the fixes; the same fixes appear in VS Code and `/doctor`"
+          "en": "Improved `/usage`: each warning is now a one-line fix that names its source, and `f` applies the fixes; the same fixes appear in VS Code and `/doctor`",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 1,
           "ko": "MCP 동의 창에서 Enter 가 수락으로 처리되던 문제 개선",
-          "en": "Improved MCP consent dialogs so an Enter meant for the prompt is less likely to be taken as Accept"
+          "en": "Improved MCP consent dialogs so an Enter meant for the prompt is less likely to be taken as Accept",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "iTerm2 3.5+ 전체화면에서 플러그인 `Image` 가 `alt` 만 보이던 문제 수정",
-          "en": "Improved a mod's `Image` to draw its picture in iTerm2 3.5 and later with fullscreen rendering, where it showed only its `alt` text"
+          "en": "Improved a mod's `Image` to draw its picture in iTerm2 3.5 and later with fullscreen rendering, where it showed only its `alt` text",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "Remote Control 스폰 모드 저장·출처 안내 메시지 개선",
-          "en": "Remote Control: Improved the spawn-mode messages: pressing `w` now says the new mode is saved for the folder, and a later `claude remote-control` start that uses the saved mode says where it came from"
+          "en": "Remote Control: Improved the spawn-mode messages: pressing `w` now says the new mode is saved for the folder, and a later `claude remote-control` start that uses the saved mode says where it came from",
+          "area": [
+            "remote-control"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "`allowedMcpServers` 허용 목록에서 빠진 `${VAR}` stdio 서버가 업그레이드 시 로드됨",
-          "en": "Changed `allowedMcpServers` to stop filtering `managed-mcp.json` stdio servers that use `${VAR}` only in `env`: one your allowlist left out now loads on upgrade; use `deniedMcpServers` to keep it off"
+          "en": "Changed `allowedMcpServers` to stop filtering `managed-mcp.json` stdio servers that use `${VAR}` only in `env`: one your allowlist left out now loads on upgrade; use `deniedMcpServers` to keep it off",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "changed",
           "impact": "internal",
           "weight": 2,
           "ko": "조직 `allowManagedPermissionRulesOnly` 시 경로 플러그인 `allowed-tools` 무효화",
-          "en": "Changed plugins that Claude Desktop mounts by path to no longer keep their `allowed-tools` when your organization's managed settings set `allowManagedPermissionRulesOnly`"
+          "en": "Changed plugins that Claude Desktop mounts by path to no longer keep their `allowed-tools` when your organization's managed settings set `allowManagedPermissionRulesOnly`",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "`/artifacts` 삭제 확인이 1·Enter 유지, 2 삭제, Esc 취소로 변경 — `y`·`n` 무효",
-          "en": "Changed the `/artifacts` delete confirmation to take 1 or Enter to keep, 2 to delete, and Esc to cancel; `y` and `n` no longer answer it"
+          "en": "Changed the `/artifacts` delete confirmation to take 1 or Enter to keep, 2 to delete, and Esc to cancel; `y` and `n` no longer answer it",
+          "area": [
+            "artifacts"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 3,
           "ko": "플러그인 도킹 패널 폭을 터미널 45% 이내로 제한",
-          "en": "Changed a mod's docked pane to stay within 45% of the terminal's width, including a width kept from a wider terminal"
+          "en": "Changed a mod's docked pane to stay within 45% of the terminal's width, including a width kept from a wider terminal",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 3,
           "ko": "[VSCode] SessionStart·Setup 훅 실행 중 스피너 상태 표시 추가",
-          "en": "[VSCode] Added a \"Running start-up hooks\" spinner status, with a screen reader announcement, while SessionStart or Setup hooks run"
+          "en": "[VSCode] Added a \"Running start-up hooks\" spinner status, with a screen reader announcement, while SessionStart or Setup hooks run",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "[VSCode] `spinnerVerbs` 가 짧을 때 \"Compacting...\" 이 잘리던 문제 수정",
-          "en": "[VSCode] Fixed the spinner cutting off \"Compacting...\" when your `spinnerVerbs` setting replaces the built-in verbs with short ones"
+          "en": "[VSCode] Fixed the spinner cutting off \"Compacting...\" when your `spinnerVerbs` setting replaces the built-in verbs with short ones",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 3,
           "ko": "[VSCode] 세션 시작 지연 메시지를 출력 로그·원인 중심으로 변경",
-          "en": "[VSCode] Changed the message shown when a session does not start in time and no hook is running: it now leads with the output logs and lists causes instead of pointing to sign-in and network first"
+          "en": "[VSCode] Changed the message shown when a session does not start in time and no hook is running: it now leads with the output logs and lists causes instead of pointing to sign-in and network first",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[클라우드 세션] 기존 환경 저장이 패키지 설치 오류로 거부되던 문제 수정",
-          "en": "[Cloud sessions] Fixed the Cloud environments admin page wrongly refusing to save an existing environment with an \"installs packages\" error"
+          "en": "[Cloud sessions] Fixed the Cloud environments admin page wrongly refusing to save an existing environment with an \"installs packages\" error",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "improved",
           "impact": "internal",
           "weight": 3,
           "ko": "[클라우드 세션] 셀프호스트 환경 삭제 시 차단 원인·영향 안내 개선",
-          "en": "[Cloud sessions] Improved deleting a self-hosted environment so the dialog and error messages say what blocks the delete and what it will affect"
+          "en": "[Cloud sessions] Improved deleting a self-hosted environment so the dialog and error messages say what blocks the delete and what it will affect",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "added",
           "impact": "internal",
           "weight": 3,
           "ko": "[Claude Tag] 관리자 장소 검색에 미가입 공개 Slack 채널 추가",
-          "en": "[Claude Tag] Added public Slack channels Claude hasn't joined to the Claude Tag admin Add place search, so admins can set one up from there"
+          "en": "[Claude Tag] Added public Slack channels Claude hasn't joined to the Claude Tag admin Add place search, so admins can set one up from there",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[Claude Tag] 다른 GitHub 계정으로 이전된 저장소 재추가 수정",
-          "en": "[Claude Tag] Fixed Claude Tag access bundles so a repository that moved to another GitHub account can be added again"
+          "en": "[Claude Tag] Fixed Claude Tag access bundles so a repository that moved to another GitHub account can be added again",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "[Claude Tag] Slack DM 스레드 루틴이 대화 재시작 후 못 올리던 문제 수정",
-          "en": "[Claude Tag] Fixed a routine set up in a Slack DM thread no longer posting after another routine in that thread restarted the conversation; both now keep posting there"
+          "en": "[Claude Tag] Fixed a routine set up in a Slack DM thread no longer posting after another routine in that thread restarted the conversation; both now keep posting there",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "[Claude Tag] 대화 종료 후 게시 없이 성공 보고하던 루틴을 건너뛰고 알림",
-          "en": "[Claude Tag] Fixed routines set up in a Slack thread reporting success without posting after the conversation ended; those runs are now skipped and the creator is told"
+          "en": "[Claude Tag] Fixed routines set up in a Slack thread reporting success without posting after the conversation ended; those runs are now skipped and the creator is told",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "improved",
           "impact": "internal",
           "weight": 3,
           "ko": "[Claude Tag] 대규모 조직 관리자 페이지에서 채널 로딩 중 편집 가능하도록 개선",
-          "en": "[Claude Tag] Improved Claude Tag admin pages in large organizations so plugin, skill and bundle edits work while the channel list is still loading"
+          "en": "[Claude Tag] Improved Claude Tag admin pages in large organizations so plugin, skill and bundle edits work while the channel list is still loading",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "[Code Review] 리뷰 중 여러 푸시가 들어오면 최신 커밋을 빠뜨리던 문제 수정",
-          "en": "[Code Review] Fixed Code Review sometimes not reviewing the newest commit when several pushes landed on a pull request during a review"
+          "en": "[Code Review] Fixed Code Review sometimes not reviewing the newest commit when several pushes landed on a pull request during a review",
+          "area": [
+            "code-review"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "[Code Review] 블로킹 지적이 남은 재리뷰에서 LGTM 로 시작하지 않도록 변경",
-          "en": "[Code Review] Changed Code Review re-reviews so they no longer open with LGTM while earlier blocking findings are still open"
+          "en": "[Code Review] Changed Code Review re-reviews so they no longer open with LGTM while earlier blocking findings are still open",
+          "area": [
+            "code-review"
+          ]
         }
       ]
     },
