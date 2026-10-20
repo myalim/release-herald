@@ -12,532 +12,760 @@
           "impact": "user",
           "weight": 2,
           "ko": "먼저 실행된 플러그인이 모드 훅을 건너뛸 때 이벤트·플러그인명 트랜스크립트 표시 추가",
-          "en": "Added a transcript line when a plugin that runs first skips one of your mod's hooks, naming the event and the plugin"
+          "en": "Added a transcript line when a plugin that runs first skips one of your mod's hooks, naming the event and the plugin",
+          "area": [
+            "hooks"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 1,
           "ko": "모드 `tool.check` 응답에 사람만 승인할 수 있는 `decider: \"person\"` 추가",
-          "en": "Added `decider: \"person\"` to a mod's `tool.check` answer: only the permission dialog or a host's callback can approve the ask, and it is refused with the mod's reason where nobody can be asked"
+          "en": "Added `decider: \"person\"` to a mod's `tool.check` answer: only the permission dialog or a host's callback can approve the ask, and it is refused with the mod's reason where nobody can be asked",
+          "area": [
+            "hooks"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 2,
           "ko": "모드 `tool.check` 이벤트에 읽기 전용 여부 `e.isReadOnly` 추가",
-          "en": "Added `e.isReadOnly` to a mod's `tool.check` event, set when the tool call is read-only"
+          "en": "Added `e.isReadOnly` to a mod's `tool.check` event, set when the tool call is read-only",
+          "area": [
+            "hooks"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 2,
           "ko": "`/auto-mode-setup` 추가 — 프로젝트·최근 세션을 읽어 자동 모드 환경 설정",
-          "en": "Added `/auto-mode-setup`: a guided setup that reads your project and recent sessions to teach auto mode about your environment, now also available on Bedrock, Vertex, Foundry, Claude apps gateway and telemetry-disabled sessions"
+          "en": "Added `/auto-mode-setup`: a guided setup that reads your project and recent sessions to teach auto mode about your environment, now also available on Bedrock, Vertex, Foundry, Claude apps gateway and telemetry-disabled sessions",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "added",
           "impact": "internal",
           "weight": 3,
           "ko": "Managed Agents 설정을 보안 가이드와 대조하는 `/claude-api managed-agents-secure` 추가",
-          "en": "Added `/claude-api managed-agents-secure`, which compares a Managed Agents agent's settings with Anthropic's published security guide, without changing anything"
+          "en": "Added `/claude-api managed-agents-secure`, which compares a Managed Agents agent's settings with Anthropic's published security guide, without changing anything",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 2,
           "ko": "트랜스크립트 뷰(Ctrl+O) 압축 요약에 앞서 호출된 도구 이름 추가",
-          "en": "Added the names of the tools called earlier to the compaction summary in the transcript view (Ctrl+O)"
+          "en": "Added the names of the tools called earlier to the compaction summary in the transcript view (Ctrl+O)",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 2,
           "ko": "Pro·Max 에서 비활성 대화 재개가 5시간 한도를 크게 쓸 때 경고 추가",
-          "en": "Added a warning on Pro and Max plans when resuming an inactive conversation would use a noticeable share of your 5-hour usage limit: resume anyway, or start a new conversation and Claude can look up the previous one if you refer to it"
+          "en": "Added a warning on Pro and Max plans when resuming an inactive conversation would use a noticeable share of your 5-hour usage limit: resume anyway, or start a new conversation and Claude can look up the previous one if you refer to it",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "`ANTHROPIC_API_KEY` 승인·커스텀 키 전환 후 조직 정책이 갱신되지 않던 문제 수정",
-          "en": "Fixed the organization policy not refreshing until the hourly check after approving an `ANTHROPIC_API_KEY` at startup or switching \"Use custom API key\" in `/config`"
+          "en": "Fixed the organization policy not refreshing until the hourly check after approving an `ANTHROPIC_API_KEY` at startup or switching \"Use custom API key\" in `/config`",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "리눅스에서 `sandbox.filesystem.denyRead` 글롭의 대괄호로 샌드박스 실행이 실패하던 문제 수정",
-          "en": "Fixed sandboxed commands failing to start on Linux when a `sandbox.filesystem.denyRead` glob contains brackets that are not a character class, such as a `[user-id]` route folder"
+          "en": "Fixed sandboxed commands failing to start on Linux when a `sandbox.filesystem.denyRead` glob contains brackets that are not a character class, such as a `[user-id]` route folder",
+          "area": [
+            "sandbox"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "마운트 드라이브 최상위 `rm -r` 에 안전 확인 프롬프트가 뜨지 않던 문제 수정",
-          "en": "Fixed `rm -r` of a mounted drive or a folder at its top level (`/Volumes`, `/media`, WSL's `/mnt/c`) not getting the safety prompt that `rm -rf /Applications` gets"
+          "en": "Fixed `rm -r` of a mounted drive or a folder at its top level (`/Volumes`, `/media`, WSL's `/mnt/c`) not getting the safety prompt that `rm -rf /Applications` gets",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "디스크가 가득 찰 때 `CLAUDE_CODE_TRANSCRIPT_LOCAL_GC` 가 메시지를 잃던 문제 수정",
-          "en": "Fixed `CLAUDE_CODE_TRANSCRIPT_LOCAL_GC` dropping messages from the saved transcript when the disk filled up while the file was being trimmed"
+          "en": "Fixed `CLAUDE_CODE_TRANSCRIPT_LOCAL_GC` dropping messages from the saved transcript when the disk filled up while the file was being trimmed",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "플러그인이 `--max-turns`·Stop 이후에도 헤드리스 실행을 이어가던 문제 수정",
-          "en": "Fixed a plugin keeping a headless run going past `--max-turns`, Stop, or ended input by spawning subagents or re-running a finished one"
+          "en": "Fixed a plugin keeping a headless run going past `--max-turns`, Stop, or ended input by spawning subagents or re-running a finished one",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "모드 리로드 실패 시 남아 있는 버전의 도구·명령이 사라지던 문제 수정",
-          "en": "Fixed a failed mod reload removing the tools and commands of the version that stays loaded, and its messages being wrong or silent about whether the previous version is still loaded"
+          "en": "Fixed a failed mod reload removing the tools and commands of the version that stays loaded, and its messages being wrong or silent about whether the previous version is still loaded",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "같은 라벨에 `key` 없는 모드 버튼의 클릭이 사라지던 문제 수정",
-          "en": "Fixed a click on a mod's button being lost when buttons with the same label and no `key` were redrawn unchanged"
+          "en": "Fixed a click on a mod's button being lost when buttons with the same label and no `key` were redrawn unchanged",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "관리 설정·Team·Enterprise 에서 모드 공유가 비밀 검사에서 멈추던 문제 수정",
-          "en": "Fixed mod sharing in the built-in `plugin-authoring` skill stopping at the secret scan on machines with managed settings and on Team and Enterprise plans"
+          "en": "Fixed mod sharing in the built-in `plugin-authoring` skill stopping at the secret scan on machines with managed settings and on Team and Enterprise plans",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "예약 Cowork 세션이 subagent 의 WebFetch 승인 대기로 5분씩 멈추던 문제 수정",
-          "en": "Fixed scheduled Cowork cloud sessions waiting five minutes again for each subagent whose WebFetch needed a URL approval that nobody was there to give"
+          "en": "Fixed scheduled Cowork cloud sessions waiting five minutes again for each subagent whose WebFetch needed a URL approval that nobody was there to give",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "작업 디렉터리 밖 파일이 `../../…` 로 표시되던 문제 수정",
-          "en": "Fixed Write results and rejected edits showing a file outside the working directory as `../../…`; they now show `~/…` or the full path"
+          "en": "Fixed Write results and rejected edits showing a file outside the working directory as `../../…`; they now show `~/…` or the full path",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "클라우드 세션 \"/\" 메뉴에서 Directory 플러그인 스킬이 실행되지 않던 문제 수정",
-          "en": "Fixed a claude.ai Directory plugin's skills not running as commands when picked from the \"/\" menu in Cowork cloud sessions"
+          "en": "Fixed a claude.ai Directory plugin's skills not running as commands when picked from the \"/\" menu in Cowork cloud sessions",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "터미널에 다른 계정이 로그인되면 Remote Control 이 대화 기록을 영영 막던 문제 수정",
-          "en": "Fixed Remote Control permanently withholding a desktop conversation's history when a different account was signed in to the terminal"
+          "en": "Fixed Remote Control permanently withholding a desktop conversation's history when a different account was signed in to the terminal",
+          "area": [
+            "remote-control"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`DISABLE_TELEMETRY`·`DO_NOT_TRACK` 설정 시 Remote Control 이 시작되지 않던 문제 수정",
-          "en": "Fixed Remote Control failing to start from Claude Desktop when DISABLE_TELEMETRY or DO_NOT_TRACK is set on a paid plan"
+          "en": "Fixed Remote Control failing to start from Claude Desktop when DISABLE_TELEMETRY or DO_NOT_TRACK is set on a paid plan",
+          "area": [
+            "remote-control"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "컨텍스트 사용량 확인에 모델 전환·메시지·중단이 밀리던 문제 수정",
-          "en": "Fixed model switches, messages and interrupts waiting behind a context usage check in SDK and desktop sessions"
+          "en": "Fixed model switches, messages and interrupts waiting behind a context usage check in SDK and desktop sessions",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "LLM 게이트웨이에서 `context_management` 오류가 나던 문제 수정",
-          "en": "Fixed `context_management: Extra inputs are not permitted` errors behind LLM gateways; Claude Code now resends the request without that field"
+          "en": "Fixed `context_management: Extra inputs are not permitted` errors behind LLM gateways; Claude Code now resends the request without that field",
+          "area": [
+            "providers"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "서버 관리 설정의 OpenTelemetry 설정이 세션 내내 무시되던 문제 수정",
-          "en": "Fixed OpenTelemetry settings delivered through server-managed settings being ignored for the whole session after signing in during first-run setup or the first start after /logout"
+          "en": "Fixed OpenTelemetry settings delivered through server-managed settings being ignored for the whole session after signing in during first-run setup or the first start after /logout",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "Claude Desktop Code 탭의 Bash 가 `~/.zshrc` 환경 변수를 못 보던 문제 수정",
-          "en": "Fixed unsandboxed Bash commands in Claude Desktop Code tab sessions on macOS and Linux not seeing environment variables exported in shell startup files such as ~/.zshrc"
+          "en": "Fixed unsandboxed Bash commands in Claude Desktop Code tab sessions on macOS and Linux not seeing environment variables exported in shell startup files such as ~/.zshrc",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "서버 오류 후 Consumer Terms 안내가 하루 이상 생략되던 문제 수정",
-          "en": "Fixed the Consumer Terms notice being skipped for a day or longer after a server error"
+          "en": "Fixed the Consumer Terms notice being skipped for a day or longer after a server error",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "오류 후 `/privacy-settings` 가 적용되지 않는 선택지를 띄우던 문제 수정",
-          "en": "Fixed `/privacy-settings` offering choices that may not apply to you after a network or server error"
+          "en": "Fixed `/privacy-settings` offering choices that may not apply to you after a network or server error",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "압축 중 턴을 멈추면 \"Context limit reached\" 오류가 나던 문제 수정",
-          "en": "Fixed a \"Context limit reached\" or \"Prompt is too long\" error after stopping a turn while Claude Code was compacting a conversation the API had rejected as too long"
+          "en": "Fixed a \"Context limit reached\" or \"Prompt is too long\" error after stopping a turn while Claude Code was compacting a conversation the API had rejected as too long",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "subagent 가 종료 직후 재개·메시지 수신 시 최근 작업을 잊던 문제 수정",
-          "en": "Fixed subagents sometimes forgetting their most recent work when they were messaged or resumed right after finishing"
+          "en": "Fixed subagents sometimes forgetting their most recent work when they were messaged or resumed right after finishing",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "`claude --help` 의 `--tools`·`--resume` 등 설명을 실제 동작에 맞게 수정",
-          "en": "Fixed `claude --help` text for `--tools`, `--resume`, `--debug`, `--json-schema`, `--disable-slash-commands`, `--system-prompt-snapshot` and `claude update` to match actual behavior"
+          "en": "Fixed `claude --help` text for `--tools`, `--resume`, `--debug`, `--json-schema`, `--disable-slash-commands`, `--system-prompt-snapshot` and `claude update` to match actual behavior",
+          "area": [
+            "runtime"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "`claude --worktree` 가 확인 없이 워크트리·브랜치를 지워 커밋을 잃던 문제 수정",
-          "en": "Fixed `claude --worktree` removing the worktree and its branch without asking at exit when HEAD was detached or on another branch, which could lose commits"
+          "en": "Fixed `claude --worktree` removing the worktree and its branch without asking at exit when HEAD was detached or on another branch, which could lose commits",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "플러그인 리로드마다 스킬 목록 전체를 다시 보내던 문제 수정",
-          "en": "Fixed resumed and cloud sessions sending Claude the whole skill list again each time plugins reloaded at startup"
+          "en": "Fixed resumed and cloud sessions sending Claude the whole skill list again each time plugins reloaded at startup",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "유휴 파이프·장치를 읽는 Read 가 중단되지 않던 문제 수정",
-          "en": "Fixed an interrupt not ending a Read that waits on an idle pipe or device named like an image"
+          "en": "Fixed an interrupt not ending a Read that waits on an idle pipe or device named like an image",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "`CLAUDE_CODE_EFFORT_LEVEL` 이 `auto` 일 때 `/effort` 가 추측값을 보이던 문제 수정",
-          "en": "Fixed `/effort status`, `/effort ultracode` and the prompt's effort indicator showing a guessed effort level when `CLAUDE_CODE_EFFORT_LEVEL` is `auto` or `unset` and no level is sent"
+          "en": "Fixed `/effort status`, `/effort ultracode` and the prompt's effort indicator showing a guessed effort level when `CLAUDE_CODE_EFFORT_LEVEL` is `auto` or `unset` and no level is sent",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "콜백 훅 타임아웃이 PreToolUse 훅의 거부 사유를 덮어쓰던 문제 수정",
-          "en": "Fixed a PreToolUse hook's deny reason being replaced by a timeout error when an Agent SDK callback hook on the same tool call timed out"
+          "en": "Fixed a PreToolUse hook's deny reason being replaced by a timeout error when an Agent SDK callback hook on the same tool call timed out",
+          "area": [
+            "hooks"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "출력 파일 복사에 실패하면 Bash·PowerShell 이 그 파일을 지우던 문제 수정",
-          "en": "Fixed Bash and PowerShell deleting a large command's output file when it could not be copied to the session's tool-results folder, unless the disk is full"
+          "en": "Fixed Bash and PowerShell deleting a large command's output file when it could not be copied to the session's tool-results folder, unless the disk is full",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "100열 미만 터미널에서 객관식 질문에 입력한 메모가 잘리던 문제 수정",
-          "en": "Fixed notes typed into a multiple-choice question with previews being cut off with \"…\" in terminals under about 100 columns, hiding what was typed (#82768)"
+          "en": "Fixed notes typed into a multiple-choice question with previews being cut off with \"…\" in terminals under about 100 columns, hiding what was typed (#82768)",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`/loop` 자기조절 깨우기가 1시간 프롬프트 캐시 만료 직후 실행되던 문제 수정",
-          "en": "Fixed self-paced `/loop` wakeups scheduled at the 1-hour maximum firing just after the 1-hour prompt cache expired, so those wakeups no longer re-read the conversation uncached"
+          "en": "Fixed self-paced `/loop` wakeups scheduled at the 1-hour maximum firing just after the 1-hour prompt cache expired, so those wakeups no longer re-read the conversation uncached",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "에이전트 팀 종료 요청을 승인하면 CLI 전체가 종료되던 문제 수정",
-          "en": "Fixed agent teams: approving a shutdown request from the main session no longer exits the whole CLI"
+          "en": "Fixed agent teams: approving a shutdown request from the main session no longer exits the whole CLI",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "스킬의 `once` 훅이 다른 스킬의 동일한 훅까지 제거하던 문제 수정",
-          "en": "Fixed a skill's `once` hook also removing another skill's identical hook after it ran"
+          "en": "Fixed a skill's `once` hook also removing another skill's identical hook after it ran",
+          "area": [
+            "hooks"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "트랜스크립트 모드의 `{`·`}` 가 프롬프트를 엉뚱한 행에 놓던 문제 수정",
-          "en": "Fixed transcript mode's `{` and `}` landing the prompt on an inconsistent row, or off screen, instead of the transcript's first row"
+          "en": "Fixed transcript mode's `{` and `}` landing the prompt on an inconsistent row, or off screen, instead of the transcript's first row",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`CLAUDE_CODE_AUTO_COMPACT_WINDOW` 가 `k`·`M` 접미사를 받도록 수정",
-          "en": "Fixed `CLAUDE_CODE_AUTO_COMPACT_WINDOW=200k` silently setting a 100K window: the variable now accepts `k` and `M` suffixes like `--autocompact`, and warns when a value is out of range or ignored"
+          "en": "Fixed `CLAUDE_CODE_AUTO_COMPACT_WINDOW=200k` silently setting a 100K window: the variable now accepts `k` and `M` suffixes like `--autocompact`, and warns when a value is out of range or ignored",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "에이전트 뷰에서 Ctrl+C 가 복사 없이 선택을 지우던 문제 수정",
-          "en": "Fixed Ctrl+C in the agents view clearing a text selection without copying it when pressed before the mouse button was released"
+          "en": "Fixed Ctrl+C in the agents view clearing a text selection without copying it when pressed before the mouse button was released",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "`/usage` 가 사용량 조회 제한이 끝나는 시점을 알리도록 개선",
-          "en": "Improved `/usage` to say when a rate limit on usage data ends instead of \"try again in a moment\""
+          "en": "Improved `/usage` to say when a rate limit on usage data ends instead of \"try again in a moment\"",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "세션에서 작성한 모드의 로드·리로드·실패 표시 개선",
-          "en": "Improved the lines shown when a mod written in the session loads, reloads or fails to load"
+          "en": "Improved the lines shown when a mod written in the session loads, reloads or fails to load",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "여러 뷰가 있는 아티팩트의 뷰별 링크 안내 개선",
-          "en": "Improved artifacts with several views: when you ask for links to them, Claude now writes out each view's link and explains that the address bar stays the same as you switch views"
+          "en": "Improved artifacts with several views: when you ask for links to them, Claude now writes out each view's link and explains that the address bar stays the same as you switch views",
+          "area": [
+            "artifacts"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "클라우드 세션 첫 턴이 플러그인 로컬 MCP 서버를 기다리지 않도록 개선",
-          "en": "Improved cloud sessions: a new conversation's first turn no longer waits for the local (stdio) MCP servers of plugins synced from claude.ai, unless a server sets `alwaysLoad: true`"
+          "en": "Improved cloud sessions: a new conversation's first turn no longer waits for the local (stdio) MCP servers of plugins synced from claude.ai, unless a server sets `alwaysLoad: true`",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "서버가 상태 갱신을 거부할 때 원격 세션의 상태 복구 개선",
-          "en": "Improved how a remote session recovers its status when the server refuses a status update that carried other session data"
+          "en": "Improved how a remote session recovers its status when the server refuses a status update that carried other session data",
+          "area": [
+            "remote-control"
+          ]
         },
         {
           "kind": "improved",
           "impact": "internal",
           "weight": 3,
           "ko": "자동 모드에서 안전 분류기 컨텍스트를 빼 세션 파일 크기 개선",
-          "en": "Improved session file size in auto mode: the safety classifier's context is no longer stored with every request"
+          "en": "Improved session file size in auto mode: the safety classifier's context is no longer stored with every request",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "`claude -p` 의 잘못된 설정 경고를 원인 위주로 개선",
-          "en": "Improved the `claude -p` invalid-settings warning: a file that did not load lists only what stopped it, and long lists are capped per file"
+          "en": "Improved the `claude -p` invalid-settings warning: a file that did not load lists only what stopped it, and long lists are capped per file",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "improved",
           "impact": "internal",
           "weight": 3,
           "ko": "SDK·헤드리스에서 큰 압축 세션의 재개 속도 개선",
-          "en": "Improved resume of large compacted sessions in SDK and headless mode: the first request after resuming is sent sooner"
+          "en": "Improved resume of large compacted sessions in SDK and headless mode: the first request after resuming is sent sooner",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "subagent 다수 동시 실행 시 응답성·처리량 개선",
-          "en": "Improved responsiveness and throughput when many subagents are running at the same time"
+          "en": "Improved responsiveness and throughput when many subagents are running at the same time",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "improved",
           "impact": "internal",
           "weight": 3,
           "ko": "길거나 재개된 대화에서 요청 전송 시 메모리 사용 개선",
-          "en": "Improved memory use when sending requests in long or resumed conversations"
+          "en": "Improved memory use when sending requests in long or resumed conversations",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 3,
           "ko": "셀프호스트 러너에서 저장소 \"not found\" 오류 메시지 개선",
-          "en": "Self-hosted runner: Improved the error shown when the git host answers \"not found\" for a session's repository: it now names the repository and whom to ask"
+          "en": "Self-hosted runner: Improved the error shown when the git host answers \"not found\" for a session's repository: it now names the repository and whom to ask",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "Windows 에서 `git.exe` 직접 실행으로 git 시작 속도 개선",
-          "en": "Windows: Improved git command start-up with a standard Git for Windows install by running its git.exe directly instead of through its cmd launcher"
+          "en": "Windows: Improved git command start-up with a standard Git for Windows install by running its git.exe directly instead of through its cmd launcher",
+          "area": [
+            "runtime"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "모드 `settings.read` 훅이 설정 레이어별로 받아 병합 설정을 재작성하도록 변경",
-          "en": "Changed mods' `settings.read` hooks to receive each settings layer and rewrite the merged settings, so a managed mod can make an organization's setting a ceiling, including the `cleanupPeriodDays` the retention sweep uses"
+          "en": "Changed mods' `settings.read` hooks to receive each settings layer and rewrite the merged settings, so a managed mod can make an organization's setting a ceiling, including the `cleanupPeriodDays` the retention sweep uses",
+          "area": [
+            "hooks"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 3,
           "ko": "`/artifacts` 삭제 확인을 번호 선택지로 변경",
-          "en": "Changed the `/artifacts` delete confirmation to show numbered choices: 1 or Enter keeps the artifact, 2 deletes it, and y, n and Esc still work"
+          "en": "Changed the `/artifacts` delete confirmation to show numbered choices: 1 or Enter keeps the artifact, 2 deletes it, and y, n and Esc still work",
+          "area": [
+            "artifacts"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "세션 작성 모드 활성화 질문을 링크·세션 id 없는 평문으로 변경",
-          "en": "Changed the question that turns on the mods Claude writes in a session to plain text with no link or session id; it stays up when a new turn starts, and Claude tells you what loaded when you turn them on"
+          "en": "Changed the question that turns on the mods Claude writes in a session to plain text with no link or session id; it stays up when a new turn starts, and Claude tells you what loaded when you turn them on",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "changed",
           "impact": "internal",
           "weight": 3,
           "ko": "커스텀 `ANTHROPIC_BASE_URL` 에서 도구 검색 기본 활성화로 변경",
-          "en": "Changed tool search to be on by default behind a custom `ANTHROPIC_BASE_URL`; a 400 or 422 from the gateway is retried without it"
+          "en": "Changed tool search to be on by default behind a custom `ANTHROPIC_BASE_URL`; a 400 or 422 from the gateway is retried without it",
+          "area": [
+            "providers"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "압축 후 스킬 목록을 Claude 에 다시 보내도록 변경",
-          "en": "Changed compaction to send Claude the skill list again afterwards; `/reload-skills` now sends only new or changed skills"
+          "en": "Changed compaction to send Claude the skill list again afterwards; `/reload-skills` now sends only new or changed skills",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "스킬 훅을 소스당 세션 1,024개·매처 16,384자로 제한",
-          "en": "Changed skill hooks: the skills of one source (a repo, your own folder, or a plugin) can register at most 1,024 hooks and 16,384 matcher characters per session"
+          "en": "Changed skill hooks: the skills of one source (a repo, your own folder, or a plugin) can register at most 1,024 hooks and 16,384 matcher characters per session",
+          "area": [
+            "hooks"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "훅이 빠진 스킬에는 `allowed-tools` 가 적용되지 않도록 변경",
-          "en": "Changed skills under a policy that allows hooks from plugins only: a skill used in the main conversation whose hooks are kept out no longer gets its `allowed-tools`"
+          "en": "Changed skills under a policy that allows hooks from plugins only: a skill used in the main conversation whose hooks are kept out no longer gets its `allowed-tools`",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 3,
           "ko": "`/claude-api` 스킬이 AWS 의 Claude Platform 에서 `ant` CLI 를 쓰도록 변경",
-          "en": "Updated the /claude-api skill to use the `ant` CLI on Claude Platform on AWS instead of falling back to the SDK or curl"
+          "en": "Updated the /claude-api skill to use the `ant` CLI on Claude Platform on AWS instead of falling back to the SDK or curl",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "other",
           "impact": "user",
           "weight": 3,
           "ko": "`claude plugin validate` 의 모드 훅 실행 위치 예측 안내 제거",
-          "en": "Removed the notes from `claude plugin validate` that predicted where a mod's hooks would run"
+          "en": "Removed the notes from `claude plugin validate` that predicted where a mod's hooks would run",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "other",
           "impact": "user",
           "weight": 3,
           "ko": "Opus 5.5 `/fast` 대화상자의 \"(research preview)\" 라벨 제거",
-          "en": "Removed the \"(research preview)\" label from the `/fast` dialog title on Opus 5.5"
+          "en": "Removed the \"(research preview)\" label from the `/fast` dialog title on Opus 5.5",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "added",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] Bedrock·Vertex·Foundry 등에서 채팅 패널 모드 그리기 추가",
-          "en": "[VSCode] Added mod drawing in the chat panel for sessions on Amazon Bedrock, Google Vertex AI and Microsoft Foundry, behind an LLM gateway, or with telemetry turned off"
+          "en": "[VSCode] Added mod drawing in the chat panel for sessions on Amazon Bedrock, Google Vertex AI and Microsoft Foundry, behind an LLM gateway, or with telemetry turned off",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] SessionStart 훅 시간이 세션 시작 제한에 포함되던 문제 수정",
-          "en": "[VSCode] Fixed one cause of sessions failing to start with \"Subprocess initialization did not complete within 60000ms\": time a SessionStart command hook spends running no longer counts toward the limit, up to 10 minutes in total"
+          "en": "[VSCode] Fixed one cause of sessions failing to start with \"Subprocess initialization did not complete within 60000ms\": time a SessionStart command hook spends running no longer counts toward the limit, up to 10 minutes in total",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 시작 중 닫은 세션의 프로세스가 계속 남던 문제 수정",
-          "en": "[VSCode] Fixed a session closed while it was starting keeping its Claude Code process running until the start ended"
+          "en": "[VSCode] Fixed a session closed while it was starting keeping its Claude Code process running until the start ended",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 구버전 병행 설치 시 모드 그림이 사라지던 문제 수정",
-          "en": "[VSCode] Fixed a mod's drawings disappearing from a long-open panel until the next turn on machines that also run an older Claude Code"
+          "en": "[VSCode] Fixed a mod's drawings disappearing from a long-open panel until the next turn on machines that also run an older Claude Code",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] `claudeCode.claudeProcessWrapper` 설정 시 지난 대화가 숨겨지던 문제 수정",
-          "en": "[VSCode] Fixed Past conversations hiding sessions when `claudeCode.claudeProcessWrapper` is set"
+          "en": "[VSCode] Fixed Past conversations hiding sessions when `claudeCode.claudeProcessWrapper` is set",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "changed",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 백그라운드 subagent 를 Agent 카드의 상태 한 줄로 변경",
-          "en": "[VSCode] Changed background sub-agents to show as one status line under their Agent card instead of streaming every step into the chat; the full transcript stays in /tasks"
+          "en": "[VSCode] Changed background sub-agents to show as one status line under their Agent card instead of streaming every step into the chat; the full transcript stays in /tasks",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "[클라우드 세션] 작성창 @ 목록의 폴더 이름이 비어 있던 문제 수정",
-          "en": "[Cloud sessions] Fixed folders in the composer's @ list showing no name in cloud sessions, where picking one added only a space instead of a mention"
+          "en": "[Cloud sessions] Fixed folders in the composer's @ list showing no name in cloud sessions, where picking one added only a space instead of a mention",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[Claude Tag] Enterprise Grid 공유 채널에서 Claude 가 침묵하던 문제 수정",
-          "en": "[Claude Tag] Fixed Claude going silent in a thread when its channel becomes shared across Enterprise Grid workspaces mid-task; it now posts a one-time note to @-mention it in a new thread"
+          "en": "[Claude Tag] Fixed Claude going silent in a thread when its channel becomes shared across Enterprise Grid workspaces mid-task; it now posts a one-time note to @-mention it in a new thread",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[Claude Tag] 스레드 밖 `@Claude !fork` 에 응답이 없던 문제 수정",
-          "en": "[Claude Tag] Fixed `@Claude !fork` typed outside a thread getting no visible reply; Claude now shows you a private note saying to run it from inside a thread"
+          "en": "[Claude Tag] Fixed `@Claude !fork` typed outside a thread getting no visible reply; Claude now shows you a private note saying to run it from inside a thread",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "added",
           "impact": "internal",
           "weight": 3,
           "ko": "[Code Review] 조직·저장소별 리뷰 수준(Quick·Standard·Deep) 추가",
-          "en": "[Code Review] Added review levels to Code Review: Owners choose Quick, Standard (the default), or Deep for the organization, and can give individual repositories their own level"
+          "en": "[Code Review] Added review levels to Code Review: Owners choose Quick, Standard (the default), or Deep for the organization, and can give individual repositories their own level",
+          "area": [
+            "code-review"
+          ]
         },
         {
           "kind": "added",
           "impact": "internal",
           "weight": 3,
           "ko": "[Code Review] GitHub 조직의 모든 저장소를 리뷰하는 설정 추가",
-          "en": "[Code Review] Added an option in Code Review admin settings to review every repository in a GitHub organization, including ones added later, without selecting them one by one"
+          "en": "[Code Review] Added an option in Code Review admin settings to review every repository in a GitHub organization, including ones added later, without selecting them one by one",
+          "area": [
+            "code-review"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[Code Review] 활성화 직후 열린 PR 이 건너뛰어지던 문제 수정",
-          "en": "[Code Review] Fixed pull requests opened within a minute or two of an admin turning on Code Review being silently skipped; they are now retried and reviewed"
+          "en": "[Code Review] Fixed pull requests opened within a minute or two of an admin turning on Code Review being silently skipped; they are now retried and reviewed",
+          "area": [
+            "code-review"
+          ]
         }
       ]
     },
