@@ -1,7 +1,28 @@
 {
   "schema": 1,
-  "generated": "2026-10-20T23:45:40Z",
+  "generated": "2026-10-21T03:59:38Z",
   "releases": [
+    {
+      "version": "v2.1.306",
+      "date": "2026-10-21",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.306",
+      "items": [
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "클라우드 세션에서 `claude -p` 가 \"Not logged in\" 으로 실패하던 문제 수정",
+          "en": "Fixed `claude -p` inside cloud sessions reporting \"Not logged in\" when started without the session's environment variables"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "MCP 도구가 많은 세션에서 API 오류가 \"prompt is too long\" 으로 바뀌던 문제 수정",
+          "en": "Fixed an API error being replaced by \"prompt is too long\", and an unneeded compaction, in sessions with many MCP tools"
+        }
+      ]
+    },
     {
       "version": "v2.1.305",
       "date": "2026-10-20",
