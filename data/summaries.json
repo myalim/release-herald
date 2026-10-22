@@ -12,301 +12,430 @@
           "impact": "user",
           "weight": 2,
           "ko": "`/claude-api api-version` 추가 — API 버전 `2026-10-21` 로 코드 이전",
-          "en": "Added `/claude-api api-version` to move Claude API code to API version `2026-10-21`"
+          "en": "Added `/claude-api api-version` to move Claude API code to API version `2026-10-21`",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "added",
           "impact": "internal",
           "weight": 3,
           "ko": "권한·훅·샌드박스가 막은 도구 호출의 `claude_code.safety_event` 이벤트 추가",
-          "en": "Added the `claude_code.safety_event` OpenTelemetry event for each tool call a permission rule, auto mode, a safety check, a hook or the sandbox stopped, prompted or sent back"
+          "en": "Added the `claude_code.safety_event` OpenTelemetry event for each tool call a permission rule, auto mode, a safety check, a hook or the sandbox stopped, prompted or sent back",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`CLAUDE_CODE_DISABLE_1M_CONTEXT` 와 `opus[1m]` 별칭 조합의 요청 실패 수정",
-          "en": "Fixed requests failing with a model-not-found error when `CLAUDE_CODE_DISABLE_1M_CONTEXT` is set and the model is an alias with the `[1m]` suffix, such as `opus[1m]`"
+          "en": "Fixed requests failing with a model-not-found error when `CLAUDE_CODE_DISABLE_1M_CONTEXT` is set and the model is an alias with the `[1m]` suffix, such as `opus[1m]`",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "커스텀 게이트웨이·Foundry 에서 `prompt-caching-scope` 헤더 전송 수정",
-          "en": "Fixed the `prompt-caching-scope` beta header being sent behind custom `ANTHROPIC_BASE_URL` gateways and on Foundry, where it has no effect"
+          "en": "Fixed the `prompt-caching-scope` beta header being sent behind custom `ANTHROPIC_BASE_URL` gateways and on Foundry, where it has no effect",
+          "area": [
+            "providers"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "macOS 키체인 잠김 상태의 `claude -p` 에서 MCP 인증 오류 표시 수정",
-          "en": "Fixed MCP servers showing \"needs authentication\" in `claude -p` on macOS while the login keychain was locked; they now say why, and the next run after an unlock connects without a new sign-in"
+          "en": "Fixed MCP servers showing \"needs authentication\" in `claude -p` on macOS while the login keychain was locked; they now say why, and the next run after an unlock connects without a new sign-in",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "절전 중 연결하던 MCP 서버가 시간 초과로 실패 상태에 남던 문제 수정",
-          "en": "Fixed MCP servers being reported as timed out, and staying failed in headless runs, when a macOS or Linux computer went to sleep while they were connecting"
+          "en": "Fixed MCP servers being reported as timed out, and staying failed in headless runs, when a macOS or Linux computer went to sleep while they were connecting",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "연결이 끊길 때 HTTP MCP 도구 호출이 두 번 전송되던 문제 수정",
-          "en": "Fixed HTTP MCP tool calls being sent twice when the connection closed mid-call; only read-only or idempotent tools are now retried"
+          "en": "Fixed HTTP MCP tool calls being sent twice when the connection closed mid-call; only read-only or idempotent tools are now retried",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "백그라운드 작업 중 SDK MCP 서버의 최신 도구가 빠지던 문제 수정",
-          "en": "Fixed a turn sometimes starting without an SDK MCP server's latest tools when a background task was running"
+          "en": "Fixed a turn sometimes starting without an SDK MCP server's latest tools when a background task was running",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "PDF·이미지 등 큰 결과를 읽은 턴의 `Autocompact is thrashing` 오류 수정",
-          "en": "Fixed some \"Autocompact is thrashing\" errors in turns that read many PDF pages, images or other large tool results"
+          "en": "Fixed some \"Autocompact is thrashing\" errors in turns that read many PDF pages, images or other large tool results",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "클라우드 세션 재시작 후 `/autocompact` 가 기본값으로 돌아가던 문제 수정",
-          "en": "Fixed `/autocompact` in cloud sessions going back to the default window after the session restarted"
+          "en": "Fixed `/autocompact` in cloud sessions going back to the default window after the session restarted",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "클라우드·자체 호스팅 세션 재시작 후 `/clear` 한 대화가 되살아나던 문제 수정",
-          "en": "Fixed a conversation cleared with `/clear` sometimes coming back when a cloud or self-hosted runner session restarted"
+          "en": "Fixed a conversation cleared with `/clear` sometimes coming back when a cloud or self-hosted runner session restarted",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "Claude 앱 게이트웨이 세션에서 `CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS` 무시 수정",
-          "en": "Fixed `CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS` being ignored in Claude apps gateway sessions"
+          "en": "Fixed `CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS` being ignored in Claude apps gateway sessions",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "Claude 앱 게이트웨이 뒤 데스크톱 세션의 텔레메트리가 거부되던 문제 수정",
-          "en": "Fixed telemetry from Claude Desktop sessions behind a Claude apps gateway being rejected when `OTEL_EXPORTER_OTLP_HEADERS` is set"
+          "en": "Fixed telemetry from Claude Desktop sessions behind a Claude apps gateway being rejected when `OTEL_EXPORTER_OTLP_HEADERS` is set",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "`/permissions` 최근 거부에 명령이 표시되지 않고 승인이 무시되던 문제 수정",
-          "en": "Fixed `/permissions` > Recently denied not showing the denied shell command, and auto mode's local classifier ignoring an approval from there when it checks a retried command; approving a row now names the command, not its description"
+          "en": "Fixed `/permissions` > Recently denied not showing the denied shell command, and auto mode's local classifier ignoring an approval from there when it checks a retried command; approving a row now names the command, not its description",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "`/help` 와 명령 메뉴가 번들 스킬의 긴 설명을 표시하던 문제 수정",
-          "en": "Fixed `/help` and the `/` command menu showing long model-facing descriptions for bundled skills such as `/claude-api` instead of their short descriptions"
+          "en": "Fixed `/help` and the `/` command menu showing long model-facing descriptions for bundled skills such as `/claude-api` instead of their short descriptions",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "subagent 트랜스크립트의 토큰 사용량·종료 이유가 비어 있던 문제 수정",
-          "en": "Fixed subagent transcripts recording placeholder token usage and an empty stop reason for streamed responses"
+          "en": "Fixed subagent transcripts recording placeholder token usage and an empty stop reason for streamed responses",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "Agent SDK `setModel()` 의 모델 전환 거부 수정 — 대기 15초로 연장",
-          "en": "Fixed model switches through the Agent SDK's `setModel()`, and apps built on it, being refused when the API took more than 5 seconds to confirm the model; Claude Code now waits up to 15 seconds"
+          "en": "Fixed model switches through the Agent SDK's `setModel()`, and apps built on it, being refused when the API took more than 5 seconds to confirm the model; Claude Code now waits up to 15 seconds",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "연결된 앱이 중지한 백그라운드 명령이 사용자 중지로 보고되던 문제 수정",
-          "en": "Fixed a background command stopped through a connected app (such as the desktop app archiving an idle session) being reported to Claude as stopped by the user; the notice now names its output file"
+          "en": "Fixed a background command stopped through a connected app (such as the desktop app archiving an idle session) being reported to Claude as stopped by the user; the notice now names its output file",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "Cowork 클라우드 세션의 WebFetch 가 4xx·robots.txt 거부를 오류로 보고하던 문제 수정",
-          "en": "Fixed WebFetch in Cowork cloud sessions reporting a tool error when a site answered with a 4xx status or a robots.txt refusal; it is now a normal result, as in local sessions"
+          "en": "Fixed WebFetch in Cowork cloud sessions reporting a tool error when a site answered with a 4xx status or a robots.txt refusal; it is now a normal result, as in local sessions",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "데스크톱 Code 탭에서 GitHub MCP 쓰기 양식이 빈 채로 닫히던 문제 수정",
-          "en": "Fixed write tools on a directly configured GitHub MCP server showing a form that closed without creating anything in the desktop app's Code tab"
+          "en": "Fixed write tools on a directly configured GitHub MCP server showing a form that closed without creating anything in the desktop app's Code tab",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "재사용 연결이 닫혔을 때 Artifact 도구 읽기가 실패하던 문제 수정",
-          "en": "Fixed Artifact tool reads failing with a connection reset when the server had closed a reused connection"
+          "en": "Fixed Artifact tool reads failing with a connection reset when the server had closed a reused connection",
+          "area": [
+            "artifacts"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 3,
           "ko": "자체 호스팅 러너: 이전 세션이 남긴 `.claude/settings.local.json` 커밋 수정",
-          "en": "Self-hosted runner: Fixed sessions with `--use-anthropic-git-proxy` committing a `.claude/settings.local.json` left in the clone by an earlier session"
+          "en": "Self-hosted runner: Fixed sessions with `--use-anthropic-git-proxy` committing a `.claude/settings.local.json` left in the clone by an earlier session",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 3,
           "ko": "자체 호스팅 러너: 체크아웃 훅 중단 시 프로세스·슬롯이 남던 문제 수정",
-          "en": "Self-hosted runner: Fixed archiving or requeueing a session, or stopping the runner, during its checkout hook leaving the hook's processes running and the runner's slot held"
+          "en": "Self-hosted runner: Fixed archiving or requeueing a session, or stopping the runner, during its checkout hook leaving the hook's processes running and the runner's slot held",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "파싱 불가 도구 호출을 두 번까지 재시도하도록 복구 개선",
-          "en": "Improved recovery from unparseable tool calls: Claude Code now retries the call up to twice before ending the turn with an error"
+          "en": "Improved recovery from unparseable tool calls: Claude Code now retries the call up to twice before ending the turn with an error",
+          "area": [
+            "runtime"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "함께 실행된 fork subagent 가 서로의 작업을 시작하지 않도록 개선",
-          "en": "Improved fork subagents launched together: each is now told which launch is its own, so forks are much less likely to try to start each other's work"
+          "en": "Improved fork subagents launched together: each is now told which launch is its own, so forks are much less likely to try to start each other's work",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "브라우저 로그인 성공 화면이 프로필 로드 전에 표시되도록 개선",
-          "en": "Improved browser sign-in: the success page now appears as soon as sign-in completes, without waiting for your account profile to load"
+          "en": "Improved browser sign-in: the success page now appears as soon as sign-in completes, without waiting for your account profile to load",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "클라우드·자체 호스팅 세션의 웹 검색 403 오류에 사유 표시",
-          "en": "Improved web search errors in cloud and self-hosted runner sessions: a search refused with a 403 that gives a reason now shows that reason instead of a generic \"Authentication error\""
+          "en": "Improved web search errors in cloud and self-hosted runner sessions: a search refused with a 403 that gives a reason now shows that reason instead of a generic \"Authentication error\"",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "데스크톱 MCP 서버 연결 실패 시 클라우드 세션 첫 응답 시간 개선",
-          "en": "Improved the time to the first reply in cloud sessions when one of the desktop app's MCP servers can't connect"
+          "en": "Improved the time to the first reply in cloud sessions when one of the desktop app's MCP servers can't connect",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "큰 이미지·PDF 가 담긴 세션의 Remote Control 연결 시간 개선",
-          "en": "Improved Remote Control connect time for sessions whose transcript contains large pasted images or PDF reads"
+          "en": "Improved Remote Control connect time for sessions whose transcript contains large pasted images or PDF reads",
+          "area": [
+            "remote-control"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "WebSearch 예산 소진 안내에 브라우저·컴퓨터 사용 검색 금지 추가",
-          "en": "Changed the notice Claude gets when the WebSearch budget is used up to also tell it not to query search engines in a browser or through computer use"
+          "en": "Changed the notice Claude gets when the WebSearch budget is used up to also tell it not to query search engines in a browser or through computer use",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "`axScreenReader` 를 사용자·관리·`--settings` 설정에서만 적용하도록 변경",
-          "en": "Changed the `axScreenReader` setting and `CLAUDE_AX_SCREEN_READER` in a settings `env` block to apply only from user, managed or `--settings` settings (since 2.1.305)"
+          "en": "Changed the `axScreenReader` setting and `CLAUDE_AX_SCREEN_READER` in a settings `env` block to apply only from user, managed or `--settings` settings (since 2.1.305)",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 1,
           "ko": "자체 호스팅 러너: 체크아웃 훅 기본 제한 30분으로 변경 (`--checkout-hook-timeout-min`)",
-          "en": "Self-hosted runner: Changed checkout hooks to be stopped after 30 minutes by default, failing the session's setup; if yours needs longer, raise `--checkout-hook-timeout-min` or set it to `0`"
+          "en": "Self-hosted runner: Changed checkout hooks to be stopped after 30 minutes by default, failing the session's setup; if yours needs longer, raise `--checkout-hook-timeout-min` or set it to `0`",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 2,
           "ko": "자체 호스팅 러너: git 인증서 파일의 신뢰 인증서 필터링 변경",
-          "en": "Self-hosted runner: Changed the certificate file built for Anthropic-managed git to filter its trusted certificates as the CLI does; a `[runner:warn]` line gives the number left out"
+          "en": "Self-hosted runner: Changed the certificate file built for Anthropic-managed git to filter its trusted certificates as the CLI does; a `[runner:warn]` line gives the number left out",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 2,
           "ko": "[VSCode] 음성 입력 자동 종료 시 마이크 버튼 안내 추가",
-          "en": "[VSCode] Added a notice on the microphone button when voice dictation stops by itself (15 seconds without recognized speech, or the 2-minute limit), saying why and that the text so far is kept"
+          "en": "[VSCode] Added a notice on the microphone button when voice dictation stops by itself (15 seconds without recognized speech, or the 2-minute limit), saying why and that the text so far is kept",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "[VSCode] Show more 로 펼친 긴 프롬프트를 패널 40% 로 제한",
-          "en": "[VSCode] Fixed a long prompt expanded with Show more covering the whole chat panel: a pinned prompt is now capped at 40% of the panel and scrolls"
+          "en": "[VSCode] Fixed a long prompt expanded with Show more covering the whole chat panel: a pinned prompt is now capped at 40% of the panel and scrolls",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "[VSCode] LaTeX 수식이 든 목록·표 일부가 잘못 붙던 문제 수정",
-          "en": "[VSCode] Fixed part of a list item or table cell with LaTeX math pasting as a new list or table in rich text editors"
+          "en": "[VSCode] Fixed part of a list item or table cell with LaTeX math pasting as a new list or table in rich text editors",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "[VSCode] `NODE_EXTRA_CA_CERTS` 프록시 환경의 음성 입력 실패 수정",
-          "en": "[VSCode] Fixed dictation failing behind a TLS-inspecting proxy when `NODE_EXTRA_CA_CERTS` is set only in `~/.claude/settings.json`; it now also follows `CLAUDE_CODE_CERT_STORE`"
+          "en": "[VSCode] Fixed dictation failing behind a TLS-inspecting proxy when `NODE_EXTRA_CA_CERTS` is set only in `~/.claude/settings.json`; it now also follows `CLAUDE_CODE_CERT_STORE`",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 3,
           "ko": "[VSCode] 다른 곳에서 열림 안내에 확장 재시작 잔여 프로세스 포함",
-          "en": "[VSCode] Changed the \"still open somewhere else\" notice to also cover a Claude process left over from an extension restart, which usually ends on its own within about 10 minutes"
+          "en": "[VSCode] Changed the \"still open somewhere else\" notice to also cover a Claude process left over from an extension restart, which usually ends on its own within about 10 minutes",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "[VSCode] 음성 입력의 신뢰 인증서 필터링을 CLI 와 동일하게 변경",
-          "en": "[VSCode] Changed voice dictation to filter its trusted certificates as the CLI does"
+          "en": "[VSCode] Changed voice dictation to filter its trusted certificates as the CLI does",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "[VSCode] 확장 요청의 신뢰 인증서 필터링과 `NODE_EXTRA_CA_CERTS` 신뢰 변경",
-          "en": "[VSCode] Changed the extension's own requests to filter their trusted certificates as the CLI does, and to trust the `NODE_EXTRA_CA_CERTS` file named in the environment or in user settings"
+          "en": "[VSCode] Changed the extension's own requests to filter their trusted certificates as the CLI does, and to trust the `NODE_EXTRA_CA_CERTS` file named in the environment or in user settings",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "[Cloud sessions] 저장소 검색 중 결과 없음으로 표시되던 문제 수정",
-          "en": "[Cloud sessions] Fixed the repository picker saying \"No repositories match\" while a search was still running; it now shows \"Searching…\" until the results arrive"
+          "en": "[Cloud sessions] Fixed the repository picker saying \"No repositories match\" while a search was still running; it now shows \"Searching…\" until the results arrive",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "[Cloud sessions] 자체 호스팅 환경의 러너 대기 상태 표시 수정",
-          "en": "[Cloud sessions] Fixed the \"Waiting for a runner\" status on self-hosted environments being cut off; with on-demand runners it now counts up from your last message and shows failed attempts"
+          "en": "[Cloud sessions] Fixed the \"Waiting for a runner\" status on self-hosted environments being cut off; with on-demand runners it now counts up from your last message and shows failed attempts",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 2,
           "ko": "[Code Review] `@claude review stop` 으로 상시 리뷰 구독 종료 추가",
-          "en": "[Code Review] Added `@claude review stop` (also `off` and `pause`) to Code Review, ending an `@claude review always` subscription on a pull request without starting a new review"
+          "en": "[Code Review] Added `@claude review stop` (also `off` and `pause`) to Code Review, ending an `@claude review always` subscription on a pull request without starting a new review",
+          "area": [
+            "code-review"
+          ]
         }
       ]
     },
