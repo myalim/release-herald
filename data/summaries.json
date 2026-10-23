@@ -12,553 +12,790 @@
           "impact": "user",
           "weight": 1,
           "ko": "macOS·Linux 샌드박스 Bash 명령이 셸 시작 파일을 샌드박스 밖에서 실행하던 문제 수정",
-          "en": "Fixed sandboxed Bash commands on macOS and Linux running the shell's startup files outside the sandbox before each command"
+          "en": "Fixed sandboxed Bash commands on macOS and Linux running the shell's startup files outside the sandbox before each command",
+          "area": [
+            "sandbox"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "symlink 경유 시 macOS 샌드박스 `denyWrite` 패턴이 적용되지 않던 문제 수정",
-          "en": "Fixed macOS sandbox `denyWrite` glob patterns not applying at a path's real location when the pattern's folder is reached through a symlink"
+          "en": "Fixed macOS sandbox `denyWrite` glob patterns not applying at a path's real location when the pattern's folder is reached through a symlink",
+          "area": [
+            "sandbox"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "샌드박스·자동 승인 편집이 `--mcp-config` 파일을 수정할 수 있던 문제 수정",
-          "en": "Fixed sandboxed commands and auto-accepted edits being able to modify the MCP config file passed with `--mcp-config`"
+          "en": "Fixed sandboxed commands and auto-accepted edits being able to modify the MCP config file passed with `--mcp-config`",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "print·SDK 세션에서 비활성 MCP 서버가 권한 프롬프트로 재연결되던 문제 수정",
-          "en": "Fixed a disabled MCP server being reconnected by a later permission prompt in print and SDK sessions"
+          "en": "Fixed a disabled MCP server being reconnected by a later permission prompt in print and SDK sessions",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "Bash 권한 검사가 리다이렉트 실패 가능 명령의 변수를 신뢰하던 문제 수정",
-          "en": "Fixed the Bash permission check trusting a variable set by a command whose redirect can fail to open"
+          "en": "Fixed the Bash permission check trusting a variable set by a command whose redirect can fail to open",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "감싸인 `cd` 가 붙은 복합 git 명령에서 Bash 권한 프롬프트가 생략되던 문제 수정",
-          "en": "Fixed Bash permission checks not prompting for some compound commands that change directory before running git when the `cd` is wrapped or prefixed, as they do for a plain `cd`"
+          "en": "Fixed Bash permission checks not prompting for some compound commands that change directory before running git when the `cd` is wrapped or prefixed, as they do for a plain `cd`",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "서브셸 포함 명령에서 `Edit(path)` 거부 규칙이 Bash 리다이렉트를 막지 못한 문제 수정",
-          "en": "Fixed an `Edit(path)` deny rule not blocking a Bash redirect to that path in some commands that also held a subshell"
+          "en": "Fixed an `Edit(path)` deny rule not blocking a Bash redirect to that path in some commands that also held a subshell",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "worktree 격리 세션이 로케일 접두 명령을 허용하던 문제 수정",
-          "en": "Fixed worktree-isolated sessions accepting some locale-prefixed commands the isolation guard should refuse"
+          "en": "Fixed worktree-isolated sessions accepting some locale-prefixed commands the isolation guard should refuse",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "zsh worktree 격리 세션이 산술 명령을 허용하던 문제 수정",
-          "en": "Fixed worktree-isolated sessions on zsh accepting some arithmetic commands that the isolation guard should refuse"
+          "en": "Fixed worktree-isolated sessions on zsh accepting some arithmetic commands that the isolation guard should refuse",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "Claude Code 가 만드는 worktree·브랜치 체크아웃이 git replace ref 를 무시하도록 수정",
-          "en": "Fixed worktrees and branch checkouts that Claude Code creates so they ignore git replace refs, as its other git operations already do"
+          "en": "Fixed worktrees and branch checkouts that Claude Code creates so they ignore git replace refs, as its other git operations already do",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "symlink 경유 설정 디렉터리에서 프로파일 저장소 쓰기 보호가 빠지던 문제 수정",
-          "en": "Fixed profile store write protection not applying when the config directory is reached through a symlink"
+          "en": "Fixed profile store write protection not applying when the config directory is reached through a symlink",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "큰 중첩 CLAUDE.md 로 반복 압축되던 문제 수정 — 한도 초과 시 앞부분만 로드",
-          "en": "Fixed sessions compacting repeatedly after reading files under a very large nested CLAUDE.md; a nested CLAUDE.md over the size limit now loads only its start"
+          "en": "Fixed sessions compacting repeatedly after reading files under a very large nested CLAUDE.md; a nested CLAUDE.md over the size limit now loads only its start",
+          "area": [
+            "memory-context"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "ctrl+enter 가 메시지를 큐에만 넣거나 훅을 재시작하던 문제 수정",
-          "en": "Fixed ctrl+enter (send now) only queuing a message when pressed before the response had started, and restarting a prompt's hooks while leaving the message queued when pressed while those hooks were running"
+          "en": "Fixed ctrl+enter (send now) only queuing a message when pressed before the response had started, and restarting a prompt's hooks while leaving the message queued when pressed while those hooks were running",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "`!` 모드에서 키 바인딩 슬래시 명령이 셸에서 실행되던 문제 수정",
-          "en": "Fixed key-bound slash commands running in the shell from `!` mode"
+          "en": "Fixed key-bound slash commands running in the shell from `!` mode",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "ctrl+o 에 전달 대기 중인 다른 세션·에이전트 메시지가 안 보이던 문제 수정",
-          "en": "Fixed ctrl+o not showing messages from other agents and sessions that are still waiting to be delivered; they now appear in full under the transcript, marked as waiting"
+          "en": "Fixed ctrl+o not showing messages from other agents and sessions that are still waiting to be delivered; they now appear in full under the transcript, marked as waiting",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "긴 도구 출력 미리보기가 이모지 중간에서 잘려 트랜스크립트가 깨지던 문제 수정",
-          "en": "Fixed long tool output previews being cut through an emoji, leaving session transcripts that `jq` could not parse"
+          "en": "Fixed long tool output previews being cut through an emoji, leaving session transcripts that `jq` could not parse",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "Linux 샌드박스에서 PDF 페이지 범위 Read 가 파일 없음으로 보고하던 문제 수정",
-          "en": "Fixed Read reporting \"File does not exist\" for PDF page ranges in Linux sandboxes that share the parent's `/proc`"
+          "en": "Fixed Read reporting \"File does not exist\" for PDF page ranges in Linux sandboxes that share the parent's `/proc`",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "Claude Desktop 세션에서 연결 갱신 시 메시지가 유실되던 문제 수정",
-          "en": "Fixed messages from a Claude Desktop-hosted session sometimes being lost when its connection refreshed"
+          "en": "Fixed messages from a Claude Desktop-hosted session sometimes being lost when its connection refreshed",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "데스크톱 앱에서 터미널이 다른 계정으로 로그인된 경우 기능이 누락되던 문제 수정",
-          "en": "Fixed features missing from Claude Code sessions in the Claude desktop app when the terminal on the same computer was signed in to a different account or organization"
+          "en": "Fixed features missing from Claude Code sessions in the Claude desktop app when the terminal on the same computer was signed in to a different account or organization",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "git 저장소 아닌 폴더에서 `claude remote-control` 상태줄이 `HEAD` 를 표시하던 문제 수정",
-          "en": "Fixed the `claude remote-control` status line showing `HEAD` as the branch for a folder that is not in a git repository"
+          "en": "Fixed the `claude remote-control` status line showing `HEAD` as the branch for a folder that is not in a git repository",
+          "area": [
+            "remote-control"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "분할 창 팀원이 리더의 도구 거부·`--tools` 규칙을 상속하지 않던 문제 수정",
-          "en": "Fixed split-pane agent teammates not inheriting the tool deny and `--tools` rules given on the leader's command line"
+          "en": "Fixed split-pane agent teammates not inheriting the tool deny and `--tools` rules given on the leader's command line",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "`/rename` 한 세션이 다른 세션에 생성된 이름으로 보이던 문제 수정",
-          "en": "Fixed sessions renamed with `/rename` appearing to other sessions under a generated name after a VS Code window reload or a non-interactive `--resume`"
+          "en": "Fixed sessions renamed with `/rename` appearing to other sessions under a generated name after a VS Code window reload or a non-interactive `--resume`",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`/rewind` 목록이 서브에이전트·셸 변경을 코드 변경 없음으로 표시하던 문제 수정",
-          "en": "Fixed the `/rewind` list showing \"No code changes\" for a turn that changed checkpointed files through `/code-review --fix`, a subagent or a shell command"
+          "en": "Fixed the `/rewind` list showing \"No code changes\" for a turn that changed checkpointed files through `/code-review --fix`, a subagent or a shell command",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`/privacy-settings` 가 오래된 모델 개선 설정값을 표시하던 문제 수정",
-          "en": "Fixed `/privacy-settings` showing an out-of-date \"Help improve our AI models\" value; it now also says when the setting can't be fetched"
+          "en": "Fixed `/privacy-settings` showing an out-of-date \"Help improve our AI models\" value; it now also says when the setting can't be fetched",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "조직이 피드백을 받지 않을 때 서버 사유·신고 경로를 알리도록 수정",
-          "en": "Fixed feedback saying \"try again later\" when your organization does not accept feedback; it now shows the server's reason and where to report a bug"
+          "en": "Fixed feedback saying \"try again later\" when your organization does not accept feedback; it now shows the server's reason and where to report a bug",
+          "area": [
+            "other"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "용량 초과 /feedback 보고가 실패하던 문제 수정 — 트랜스크립트 없이 재전송",
-          "en": "Fixed oversized /feedback reports failing instead of being resent without the transcript"
+          "en": "Fixed oversized /feedback reports failing instead of being resent without the transcript",
+          "area": [
+            "other"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "이름이 겹친 `--add-dir` 스킬을 `<folder>:<name>` 으로 쓸 수 있도록 수정",
-          "en": "Fixed a skill in an `--add-dir` folder being unreachable when another skill already held its name; it is now offered as `<folder>:<name>`"
+          "en": "Fixed a skill in an `--add-dir` folder being unreachable when another skill already held its name; it is now offered as `<folder>:<name>`",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "셸로 변경한 중첩 패키지 스킬을 `/verify`·`/code-review` 가 못 찾던 문제 수정",
-          "en": "Fixed `/verify` and `/code-review` not finding a nested package's own skill when its files were changed from the shell"
+          "en": "Fixed `/verify` and `/code-review` not finding a nested package's own skill when its files were changed from the shell",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "/claude-api 스킬의 `ant beta:worker poll --on-work` 트레이스 전달 설명 수정",
-          "en": "Fixed the /claude-api skill saying that `ant beta:worker poll --on-work` passes trace context to the command"
+          "en": "Fixed the /claude-api skill saying that `ant beta:worker poll --on-work` passes trace context to the command",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "/claude-api 스킬 C# 트레이싱 설정에서 클라우드 플랫폼 클라이언트 스팬 누락 수정",
-          "en": "Fixed the /claude-api skill's C# tracing setup missing spans from the cloud platform clients"
+          "en": "Fixed the /claude-api skill's C# tracing setup missing spans from the cloud platform clients",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "/claude-api 스킬의 AWS Claude Platform 스팬 트레이스 연결 설명 수정",
-          "en": "Fixed the /claude-api skill saying that API spans for requests to Claude Platform on AWS can't join the caller's trace"
+          "en": "Fixed the /claude-api skill saying that API spans for requests to Claude Platform on AWS can't join the caller's trace",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "PowerShell 훅이 종료 코드 2 에 차단하지 않고 실패 시 통과되던 문제 수정",
-          "en": "Fixed hooks that run in PowerShell not blocking when the hook's program exits with code 2, and on Windows `PreToolUse` and `PermissionRequest` hooks with `\"shell\": \"powershell\"` failing open when Git for Windows isn't installed"
+          "en": "Fixed hooks that run in PowerShell not blocking when the hook's program exits with code 2, and on Windows `PreToolUse` and `PermissionRequest` hooks with `\"shell\": \"powershell\"` failing open when Git for Windows isn't installed",
+          "area": [
+            "hooks"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "모드 `turn.step` 훅의 `haiku` 같은 모델 별칭이 요청을 실패시키던 문제 수정",
-          "en": "Fixed a mod's `turn.step` hook that names a model by alias, such as `haiku`, failing every request with a model error: the alias now resolves to its model"
+          "en": "Fixed a mod's `turn.step` hook that names a model by alias, such as `haiku`, failing every request with a model error: the alias now resolves to its model",
+          "area": [
+            "hooks"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "디스크 읽기 오류 후 claude.ai 동기화 플러그인·스킬이 삭제되던 문제 수정",
-          "en": "Fixed plugins and skills synced from claude.ai being removed, sometimes mid-session, after a disk read error"
+          "en": "Fixed plugins and skills synced from claude.ai being removed, sometimes mid-session, after a disk read error",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "일부 일반 페이지의 아티팩트 게시·수정이 거부되던 문제 수정",
-          "en": "Fixed artifact publishes and updates being refused for some ordinary pages, such as pages with certain minified scripts or artifacts Claude could not read first"
+          "en": "Fixed artifact publishes and updates being refused for some ordinary pages, such as pages with certain minified scripts or artifacts Claude could not read first",
+          "area": [
+            "artifacts"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "압축이 일어난 턴에서 아티팩트 수정마다 권한을 묻던 문제 수정",
-          "en": "Fixed Claude asking for permission on each artifact update for the rest of a turn after the conversation was compacted in that turn"
+          "en": "Fixed Claude asking for permission on each artifact update for the rest of a turn after the conversation was compacted in that turn",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "`ANTHROPIC_BEDROCK_BASE_URL` 기본 엔드포인트에서 도구 스트리밍이 꺼지던 문제 수정",
-          "en": "Fixed fine-grained tool streaming staying off on Amazon Bedrock when `ANTHROPIC_BEDROCK_BASE_URL` is set to the default `bedrock-runtime.<region>.amazonaws.com` endpoint"
+          "en": "Fixed fine-grained tool streaming staying off on Amazon Bedrock when `ANTHROPIC_BEDROCK_BASE_URL` is set to the default `bedrock-runtime.<region>.amazonaws.com` endpoint",
+          "area": [
+            "providers"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "keepalive 만 보내는 게이트웨이에서 API 응답 대기 힌트가 깜빡이던 문제 수정",
-          "en": "Fixed the \"Waiting for API response\" hint flickering behind gateways that send only keepalive pings: routes off Anthropic's backend now wait 45 seconds"
+          "en": "Fixed the \"Waiting for API response\" hint flickering behind gateways that send only keepalive pings: routes off Anthropic's backend now wait 45 seconds",
+          "area": [
+            "providers"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "역할명·플레이스홀더가 멘션으로 적혀 무관한 GitHub 사용자에게 알림이 가던 문제 수정",
-          "en": "Fixed Claude notifying unrelated GitHub users by writing role names and placeholders as mentions in PRs, issues and comments"
+          "en": "Fixed Claude notifying unrelated GitHub users by writing role names and placeholders as mentions in PRs, issues and comments",
+          "area": [
+            "memory-context"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "Linux: 세션보다 오래 남은 백그라운드 명령에서 샌드박스 쓰기 거부가 풀리던 문제 수정",
-          "en": "Linux: Fixed sandbox write denies lifting when a background command outlived the session"
+          "en": "Linux: Fixed sandbox write denies lifting when a background command outlived the session",
+          "area": [
+            "sandbox"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "Windows: PowerShell 권한 검사가 인자 붙은 `cd` 를 자동 승인하던 문제 수정",
-          "en": "Windows: Fixed PowerShell permission checks auto-approving some `Set-Location` or `cd` commands that target the current directory and carry extra arguments; these now prompt for approval"
+          "en": "Windows: Fixed PowerShell permission checks auto-approving some `Set-Location` or `cd` commands that target the current directory and carry extra arguments; these now prompt for approval",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "macOS: Xcode 없는 Mac 에서 개발자 도구 설치 창이 매번 열리던 문제 수정",
-          "en": "macOS: Fixed the \"Install Command Line Developer Tools\" dialog opening each time Claude Code starts on a Mac without Xcode or the Command Line Tools"
+          "en": "macOS: Fixed the \"Install Command Line Developer Tools\" dialog opening each time Claude Code starts on a Mac without Xcode or the Command Line Tools",
+          "area": [
+            "runtime"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 3,
           "ko": "Self-hosted runner: `--startup-timeout-min` 이 작업 중 세션을 멈추던 문제 수정",
-          "en": "Self-hosted runner: Fixed `--startup-timeout-min` stopping a session whose first prompt, such as `/code-review`, was still working in a subagent; a frozen process is still stopped"
+          "en": "Self-hosted runner: Fixed `--startup-timeout-min` stopping a session whose first prompt, such as `/code-review`, was still working in a subagent; a frozen process is still stopped",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "Windows 의 git 명령 속도 개선 · git 오류를 항상 영어로 표시",
-          "en": "Improved the speed of many git commands Claude Code runs for itself on Windows; on every platform, errors from those commands now show in English even when git is set to another language"
+          "en": "Improved the speed of many git commands Claude Code runs for itself on Windows; on every platform, errors from those commands now show in English even when git is set to another language",
+          "area": [
+            "runtime"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "훅 모듈 깊이 초과 오류가 파일명을 알려주도록 개선",
-          "en": "Improved the error when a hooks module is nested too deep to load: it now names the file instead of showing a bare stack-overflow message"
+          "en": "Improved the error when a hooks module is nested too deep to load: it now names the file instead of showing a bare stack-overflow message",
+          "area": [
+            "hooks"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "디스크 가득 찼을 때 Bash 명령 중단·시작 실패 메시지 개선",
-          "en": "Improved disk-full handling: a Bash command cut off by a full disk now says so and names the folder to free up, and starting on a full temp volume prints a clear message, not a raw ENOSPC error"
+          "en": "Improved disk-full handling: a Bash command cut off by a full disk now says so and names the folder to free up, and starting on a full temp volume prints a clear message, not a raw ENOSPC error",
+          "area": [
+            "runtime"
+          ]
         },
         {
           "kind": "improved",
           "impact": "internal",
           "weight": 3,
           "ko": "/claude-api 스킬이 OpenTelemetry 추가 시 API 트레이싱도 제안하도록 개선",
-          "en": "Improved the /claude-api skill to offer API tracing alongside SDK tracing when asked to add OpenTelemetry"
+          "en": "Improved the /claude-api skill to offer API tracing alongside SDK tracing when asked to add OpenTelemetry",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "/claude-api 스킬이 미지원 단정 전 최신 문서를 확인하도록 개선",
-          "en": "Improved the /claude-api skill to check the live docs before saying a feature is unsupported"
+          "en": "Improved the /claude-api skill to check the live docs before saying a feature is unsupported",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 3,
           "ko": "Self-hosted runner: 러너 이동 시 중단된 도구 호출을 결과 불명으로 표시",
-          "en": "Self-hosted runner: Improved sessions that move to a new runner: Claude now sees the tool call that was interrupted, marked as outcome unknown"
+          "en": "Self-hosted runner: Improved sessions that move to a new runner: Claude now sees the tool call that was interrupted, marked as outcome unknown",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "other",
           "impact": "user",
           "weight": 2,
           "ko": "번들 dataviz 스킬이 APCA 대비 측정과 `apca()` 검증 함수를 지원하도록 갱신",
-          "en": "Updated the bundled dataviz skill to accept APCA as a text-contrast measure (keeping WCAG 2 ratios where AA conformance is required), add an `apca(text, background)` function to its palette validator scripts, and say whether a label inside a colored chart fill should be white or near-black"
+          "en": "Updated the bundled dataviz skill to accept APCA as a text-contrast measure (keeping WCAG 2 ratios where AA conformance is required), add an `apca(text, background)` function to its palette validator scripts, and say whether a label inside a colored chart fill should be white or near-black",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 3,
           "ko": "/claude-api 스킬 갱신: 서비스 계정 키·WIF 토큰으로 OpenTelemetry 대상 관리",
-          "en": "Updated the /claude-api skill: service account keys and Workload Identity Federation tokens can now manage OpenTelemetry destinations"
+          "en": "Updated the /claude-api skill: service account keys and Workload Identity Federation tokens can now manage OpenTelemetry destinations",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "`sed -i` 가 편집 미리보기 없이 그대로 실행 — `/rewind` 복원 대상 아님",
-          "en": "Changed `sed -i` to get the standard Bash prompt and run as written, not a simulated file-edit preview; like other Bash edits, it is no longer restored by `/rewind`"
+          "en": "Changed `sed -i` to get the standard Bash prompt and run as written, not a simulated file-edit preview; like other Bash edits, it is no longer restored by `/rewind`",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "`claude ultrareview` 가 작업공간 신뢰를 요구 — 스크립트는 `--trust-workspace` 필요",
-          "en": "Changed `claude ultrareview` to require workspace trust: it asks on a terminal, else refuses; scripts pass `--trust-workspace`, which takes no value (put a PR number or base branch before it), or set `CLAUDE_CODE_DISABLE_ULTRAREVIEW_TRUST_CHECK=1`"
+          "en": "Changed `claude ultrareview` to require workspace trust: it asks on a terminal, else refuses; scripts pass `--trust-workspace`, which takes no value (put a PR number or base branch before it), or set `CLAUDE_CODE_DISABLE_ULTRAREVIEW_TRUST_CHECK=1`",
+          "area": [
+            "code-review"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "Desktop·VS Code 우회 모드에서 위험한 `rm`·`rmdir` 을 즉시 거부로 변경",
-          "en": "Changed the dangerous `rm` and `rmdir` prompt in bypass permissions mode in the Desktop app and VS Code to deny the command at once with a rewrite hint, so unattended sessions keep going"
+          "en": "Changed the dangerous `rm` and `rmdir` prompt in bypass permissions mode in the Desktop app and VS Code to deny the command at once with a rewrite hint, so unattended sessions keep going",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "샌드박스가 켜졌지만 실행 못 할 때 제외 명령의 쓰기도 확인하도록 변경",
-          "en": "Changed commands the settings exclude from the sandbox to ask before writing to its write-list paths while the sandbox is enabled but cannot run; the unsandboxed fallback is refused there"
+          "en": "Changed commands the settings exclude from the sandbox to ask before writing to its write-list paths while the sandbox is enabled but cannot run; the unsandboxed fallback is refused there",
+          "area": [
+            "sandbox"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "worktree 생성·재사용 시 git 이 객체를 필요할 때 받지 않도록 변경",
-          "en": "Changed worktree creation and reuse so git no longer fetches objects on demand, in ordinary clones and in partial clones with a Bash sandbox configured; such a partial clone fetches them first"
+          "en": "Changed worktree creation and reuse so git no longer fetches objects on demand, in ordinary clones and in partial clones with a Bash sandbox configured; such a partial clone fetches them first",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "changed",
           "impact": "internal",
           "weight": 3,
           "ko": "`/claude-api` 스킬이 팀을 `multiagent_20261001` 기본 구성으로 만들도록 변경",
-          "en": "Changed the `/claude-api` skill to build Managed Agents subagent teams on `multiagent_20261001` with dynamic workflows on by default, instead of `coordinator`"
+          "en": "Changed the `/claude-api` skill to build Managed Agents subagent teams on `multiagent_20261001` with dynamic workflows on by default, instead of `coordinator`",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 3,
           "ko": "[VSCode] 인증서 검증 실패 시 대처를 알려주는 로그 경고 추가",
-          "en": "[VSCode] Added a log warning that says what to do when dictation or the extension's own requests fail certificate verification, such as behind a TLS-inspecting proxy"
+          "en": "[VSCode] Added a log warning that says what to do when dictation or the extension's own requests fail certificate verification, such as behind a TLS-inspecting proxy",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "[VSCode] 파일 캐시가 불완전해 Claude 패널이 빈 화면으로 남던 문제 수정",
-          "en": "[VSCode] Fixed the Claude panel staying blank after the editor cached an incomplete copy of its files; it now recovers by itself, or says what went wrong and how to fix it"
+          "en": "[VSCode] Fixed the Claude panel staying blank after the editor cached an incomplete copy of its files; it now recovers by itself, or says what went wrong and how to fix it",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "[VSCode] 세션 기록에 빈 Untitled 세션이 쌓이던 문제 수정",
-          "en": "[VSCode] Fixed Session history filling up with empty \"Untitled\" sessions each time you start a new session without sending a message"
+          "en": "[VSCode] Fixed Session history filling up with empty \"Untitled\" sessions each time you start a new session without sending a message",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "[VSCode] `/goal` 같은 긴 슬래시 명령 메시지가 접히지 않던 문제 수정",
-          "en": "[VSCode] Fixed long slash-command messages such as `/goal` filling the chat panel; they now fold behind Show more like other prompts (#97469)"
+          "en": "[VSCode] Fixed long slash-command messages such as `/goal` filling the chat panel; they now fold behind Show more like other prompts (#97469)",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "[VSCode] 패널을 좁힌 뒤 긴 메시지가 접히지 않던 문제 수정",
-          "en": "[VSCode] Fixed long messages not folding behind Show more after the chat panel is made narrower"
+          "en": "[VSCode] Fixed long messages not folding behind Show more after the chat panel is made narrower",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "[VSCode] `ctrl+j` 를 null 로 둬도 입력창에서 줄바꿈이 들어가던 문제 수정",
-          "en": "[VSCode] Fixed Ctrl+J in the chat input always inserting a newline: it is now left to VS Code and the OS when \"ctrl+j\" is set to null in the Chat context of ~/.claude/keybindings.json"
+          "en": "[VSCode] Fixed Ctrl+J in the chat input always inserting a newline: it is now left to VS Code and the OS when \"ctrl+j\" is set to null in the Chat context of ~/.claude/keybindings.json",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "[VSCode] 모드 플러그인 라벨이 슬래시·멘션 메뉴를 덮던 문제 수정",
-          "en": "[VSCode] Fixed a mod's \"From the … plugin\" label above the prompt being drawn over the slash command and @-mention menus (#102981)"
+          "en": "[VSCode] Fixed a mod's \"From the … plugin\" label above the prompt being drawn over the slash command and @-mention menus (#102981)",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "[VSCode] LaTeX 수식 붙여넣기 시 빈 항목·번호 재시작 문제 수정",
-          "en": "[VSCode] Fixed an empty list item, paragraph or code block, and list items renumbered from 1, when pasting copied LaTeX math"
+          "en": "[VSCode] Fixed an empty list item, paragraph or code block, and list items renumbered from 1, when pasting copied LaTeX math",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "[VSCode] 조직이 피드백을 받지 않을 때 HTTP 상태만 보이던 문제 수정",
-          "en": "[VSCode] Fixed the feedback error showing only an HTTP status when your organization does not accept feedback"
+          "en": "[VSCode] Fixed the feedback error showing only an HTTP status when your organization does not accept feedback",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "[VSCode] 채팅 패널 Edit·Write 속도 개선 — 편집 후 대기 0.75초",
-          "en": "[VSCode] Improved Edit and Write speed in the chat panel: the wait for new problems after each edit is now 0.75 seconds in most cases, down from 1 to 1.5 seconds"
+          "en": "[VSCode] Improved Edit and Write speed in the chat panel: the wait for new problems after each edit is now 0.75 seconds in most cases, down from 1 to 1.5 seconds",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "[Cloud sessions] 루틴 폼의 커넥터 목록이 로딩 중 없음으로 표시되던 문제 수정",
-          "en": "[Cloud sessions] Fixed the Add connector list in routine forms saying no connectors were available while they were still loading"
+          "en": "[Cloud sessions] Fixed the Add connector list in routine forms saying no connectors were available while they were still loading",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "[Cloud sessions] 환경 편집기가 환경 변수를 뒤섞고 백슬래시를 넣던 문제 수정",
-          "en": "[Cloud sessions] Fixed the cloud environment editor shuffling environment variables and adding backslashes to values that contain both kinds of quote"
+          "en": "[Cloud sessions] Fixed the cloud environment editor shuffling environment variables and adding backslashes to values that contain both kinds of quote",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[Cloud sessions] 자체 호스팅 환경 상세 대화상자의 제목·탭·버튼이 가려지던 문제 수정",
-          "en": "[Cloud sessions] Fixed the self-hosted environment details dialog in admin settings so its title, tabs and buttons stay in view while only the content scrolls"
+          "en": "[Cloud sessions] Fixed the self-hosted environment details dialog in admin settings so its title, tabs and buttons stay in view while only the content scrolls",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "[Cloud sessions] 문서 읽기 도구 행이 이스케이프된 JSON 을 보이던 문제 수정",
-          "en": "[Cloud sessions] Fixed the \"read documentation\" tool row in cloud sessions, which showed escaped JSON instead of a readable page"
+          "en": "[Cloud sessions] Fixed the \"read documentation\" tool row in cloud sessions, which showed escaped JSON instead of a readable page",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "[Cloud sessions] 변경 패널이 푸시된 커밋·Claude 편집만 표시함을 알리도록 개선",
-          "en": "[Cloud sessions] Improved a cloud session's Changes pane, which now says when it lists only pushed commits or only Claude's edits"
+          "en": "[Cloud sessions] Improved a cloud session's Changes pane, which now says when it lists only pushed commits or only Claude's edits",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "[Claude Tag] Slack 에서 승인한 초안이 DM 으로 잘못 게시되던 문제 수정",
-          "en": "[Claude Tag] Fixed Claude in Slack posting a draft you approved for a channel into your DM by mistake; a post with no channel is now refused so it can go to the approved channel"
+          "en": "[Claude Tag] Fixed Claude in Slack posting a draft you approved for a channel into your DM by mistake; a post with no channel is now refused so it can go to the approved channel",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "[Claude Tag] 세션 종료 후 Slack 승인 카드의 허용·거부가 동작하지 않던 문제 수정",
-          "en": "[Claude Tag] Fixed Allow and Deny on Claude's approval cards in Slack doing nothing when the session had stopped; your answer now restarts the session"
+          "en": "[Claude Tag] Fixed Allow and Deny on Claude's approval cards in Slack doing nothing when the session had stopped; your answer now restarts the session",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[Claude Tag] Slack 워크스페이스가 다른 조직으로 옮긴 뒤 미태그 메시지를 무시하던 문제 수정",
-          "en": "[Claude Tag] Fixed Claude ignoring untagged messages in a Slack channel after its workspace moved to a different Claude organization, including unshared channels on Enterprise Grid"
+          "en": "[Claude Tag] Fixed Claude ignoring untagged messages in a Slack channel after its workspace moved to a different Claude organization, including unshared channels on Enterprise Grid",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "[Claude Tag] Slack 스레드의 최신 메시지를 읽기 전에 답글을 올리던 문제 수정",
-          "en": "[Claude Tag] Fixed Claude in a Slack channel posting a threaded reply before reading a newer message someone had just added to that thread"
+          "en": "[Claude Tag] Fixed Claude in a Slack channel posting a threaded reply before reading a newer message someone had just added to that thread",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[Claude Tag] 관리 설정 Slack 페이지가 로드 실패 시 연결 없음으로 표시하던 문제 수정",
-          "en": "[Claude Tag] Fixed the Slack page in Claude Tag admin settings saying no workspaces were connected when the list failed to load; it now shows an error with a Retry button"
+          "en": "[Claude Tag] Fixed the Slack page in Claude Tag admin settings saying no workspaces were connected when the list failed to load; it now shows an error with a Retry button",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "[Code Review] 완료된 리뷰가 PR 에 체크를 남기지 않던 문제 수정",
-          "en": "[Code Review] Fixed a finished review showing no check on the pull request when earlier tries to create it failed; a final try now adds a completed check"
+          "en": "[Code Review] Fixed a finished review showing no check on the pull request when earlier tries to create it failed; a final try now adds a completed check",
+          "area": [
+            "code-review"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "[Code Review] `@claude review stop` 후에도 대기 푸시가 리뷰를 시작하던 문제 수정",
-          "en": "[Code Review] Fixed a push queued behind a running review still starting a review after `@claude review stop`; its check now closes and says why"
+          "en": "[Code Review] Fixed a push queued behind a running review still starting a review after `@claude review stop`; its check now closes and says why",
+          "area": [
+            "code-review"
+          ]
         }
       ]
     },
