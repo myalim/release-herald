@@ -1,7 +1,196 @@
 {
   "schema": 1,
-  "generated": "2026-10-23T04:09:15Z",
+  "generated": "2026-10-24T03:59:18Z",
   "releases": [
+    {
+      "version": "v2.1.310",
+      "date": "2026-10-23",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.310",
+      "items": [
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "Bedrock·Vertex·Foundry 와 텔레메트리 비활성 환경에서 Monitor 도구·플러그인 모니터 추가",
+          "en": "Added the Monitor tool and plugin monitors on Bedrock, Vertex, and Foundry, and when telemetry or nonessential traffic is disabled; long foreground sleeps are now blocked there too"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`effort-2025-11-24` 베타 값을 거부하는 게이트웨이에서 요청이 실패하던 문제 수정",
+          "en": "Fixed requests failing behind some gateways and compatible servers that reject the `effort-2025-11-24` beta value or mid-conversation system messages; Claude Code now retries without them"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`cleanupPeriodDays` 가 매우 큰 값일 때 최근 파일이 삭제되던 문제 수정",
+          "en": "Fixed background cleanup deleting some recent files, such as pasted images, when `cleanupPeriodDays` is set to a very large value"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "'Prompt is too long' 이후 압축이 과도한 내용을 남겨 다시 실패하던 문제 수정",
+          "en": "Fixed compaction after a \"Prompt is too long\" error keeping too much of a conversation with dense text, such as base64 or SVG, so the next request could fail again"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "파일 읽기 승인 프롬프트가 심볼릭 링크의 대상을 표시하지 않던 문제 수정",
+          "en": "Fixed file read permission prompts not showing where a symbolic link leads"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "외부 편집기 종료 직후 질문 자동 진행 타임아웃이 즉시 발동하던 문제 수정",
+          "en": "Fixed a question's auto-continue timeout firing the moment the external editor closed after a long edit"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "Windows: Git Bash 없을 때 `PreToolUse`·`PermissionRequest` 훅 우회 수정",
+          "en": "Windows: Fixed PreToolUse and PermissionRequest hooks letting a tool call through when Git Bash is missing and the hook's command is only quoted strings, such as a quoted path"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 2,
+          "ko": "auto 모드의 작업 디렉터리 밖 첫 읽기 프롬프트에 셸 권한 요청 안내 추가",
+          "en": "Improved auto mode's prompt before the first read outside the working directories: it now says when blocking those reads makes shell commands ask for permission"
+        },
+        {
+          "kind": "improved",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "비대화형 세션(`-p`, Agent SDK) 압축 시 메모리 사용 개선",
+          "en": "Improved memory use of non-interactive sessions (`-p`, Agent SDK) during compaction when the transcript file is very large"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "tmux·kitty·Ghostty·iTerm2 에서 mod 의 `Image` 렌더링 개선",
+          "en": "Improved a mod's `Image` to draw inside tmux with `allow-passthrough` and `focus-events` on, in kitty, Ghostty, and iTerm2 3.5+ with fullscreen rendering, where it showed only its `alt` text"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 2,
+          "ko": "Linux: 샌드박스 시작 실패 시 Ubuntu AppArmor 제약과 해제 방법 안내 추가",
+          "en": "Linux: Improved `/sandbox` and the sandbox startup warning to name Ubuntu's AppArmor restriction on user namespaces, and how to lift it, when it keeps bubblewrap from starting the sandbox"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "비대화형 세션에서 MCP elicitation 미응답 타임아웃 오류 메시지 변경",
+          "en": "Changed the error for an MCP tool call that times out in a non-interactive session while the server's elicitation is unanswered: it now tells Claude that no answer came and not to repeat the call"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "[VSCode] 계획 검토 카드의 피드백 전송 버튼에서 Enter 가 계획을 승인하던 문제 수정",
+          "en": "[VSCode] Fixed pressing Enter on the plan review card's \"Send feedback and keep planning\" button approving the plan instead of sending your comments back"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "[VSCode] 클라우드 세션 브랜치 전환 후 패널에 오류가 표시되던 문제 수정",
+          "en": "[VSCode] Fixed the panel showing \"Something went wrong\" after \"Switch branch & continue\" on a cloud session opened from Session history's Web tab"
+        },
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "Enterprise 커스텀 역할에 클라우드 세션·Remote Control 권한 추가",
+          "en": "[Cloud sessions] Added Claude Code cloud sessions and Remote Control permissions to Enterprise custom roles, so Owners can control access to each by role"
+        },
+        {
+          "kind": "added",
+          "impact": "user",
+          "weight": 2,
+          "ko": "클라우드 환경 설정 스크립트를 파일에서 불러오는 버튼 추가",
+          "en": "[Cloud sessions] Added a Choose file button to load a cloud environment's setup script from a file"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "클라우드 환경 편집 대화상자에서 저장·보관 실패가 표시되지 않던 문제 수정",
+          "en": "[Cloud sessions] Fixed failed saves and archives in the cloud environment edit dialog showing no error inside the dialog"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "루틴 API 토큰 작업 실패가 토스트로만 표시되던 문제 수정",
+          "en": "[Cloud sessions] Fixed failed routine API token actions showing only a toast; the error now appears in the routine edit dialog"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "세션 시작 체크리스트에 클라우드 환경 설정 스크립트 출력 표시 개선",
+          "en": "[Cloud sessions] Improved the session start checklist to show a cloud environment's setup script output in a scrolling box"
+        },
+        {
+          "kind": "changed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "관리 설정에서 클라우드 세션·Remote Control 활성화 시 확인 절차 추가",
+          "en": "[Cloud sessions] Changed turning on Cloud sessions or Remote Control in admin settings to ask for confirmation and list the custom roles that have that permission"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "클라우드 환경 대화상자를 항목별 행에서 열도록 변경",
+          "en": "[Cloud sessions] Changed the cloud environment dialog to open network access, setup script and environment variables from rows instead of listing every editor at once"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "[Claude Tag] 굵게·기울임 서식의 `!restart` 등 명령이 무시되던 문제 수정",
+          "en": "[Claude Tag] Fixed Claude Tag treating `!` commands such as `!restart` and `!help` as ordinary messages when sent in bold, italic or strikethrough"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[Claude Tag] 번들 목록 갱신 실패 시 관리 페이지가 오류로 대체되던 문제 수정",
+          "en": "[Claude Tag] Fixed Claude Tag admin channel and workspace pages being replaced by a load error when a background refresh of the bundle list fails"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[Claude Tag] 채널 이름 로딩 중 지출 한도 페이지의 필터 결과가 비던 문제 수정",
+          "en": "[Claude Tag] Fixed Claude Tag's spend limits page in admin settings reporting that no channels match a filter while channel names are still loading"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[Code Review] 저장소 목록 갱신 실패 시 관리 섹션이 비어 보이던 문제 수정",
+          "en": "[Code Review] Fixed the Code Review admin section hiding its repositories and switches after a failed refresh of the repository list"
+        },
+        {
+          "kind": "improved",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[Code Review] 관리 섹션 첫 로드 재시도와 다시 시도 배너 추가",
+          "en": "[Code Review] Improved the Code Review admin section to retry the first load and show one Try again banner when it still fails"
+        }
+      ]
+    },
     {
       "version": "v2.1.309",
       "date": "2026-10-22",
