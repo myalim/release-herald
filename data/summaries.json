@@ -1,7 +1,399 @@
 {
   "schema": 1,
-  "generated": "2026-10-30T09:55:00Z",
+  "generated": "2026-10-31T04:54:32Z",
   "releases": [
+    {
+      "version": "v2.1.316",
+      "date": "2026-10-31",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.316",
+      "items": [
+        {
+          "kind": "added",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`ultrathink` 키워드를 끄는 `CLAUDE_CODE_DISABLE_ULTRATHINK` 추가",
+          "en": "Added `CLAUDE_CODE_DISABLE_ULTRATHINK`, which turns the `ultrathink` keyword off"
+        },
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "Claude apps 게이트웨이에 그룹 공유 월 예산 `pooled_budget` 추가",
+          "en": "Added pooled group budgets to the Claude apps gateway: one monthly budget that a group's members share, on top of each member's own limit, set with `pooled_budget` on the spend limits admin API"
+        },
+        {
+          "kind": "added",
+          "impact": "user",
+          "weight": 2,
+          "ko": "사설 CA 용 순환 교차 인증서 유지 `CLAUDE_CODE_DISABLE_LOOPED_CROSS_CERT_DROP` 추가",
+          "en": "Added `CLAUDE_CODE_DISABLE_LOOPED_CROSS_CERT_DROP` to keep system cross-certificates that certify each other in a loop, for servers whose private CA needs one"
+        },
+        {
+          "kind": "added",
+          "impact": "user",
+          "weight": 2,
+          "ko": "서브에이전트 기본 노력 수준을 지정하는 `CLAUDE_CODE_SUBAGENT_EFFORT` 추가",
+          "en": "Added `CLAUDE_CODE_SUBAGENT_EFFORT` to set the effort level subagents run at when nothing else names one, instead of inheriting the session's"
+        },
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "Claude apps 게이트웨이 정책 다중 적용 `managed.policy_mode: layered` 추가",
+          "en": "Added `managed.policy_mode: layered` to the Claude apps gateway: every policy that matches a developer applies, each merged over the ones listed below it, not only the first"
+        },
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "Bedrock 업스트림 프롬프트 공격 필터용 `guardrail.input_tagging` 추가",
+          "en": "Added `guardrail.input_tagging` on Claude apps gateway Bedrock upstreams, which wraps prompts in the input tags that an Amazon Bedrock guardrail's prompt attacks filter needs; `all_messages_and_system` also tags the system prompt"
+        },
+        {
+          "kind": "other",
+          "impact": "user",
+          "weight": 1,
+          "ko": "Opus 4.8 fast mode 지원 중단 — 2026-11-30 제거, Opus 5.5 로 이전 필요",
+          "en": "Deprecated fast mode for Opus 4.8 as of October 30, 2026; it will be removed on November 30, 2026. After removal, fast mode requests on Opus 4.8 return an error and do not fall back to standard Opus 4.8. Migrate to Opus 5.5 to keep the speedup"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "Claude Code 자체 종료 시 셸 명령이 계속 실행되던 문제 수정",
+          "en": "Fixed shell commands being left running on macOS and Linux when Claude Code exits by itself, for example when credentials are refused or a cloud session is archived"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "값에 줄바꿈이 있는 bash alias·대시로 시작하는 함수가 유실되던 문제 수정",
+          "en": "Fixed bash aliases with line breaks in their value (except in Git Bash), and functions whose names start with a dash, being garbled or lost in the Bash tool's shell"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`SHELLOPTS` 내보냄 시 bash 스크립트가 첫 명령에서 멈추던 문제 수정",
+          "en": "Fixed bash scripts started from the Bash tool stopping after their first command when `SHELLOPTS` is exported"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "타입 캐스트·`param` 등으로 시작하는 PowerShell 훅이 종료 코드 2 로 차단하지 못한 문제 수정",
+          "en": "Fixed PowerShell hooks not blocking on exit code 2 when the command begins with a type cast, `param`, `using` or an attribute"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "압축 응답이 잘리거나 손상됐을 때 네트워크 요청이 멈추던 문제 수정",
+          "en": "Fixed some network requests hanging when a compressed response was cut off or corrupted"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "Vertex AI·Bedrock 에서 최신 모델 미제공 시 구형 모델로 전환하지 않던 문제 수정",
+          "en": "Fixed `sonnet`, `opus` and `haiku` on Vertex AI and Amazon Bedrock showing an error mid-session instead of switching to an older model when the newest is not yet available to the account or region"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "게이트웨이가 요청의 모든 모델을 `deniedModels` 등과 대조하지 않던 문제 수정",
+          "en": "Fixed the Claude apps gateway not checking every model a request names against `availableModels`, `deniedModels` and `models`; a request that names a blocked model now gets a 400 naming the field"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "게이트웨이 필수 환경에서 `claude auth login` 이 실행을 거부하던 문제 수정",
+          "en": "Fixed `claude auth login` refusing to run where managed settings require a Claude apps gateway; in a terminal it now shows the gateway sign-in"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "`--restricted` 세션에서 작업 디렉터리 밖 파일이 업로드되던 문제 수정",
+          "en": "Fixed `--restricted` sessions uploading files from outside the working directories when a Read allow rule covered them"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "비가시 문자가 든 프롬프트가 두 번째 Enter 를 요구하던 문제 수정",
+          "en": "Fixed prompts containing invisible characters needing a second Enter to send; plain prompts now send cleaned on the first Enter, and commands still wait for review"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "부모 서브에이전트 모델을 상속한 서브에이전트가 메인 모델로 바뀌던 문제 수정",
+          "en": "Fixed sub-agents that inherited a parent sub-agent's model moving to the main model when a background job or message woke them"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`\"$defaults\"` 없는 `autoMode.allow` 에 내장 예외가 되살아나던 문제 수정",
+          "en": "Fixed a managed `autoMode.allow` list without `\"$defaults\"` getting the built-in exceptions back from a host app's `--settings`, a first rule added in `/permissions`, or `/auto-mode-setup`"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "안전성 판정 누락으로 중단된 클라우드 세션·예약 작업이 실패 처리되지 않던 문제 수정",
+          "en": "Fixed cloud sessions and cloud scheduled tasks not being marked as failed when auto mode stopped a turn because the server returned no safety verdict"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "`claude -p` 출력에 auto mode 중단 이유가 빠지던 문제 수정",
+          "en": "Fixed `claude -p` text output sometimes not saying why auto mode stopped a turn when a background agent was still running"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "호스트 앱·게이트웨이 환경에서 `CLAUDE_CODE_AUTO_MODE_SERVER=1` 이 무시되던 문제 수정",
+          "en": "Fixed `CLAUDE_CODE_AUTO_MODE_SERVER=1` being ignored in sessions started by a host application (such as Claude Desktop) behind a proxy or LLM gateway with experimental betas turned off"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "플러그인 MCP `headersHelper` 의 `CLAUDE_PLUGIN_ROOT`·서버 URL 손상 수정",
+          "en": "Fixed plugin MCP `headersHelper` scripts receiving a corrupted `CLAUDE_PLUGIN_ROOT` and server URL when a credential-named environment variable was set to a switch value such as `1`"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "SDK `register_repo_root` 가 작업 디렉터리 밖 CLAUDE.md 를 불러오지 않던 문제 수정",
+          "en": "Fixed the SDK `register_repo_root` control request not loading the CLAUDE.md of a directory outside the working directory (with `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1`)"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "Artifact 도구가 `self` 수준 DB 접근 규칙을 `?` 로 표시하던 문제 수정",
+          "en": "Fixed the Artifact tool showing `?` for artifact database access rules at the `self` level, and not quoting those rules back when it refuses a republish that would drop them"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`/model <id>` 가 미인식 모델에 경고하지 않던 문제 수정",
+          "en": "Fixed `/model <id>` not warning when the model isn't recognized by this version and auto-compact will assume a 200K context window"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "푸시투토크 안내가 한 세션에서 3회를 모두 소진하던 문제 수정",
+          "en": "Fixed the \"hold space to speak\" hint using up its three showings in one session, and showing an empty key when push-to-talk is unbound"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "타임아웃에 종료되지 않은 검색 프로세스로 Grep·Glob 이 멈추던 문제 수정",
+          "en": "Fixed Grep and Glob never returning when the search process is killed at the timeout but does not exit, seen on Windows"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "저장 중 `/clear`·`/resume` 실행 시 대화 재개에서 플랜이 복원되지 않던 문제 수정",
+          "en": "Fixed a rare case where resuming a conversation did not restore its plan, when `/clear` or `/resume` had been run while part of that conversation was still being saved"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "좁은 터미널에서 첫 실행 설정의 보안 안내 문구가 잘리던 문제 수정",
+          "en": "Fixed first-run setup dropping words from the security notes and the terminal-setup explanation in narrow terminals"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "Enterprise 설문 카드가 잠시 멈춤 뒤 입력한 1·0 을 그대로 받던 문제 수정",
+          "en": "Fixed the Enterprise survey card taking a typed 1 or 0 after a short pause; a typed answer now needs Enter"
+        },
+        {
+          "kind": "other",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "자체 호스팅 러너: 프로세스 교체 후 Stop 뒤에 메시지가 응답되던 문제 수정",
+          "en": "Self-hosted runner: Fixed a message sent while Claude was working being answered after a Stop, once the session's process had been replaced"
+        },
+        {
+          "kind": "other",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "자체 호스팅 러너: 세션 머신 이동 시 MCP 서버 켜짐 상태가 유실되던 문제 수정",
+          "en": "Self-hosted runner: Fixed an MCP server's on/off switch sometimes being lost when a session moved to a new machine"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "Windows: Git Bash rc 설정 때문에 Bash 도구가 alias·함수를 잃던 문제 수정",
+          "en": "Windows: Fixed the Bash tool losing your aliases and functions in Git Bash when the rc file sets errexit and pipefail and only winpty aliases, or none, are defined"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 2,
+          "ko": "클라우드·`claude remote-control` 세션의 `/code-review` 결과를 카드로 표시",
+          "en": "Improved `/code-review` started from the Code tab in Claude Desktop or on the web: cloud and `claude remote-control` sessions now show the findings card, not a plain-text list"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "대규모 저장소 `/diff` 의 git 명령 호출 감소·갱신 간격 조정",
+          "en": "Improved `/diff` on large repositories: each refresh usually runs one fewer full-repository git command, and refreshes are spaced out when git is slow"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "GitHub 원격이 없을 때의 안내 메시지 개선 — 저장소 생성 주소 안내",
+          "en": "Improved the messages shown when `/ultrareview`, a cloud session or a cloud agent finds no GitHub remote: they now say to create a repository at https://github.com/new, and `/ultrareview` no longer suggests a `gh` command that `gh` rejects"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "SSL 인증서 오류에 유력 원인과 각각의 해결 방법 명시",
+          "en": "Improved SSL certificate errors to name the likely causes, among them a server that leaves out an intermediate certificate, and the fix for each"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "`\"$defaults\"` 없는 `autoMode.allow` 가 예약 작업 내장 규칙을 지우지 않도록 변경",
+          "en": "Changed auto mode so that an `autoMode.allow` list without `\"$defaults\"` no longer removes the built-in rule on scheduled-task prompts"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "Team·Enterprise 서버 관리 설정이 승인 프롬프트 없이 적용되도록 변경",
+          "en": "Changed server-managed settings for Team and Enterprise logins: settings fetched from Anthropic's API now apply without an approval prompt, and a stored copy that doesn't verify is refused"
+        },
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "VSCode: 채팅 패널에서 Claude apps 게이트웨이 로그인 추가",
+          "en": "[VSCode] Added sign-in to a Claude apps gateway from the chat panel, with no terminal needed"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode: `ultrathink` 가 `xhigh` 노력 수준으로 동작하도록 변경",
+          "en": "[VSCode] Changed `ultrathink` to run its turn at `xhigh` effort and show in a rainbow in the chat box, as in the terminal"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode: `opus[1m]` 등 `[1m]` 설정에서 노력 슬라이더가 사라지던 문제 수정",
+          "en": "[VSCode] Fixed the missing Effort slider, Ultracode switch and model name when the model setting has the `[1m]` tag, such as `opus[1m]`"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode: 설정 파일 오류 시 `/btw` 기록이 조기 삭제되던 문제 수정",
+          "en": "[VSCode] Fixed saved `/btw` side-question history being deleted too early while a settings file has errors"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "VSCode: 수동 편집 승인으로 시작한 대화가 재시작 후 Auto mode 로 돌아오던 문제 수정",
+          "en": "[VSCode] Fixed a conversation coming back in Auto mode after a reload or restart when its plan was approved with \"Yes, and manually approve edits\""
+        },
+        {
+          "kind": "added",
+          "impact": "user",
+          "weight": 2,
+          "ko": "클라우드 세션: MCP 서버가 요청한 폼을 작성·거절하는 카드 추가",
+          "en": "[Cloud sessions] Added a form card to cloud sessions, so you can fill in or decline a form an MCP server asks for instead of the request being canceled without you seeing it"
+        },
+        {
+          "kind": "added",
+          "impact": "user",
+          "weight": 3,
+          "ko": "클라우드 세션: 메시지 동기화 중 `Catching up…` 안내 추가",
+          "en": "[Cloud sessions] Added a \"Catching up…\" line that shows while a cloud or Remote Control session you switch back to is still bringing its messages up to date"
+        },
+        {
+          "kind": "changed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "클라우드 세션: Enterprise 구성원이 네트워크 시크릿을 직접 추가·삭제하도록 변경",
+          "en": "[Cloud sessions] Changed network secrets so Enterprise members can add and delete them on their own cloud environments, instead of only viewing them"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "클라우드 세션: 변경 사항 창의 누락 안내를 브랜치명 옆 배지로 변경",
+          "en": "[Cloud sessions] Improved the Changes pane for cloud sessions: the note about what the list leaves out is now a badge beside the branch name, not a row above the diff"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "클라우드 세션: 파일 검색 결과가 `../..` 경로로 표시되던 문제 수정",
+          "en": "[Cloud sessions] Fixed file search in a cloud session's Files pane showing folders as ../.. paths after Claude changed directory; results now show their path from the project's root"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "Claude Tag: 다른 채널에 공유된 캔버스 편집이 거부되던 문제 수정",
+          "en": "[Claude Tag] Fixed Claude refusing to edit or append to a canvas it made in a Slack channel, from that channel, once the canvas was also shared to another channel or a DM"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "Claude Tag: Slack Connect 스레드의 미태그 답글이 무응답이던 문제 수정",
+          "en": "[Claude Tag] Fixed untagged replies going unanswered in a Slack Connect thread when both organizations have installed Claude and Slack delivered the reply to the other organization's app"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "Claude Tag: Slack 예약 작업 진행 체크리스트가 멈춰 있던 문제 수정",
+          "en": "[Claude Tag] Fixed a cloud scheduled task's live status checklist in Slack staying half-done; a run can now edit the top-level messages it posted during that run"
+        },
+        {
+          "kind": "changed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "Claude Tag: 채널 자동 응답 스위치를 참여 방식 선택으로 변경",
+          "en": "[Claude Tag] Changed a Slack channel's Respond automatically switch to a \"How Claude participates\" choice on the channel's Configure page and in Claude Tag admin settings"
+        },
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "Code Review: 분석 페이지에 심각도별 발견 항목 카드 추가",
+          "en": "[Code Review] Added a findings-by-severity card to the Code Review analytics page, showing the period's total findings, a daily chart stacked by severity, and each severity's count"
+        }
+      ]
+    },
     {
       "version": "v2.1.314",
       "date": "2026-10-30",
