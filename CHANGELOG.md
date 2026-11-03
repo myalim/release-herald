@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/myalim/release-herald/compare/v0.1.1...v0.2.0) (2026-10-06)
+
+
+### Features
+
+* **show:** 릴리스 목록을 최신 10개로 제한 ([#18](https://github.com/myalim/release-herald/issues/18)) ([9f6ad24](https://github.com/myalim/release-herald/commit/9f6ad2403f8e25d5729a640572a034911099e819))
+
 ## [0.1.1](https://github.com/myalim/release-herald/compare/v0.1.0...v0.1.1) (2026-10-05)
 
 
