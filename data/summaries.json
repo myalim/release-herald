@@ -12,588 +12,840 @@
           "impact": "user",
           "weight": 2,
           "ko": "세션 중 Claude 가 만든 mod 를 켜는 요청에 대한 답변 기록 추가",
-          "en": "Added a record of your answer when Claude Code asks to turn on the mods it writes in a session"
+          "en": "Added a record of your answer when Claude Code asks to turn on the mods it writes in a session",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "added",
           "impact": "internal",
           "weight": 3,
           "ko": "Claude 앱 게이트웨이 `mantle` 업스트림에 `assume_role` 추가",
-          "en": "Added `assume_role` on `mantle` upstreams of the Claude apps gateway, for a role in another AWS account and for per-developer AWS cost attribution"
+          "en": "Added `assume_role` on `mantle` upstreams of the Claude apps gateway, for a role in another AWS account and for per-developer AWS cost attribution",
+          "area": [
+            "providers"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 2,
           "ko": "mod `$.model.fork` 에 `effort` 옵션 추가 — 곁가지 작업을 `low` 로 실행",
-          "en": "Added an `effort` option to a mod's `$.model.fork`, so a quick side job can run at `low` whatever effort the session uses; the result reports the effort sent"
+          "en": "Added an `effort` option to a mod's `$.model.fork`, so a quick side job can run at `low` whatever effort the session uses; the result reports the effort sent",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 2,
           "ko": "`claude auth status` 와 `claude -p` JSON 결과에 로그인 만료 시점 추가",
-          "en": "Added the date a stored claude.ai sign-in ends to `claude auth status` (`loginExpiresAt`) and to `claude -p` JSON results (`credential_expires_at`)"
+          "en": "Added the date a stored claude.ai sign-in ends to `claude auth status` (`loginExpiresAt`) and to `claude -p` JSON results (`credential_expires_at`)",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 2,
           "ko": "`claude -p` 에 로그인 만료 10일 전부터 stderr 경고 추가",
-          "en": "Added a one-line stderr warning to `claude -p` text output, starting 10 days before a stored claude.ai sign-in ends"
+          "en": "Added a one-line stderr warning to `claude -p` text output, starting 10 days before a stored claude.ai sign-in ends",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`--continue` 가 앞 대화를 잃던 문제 수정 (2.1.314 회귀)",
-          "en": "Fixed `--continue` sometimes losing the earlier conversation after a malformed tool call's retries ran out (regression in 2.1.314)"
+          "en": "Fixed `--continue` sometimes losing the earlier conversation after a malformed tool call's retries ran out (regression in 2.1.314)",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "macOS 에서 Bash 명령이 많을 때 멈추며 메모리가 늘던 문제 수정",
-          "en": "Fixed macOS sessions with many running Bash commands stalling while memory grew"
+          "en": "Fixed macOS sessions with many running Bash commands stalling while memory grew",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "메시지 전송 직후 누른 키가 권한 프롬프트에 대신 답하던 문제 수정",
-          "en": "Fixed permission prompts being answered by keys typed just after sending a message, or before a slow prompt appeared"
+          "en": "Fixed permission prompts being answered by keys typed just after sending a message, or before a slow prompt appeared",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "공유 네트워크 홈에서 로그아웃·신뢰·MCP 설정 변경이 조용히 누락되던 문제 수정",
-          "en": "Fixed `/logout`, `claude auth logout` and `claude mcp remove` reporting success, and changes to trust, consent or MCP settings being dropped with no word, when the config file could not be updated on a shared network home directory"
+          "en": "Fixed `/logout`, `claude auth logout` and `claude mcp remove` reporting success, and changes to trust, consent or MCP settings being dropped with no word, when the config file could not be updated on a shared network home directory",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "다른 터미널·호스트의 재로그인으로 `Not logged in` 종료되던 문제 수정",
-          "en": "Fixed jobs exiting with `Not logged in` when another terminal or host signs in again to the same account and organization on the same home"
+          "en": "Fixed jobs exiting with `Not logged in` when another terminal or host signs in again to the same account and organization on the same home",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`claude mcp add`·`remove` 가 잠금 없이 설정을 쓰던 문제 수정",
-          "en": "Fixed `claude mcp add` and `remove` writing the config without its lock: they now wait for it or exit 1, though another job's save can still replace a saved server"
+          "en": "Fixed `claude mcp add` and `remove` writing the config without its lock: they now wait for it or exit 1, though another job's save can still replace a saved server",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`claude plugin` 이 토큰 갱신 저장 전에 종료되어 로그아웃되던 문제 수정",
-          "en": "Fixed `claude plugin` commands exiting before a slow token refresh was saved, which could sign you out on the next run"
+          "en": "Fixed `claude plugin` commands exiting before a slow token refresh was saved, which could sign you out on the next run",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "`claude plugin validate` 가 거부될 마켓플레이스 파일을 통과시키던 문제 수정",
-          "en": "Fixed `claude plugin validate` passing a custom-named marketplace file that `claude plugin marketplace add` rejects"
+          "en": "Fixed `claude plugin validate` passing a custom-named marketplace file that `claude plugin marketplace add` rejects",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "버전 탐지에서 죽는 stdio MCP 서버를 매 시작마다 재탐지하던 문제 수정",
-          "en": "Fixed stdio MCP servers that exit on the version probe being re-probed on every start; a server that dies in under 3s for its own reason is also pinned to the legacy handshake for 7 days"
+          "en": "Fixed stdio MCP servers that exit on the version probe being re-probed on every start; a server that dies in under 3s for its own reason is also pinned to the legacy handshake for 7 days",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "다른 로그인이 저장한 `allowedProviders` 로 세션 시작이 거부되던 문제 수정",
-          "en": "Fixed sessions being refused at startup by an `allowedProviders` list that another login on the same machine had stored"
+          "en": "Fixed sessions being refused at startup by an `allowedProviders` list that another login on the same machine had stored",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "유휴 압축이 대화를 요약이 아닌 응답으로 대체하던 문제 수정",
-          "en": "Fixed idle compaction replacing a conversation with a reply that was not a summary"
+          "en": "Fixed idle compaction replacing a conversation with a reply that was not a summary",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "배경 subagent 실행 중 사용 크레딧 알림이 30초마다 다시 뜨던 문제 수정",
-          "en": "Fixed the \"Now using usage credits\" notice reappearing about every 30 seconds while a background subagent is running"
+          "en": "Fixed the \"Now using usage credits\" notice reappearing about every 30 seconds while a background subagent is running",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`claude -p`·SDK 에서 실패한 슬래시 명령이 아무것도 출력하지 않던 문제 수정",
-          "en": "Fixed custom slash commands that fail, or that only Claude can invoke, printing nothing in `claude -p` and SDK sessions"
+          "en": "Fixed custom slash commands that fail, or that only Claude can invoke, printing nothing in `claude -p` and SDK sessions",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "mod 가 `turn.step` 을 훅할 때 끊긴 응답을 성공으로 보고하던 문제 수정",
-          "en": "Fixed `claude -p` and Agent SDK sessions reporting success when an API error cut off a reply while a mod hooked `turn.step`"
+          "en": "Fixed `claude -p` and Agent SDK sessions reporting success when an API error cut off a reply while a mod hooked `turn.step`",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "헤드리스에서 모델 변경 직후 메시지가 Stop 후에도 실행되던 문제 수정",
-          "en": "Fixed a message sent right after a model change still running after Stop in headless sessions: Stop now cancels or stops it as it would a queued message"
+          "en": "Fixed a message sent right after a model change still running after Stop in headless sessions: Stop now cancels or stops it as it would a queued message",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "유휴 비대화 세션 종료 시 삭제한 트랜스크립트가 되살아나던 문제 수정",
-          "en": "Fixed a deleted session transcript being re-created with its last prompt when an idle non-interactive session exited"
+          "en": "Fixed a deleted session transcript being re-created with its last prompt when an idle non-interactive session exited",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "업데이트·정리가 실행 중 프로세스 바이너리를 지워 세션 시작이 실패하던 문제 수정",
-          "en": "Fixed `claude remote-control` hosts, the background daemon and self-hosted runners failing to start new sessions (`spawn ENOENT`) after an update or version cleanup removed the binary of a still-running process"
+          "en": "Fixed `claude remote-control` hosts, the background daemon and self-hosted runners failing to start new sessions (`spawn ENOENT`) after an update or version cleanup removed the binary of a still-running process",
+          "area": [
+            "runtime"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "버전 정리가 다른 사용자의 실행 중 프로세스를 죽은 것으로 보던 문제 수정",
-          "en": "Fixed a running Claude Code process owned by another user (for example one left by `sudo claude`) being treated as dead by version cleanup, which could delete its binary"
+          "en": "Fixed a running Claude Code process owned by another user (for example one left by `sudo claude`) being treated as dead by version cleanup, which could delete its binary",
+          "area": [
+            "runtime"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "`/remote-control` 이 연결 실패 후에도 세션을 사용 가능으로 표시하던 문제 수정",
-          "en": "Fixed `/remote-control` showing a session as available after a failed connection"
+          "en": "Fixed `/remote-control` showing a session as available after a failed connection",
+          "area": [
+            "remote-control"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "`/design revoke` 가 404 실패에도 성공으로 보고하던 문제 수정",
-          "en": "Fixed `/design revoke` reporting success when the request failed with a 404"
+          "en": "Fixed `/design revoke` reporting success when the request failed with a 404",
+          "area": [
+            "other"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "재시작 후 승인한 셸 명령이 요청한 폴더가 아닌 시작 폴더에서 실행되던 문제 수정",
-          "en": "Fixed a shell command approved after a self-hosted runner or cloud session restart running in the session's start folder, not the folder it was asked in; if that folder can't be entered, it is not run"
+          "en": "Fixed a shell command approved after a self-hosted runner or cloud session restart running in the session's start folder, not the folder it was asked in; if that folder can't be entered, it is not run",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "클라우드 세션 재시작 후 커넥터 도구 사용 불가가 전달되지 않던 문제 수정",
-          "en": "Fixed Claude not being told when an approved connector tool was unavailable after a cloud session restart"
+          "en": "Fixed Claude not being told when an approved connector tool was unavailable after a cloud session restart",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "업로드 거부가 길어질 때 클라우드 세션이 턴 중간에 멈추던 문제 수정",
-          "en": "Fixed cloud sessions being stopped in the middle of a turn when the service refuses uploads for several minutes"
+          "en": "Fixed cloud sessions being stopped in the middle of a turn when the service refuses uploads for several minutes",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`Setup` 훅이 `CLAUDE_ENV_FILE` 에 쓴 변수가 Bash 도구에 닿지 않던 문제 수정",
-          "en": "Fixed variables a `Setup` hook writes to `CLAUDE_ENV_FILE` not reaching the Bash tool in some cloud sessions"
+          "en": "Fixed variables a `Setup` hook writes to `CLAUDE_ENV_FILE` not reaching the Bash tool in some cloud sessions",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "iPhone 앱이 진행 중인 클라우드 세션 턴을 완료로 표시하던 문제 수정",
-          "en": "Fixed the iPhone app showing a cloud session's turn as finished while it kept running, after a response was cut off at a tool call or a refused image or document was removed"
+          "en": "Fixed the iPhone app showing a cloud session's turn as finished while it kept running, after a response was cut off at a tool call or a refused image or document was removed",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "재시작한 세션이 실패한 메시지를 더 새 메시지보다 먼저 재전송하던 문제 수정",
-          "en": "Fixed a restarted session re-sending a message that failed with an API error, ahead of the newer message waiting behind it"
+          "en": "Fixed a restarted session re-sending a message that failed with an API error, ahead of the newer message waiting behind it",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "재시작한 세션이 중단된 턴을 버리던 문제 수정",
-          "en": "Fixed a restarted session dropping its interrupted turn when the restart came right after Claude read a large image or retried a tool call"
+          "en": "Fixed a restarted session dropping its interrupted turn when the restart came right after Claude read a large image or retried a tool call",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`NODE_EXTRA_CA_CERTS` 파일이 비거나 손상되면 모든 연결이 실패하던 문제 수정",
-          "en": "Fixed every connection failing when the `NODE_EXTRA_CA_CERTS` file is empty, not PEM, or starts with a damaged certificate: readable certificates are now used, with a warning on stderr"
+          "en": "Fixed every connection failing when the `NODE_EXTRA_CA_CERTS` file is empty, not PEM, or starts with a damaged certificate: readable certificates are now used, with a warning on stderr",
+          "area": [
+            "runtime"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "사용 한도 후 재개한 워크플로가 끝난 에이전트를 다시 실행하던 문제 수정",
-          "en": "Fixed workflows re-running finished agents when resumed after a usage limit"
+          "en": "Fixed workflows re-running finished agents when resumed after a usage limit",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "클라우드 세션 `/mcp` 가 모델이 쓸 수 없는 도구까지 세던 문제 수정",
-          "en": "Fixed `/mcp` in cloud sessions counting tools the model can't use; a server's row now shows how many of its tools are available"
+          "en": "Fixed `/mcp` in cloud sessions counting tools the model can't use; a server's row now shows how many of its tools are available",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "PushNotification 의 status 누락 시 알림이 중복되던 문제 수정",
-          "en": "Fixed a duplicate notification when Claude left the status field out of a PushNotification call"
+          "en": "Fixed a duplicate notification when Claude left the status field out of a PushNotification call",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "큰 이미지 오류가 한계를 항상 2000px 로 표시하던 문제 수정",
-          "en": "Fixed the error for a too-large image in a request with more than 20 images always saying the limit was 2000px; it now shows the API's limit"
+          "en": "Fixed the error for a too-large image in a request with more than 20 images always saying the limit was 2000px; it now shows the API's limit",
+          "area": [
+            "runtime"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "배경 셸 상세 창이 열린 동안 실행 시간이 갱신되지 않던 문제 수정",
-          "en": "Fixed the runtime in background shell details not updating while the dialog is open"
+          "en": "Fixed the runtime in background shell details not updating while the dialog is open",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "헤드리스에서 mod `turn.step` 훅이 중단된 응답을 성공으로 끝내던 문제 수정",
-          "en": "Fixed a mod's `turn.step` hook making a stopped reply finish as a success in headless runs"
+          "en": "Fixed a mod's `turn.step` hook making a stopped reply finish as a success in headless runs",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`claude -p` 전용 홈에 `~/.claude.json` 백업이 남지 않던 문제 수정",
-          "en": "Fixed retention cleanup leaving a home that only runs `claude -p` with no `~/.claude.json` backup: it now takes a fresh backup before deleting the last good one"
+          "en": "Fixed retention cleanup leaving a home that only runs `claude -p` with no `~/.claude.json` backup: it now takes a fresh backup before deleting the last good one",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "네트워크 홈에 공간이 없을 때 저장된 로그인이 빈 파일이 되던 문제 수정",
-          "en": "Fixed the stored login being replaced by an empty file when a network home directory has no room left for data but still takes new files"
+          "en": "Fixed the stored login being replaced by an empty file when a network home directory has no room left for data but still takes new files",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "`forceLoginOrgUUID` 머신에서 `setup-token` 토큰이 거부되던 문제 수정",
-          "en": "Fixed tokens from `setup-token` being refused at start on machines with `forceLoginOrgUUID`, when the token belongs to a permitted organization"
+          "en": "Fixed tokens from `setup-token` being refused at start on machines with `forceLoginOrgUUID`, when the token belongs to a permitted organization",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "비대화 시작이 깨진 `~/.claude.json` 을 기본값으로 바꿔 쓰던 문제 수정",
-          "en": "Fixed non-interactive launches replacing a `~/.claude.json` that isn't valid JSON with defaults; the start now fails, says how to restore the file, and leaves it as is (#87551)"
+          "en": "Fixed non-interactive launches replacing a `~/.claude.json` that isn't valid JSON with defaults; the start now fails, says how to restore the file, and leaves it as is (#87551)",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "백업 없는 빈 `~/.claude.json` 이 손상으로 보고되던 문제 수정",
-          "en": "Fixed an empty `~/.claude.json` with no backup being reported as corrupted; Claude Code now starts as it does when the file is missing"
+          "en": "Fixed an empty `~/.claude.json` with no backup being reported as corrupted; Claude Code now starts as it does when the file is missing",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "손상된 `~/.claude.json` 복구 명령이 빈 백업을 가리키던 문제 수정",
-          "en": "Fixed the restore command printed for a damaged or missing `~/.claude.json` naming an empty or cut-off backup, or failing on a read-only file"
+          "en": "Fixed the restore command printed for a damaged or missing `~/.claude.json` naming an empty or cut-off backup, or failing on a read-only file",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "저장된 claude.ai 로그인 기간 만료 시 실패 사유를 안내하도록 수정",
-          "en": "Fixed the sign-in failure when a stored claude.ai login reaches its time limit: it now says so, and in `claude -p` names `claude auth login` and `claude setup-token`"
+          "en": "Fixed the sign-in failure when a stored claude.ai login reaches its time limit: it now says so, and in `claude -p` names `claude auth login` and `claude setup-token`",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "공유 네트워크 홈에서 설정·로그인 파일 저장 안정성 개선",
-          "en": "Improved how `~/.claude.json`, settings files and the stored login survive saves on shared network home directories: they are less often deleted, briefly emptied or replaced by a near-empty or older copy"
+          "en": "Improved how `~/.claude.json`, settings files and the stored login survive saves on shared network home directories: they are less often deleted, briefly emptied or replaced by a near-empty or older copy",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "네트워크 파일 시스템에서 설정 파일 누락 오인 시 재확인하도록 개선",
-          "en": "Improved sessions on network file systems to look again when the configuration file is wrongly reported as missing, so fewer start without your MCP servers and trusted folders"
+          "en": "Improved sessions on network file systems to look again when the configuration file is wrongly reported as missing, so fewer start without your MCP servers and trusted folders",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "로드 전 호출된 MCP 도구 오류가 입력 스키마를 반환하도록 개선",
-          "en": "Improved MCP tool errors: a call made before the tool is loaded now returns its input schema"
+          "en": "Improved MCP tool errors: a call made before the tool is loaded now returns its input schema",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "macOS 기본 `/bin/bash` 에서 git 커밋·PR 생성 안정성 개선",
-          "en": "Improved the reliability of git commits and pull request creation when the Bash tool runs macOS's built-in `/bin/bash`"
+          "en": "Improved the reliability of git commits and pull request creation when the Bash tool runs macOS's built-in `/bin/bash`",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "사용 한도 메뉴의 관리자 사용량 요청을 한 단계로 개선",
-          "en": "Improved \"Ask your admin for more usage\" in the usage limit menu to send the request in one step"
+          "en": "Improved \"Ask your admin for more usage\" in the usage limit menu to send the request in one step",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "일시 중지·절전 후 원격 세션 재연결 속도 개선",
-          "en": "Improved how fast remote sessions reconnect after a pause or sleep"
+          "en": "Improved how fast remote sessions reconnect after a pause or sleep",
+          "area": [
+            "remote-control"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "안내 토스트가 터미널 전용 안내 대신 다시 시도를 말하도록 개선",
-          "en": "Improved You should know toasts to say \"try again\" instead of \"press 2\", which only works in the terminal"
+          "en": "Improved You should know toasts to say \"try again\" instead of \"press 2\", which only works in the terminal",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "릴리스 확인 중 일시적 네트워크 실패를 즉시 재시도하도록 개선",
-          "en": "Improved auto-update reliability: a brief network failure while verifying a release is now retried right away instead of waiting for the next check"
+          "en": "Improved auto-update reliability: a brief network failure while verifying a release is now retried right away instead of waiting for the next check",
+          "area": [
+            "runtime"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "무인 실행이 변경 없을 때 `~/.claude.json` 을 다시 쓰지 않도록 개선",
-          "en": "Improved unattended runs (`claude -p`, SDK apps) to stop rewriting `~/.claude.json` on every run when nothing in it changed"
+          "en": "Improved unattended runs (`claude -p`, SDK apps) to stop rewriting `~/.claude.json` on every run when nothing in it changed",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "IDE 터미널 시작 시 IDE 확장을 설치·갱신하지 않도록 변경 — `/ide` 로 설치",
-          "en": "Changed Claude Code to no longer install or update the IDE extension when started in an IDE terminal; use `/ide` from an outside terminal or your editor's extensions view"
+          "en": "Changed Claude Code to no longer install or update the IDE extension when started in an IDE terminal; use `/ide` from an outside terminal or your editor's extensions view",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "모델 전환을 매번 묻는 설정에서 subagent 가 전환 대신 중단하도록 변경",
-          "en": "Changed subagents to stop instead of switching models when \"Switch models when a message is flagged\" is set to \"Ask each time\""
+          "en": "Changed subagents to stop instead of switching models when \"Switch models when a message is flagged\" is set to \"Ask each time\"",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "배경 subagent 가 3분 넘는 셸 명령을 모든 공급자에서 배경으로 돌리도록 변경",
-          "en": "Changed background subagents to move a shell command to the background after 3 minutes on all providers, so the prompt cache doesn't expire while it runs"
+          "en": "Changed background subagents to move a shell command to the background after 3 minutes on all providers, so the prompt cache doesn't expire while it runs",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "changed",
           "impact": "internal",
           "weight": 3,
           "ko": "Bedrock·Vertex·Foundry·텔레메트리 끔에서 subagent 응답 대기 최대 5분으로 변경",
-          "en": "Changed subagent progress summaries on Bedrock, Vertex, Foundry, or with telemetry off: on a cold prompt cache, one can now wait up to 5 minutes for the subagent's pending response"
+          "en": "Changed subagent progress summaries on Bedrock, Vertex, Foundry, or with telemetry off: on a cold prompt cache, one can now wait up to 5 minutes for the subagent's pending response",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "mod 가 `prompt.submit` 에서 붙인 내용이 시스템 메시지가 아닌 사용자 턴에 남도록 변경",
-          "en": "Changed what a mod attaches at `prompt.submit` to stay in the user's turn rather than go out as a system message"
+          "en": "Changed what a mod attaches at `prompt.submit` to stay in the user's turn rather than go out as a system message",
+          "area": [
+            "hooks"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "`deniedMcpServers` URL 규칙이 Anthropic 제공 서버·커넥터까지 차단하도록 변경",
-          "en": "Changed `deniedMcpServers` URL entries to also block Anthropic-provided servers whose upstream URL matches, and connectors in cloud sessions and on self-hosted runners, where the session is given the connector's own URL; otherwise deny a connector by name"
+          "en": "Changed `deniedMcpServers` URL entries to also block Anthropic-provided servers whose upstream URL matches, and connectors in cloud sessions and on self-hosted runners, where the session is given the connector's own URL; otherwise deny a connector by name",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "`/permissions` 상세·삭제 확인 화면을 표준 대화상자로 변경, Ctrl+C 두 번은 뒤로",
-          "en": "Changed the `/permissions` rule details, built-in rules and delete confirmation views to use the standard dialog; pressing Ctrl+C twice there now goes back or cancels instead of quitting"
+          "en": "Changed the `/permissions` rule details, built-in rules and delete confirmation views to use the standard dialog; pressing Ctrl+C twice there now goes back or cancels instead of quitting",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "`/claude-api managed-agents-onboard` 기본 권한 정책을 `auto` 로 변경",
-          "en": "Changed `/claude-api managed-agents-onboard` to give a new agent's built-in tools, and a quickstart template's MCP tools, the `auto` permission policy (\"Judge risky actions\") by default, matching the Claude Console; say \"run without asking\" to opt out"
+          "en": "Changed `/claude-api managed-agents-onboard` to give a new agent's built-in tools, and a quickstart template's MCP tools, the `auto` permission policy (\"Judge risky actions\") by default, matching the Claude Console; say \"run without asking\" to opt out",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "other",
           "impact": "user",
           "weight": 1,
           "ko": "재개 시 이전 thinking 을 유지하던 2.1.288 수정 되돌림 — 이제 버려질 수 있음",
-          "en": "Removed the 2.1.288 fix that kept the model's earlier thinking when resuming a conversation started on 2.1.286 or earlier; that thinking can now be dropped"
+          "en": "Removed the 2.1.288 fix that kept the model's earlier thinking when resuming a conversation started on 2.1.286 or earlier; that thinking can now be dropped",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "added",
           "impact": "internal",
           "weight": 3,
           "ko": "게이트웨이: Google 연합 자격증명 토큰 만료 임박 로그 경고 추가",
-          "en": "Gateway: Added a log warning when the Google access token from a federation (`external_account`) credentials file is about to expire"
+          "en": "Gateway: Added a log warning when the Google access token from a federation (`external_account`) credentials file is about to expire",
+          "area": [
+            "providers"
+          ]
         },
         {
           "kind": "improved",
           "impact": "internal",
           "weight": 3,
           "ko": "게이트웨이: `listen.trusted_proxies` 로그 힌트 개선",
-          "en": "Gateway: Improved the log hints about `listen.trusted_proxies`: they now say to list only a proxy that adds the connecting address to `X-Forwarded-For` itself"
+          "en": "Gateway: Improved the log hints about `listen.trusted_proxies`: they now say to list only a proxy that adds the connecting address to `X-Forwarded-For` itself",
+          "area": [
+            "providers"
+          ]
         },
         {
           "kind": "improved",
           "impact": "internal",
           "weight": 3,
           "ko": "게이트웨이: Bedrock CountTokens 실패 경고 문구 개선",
-          "en": "Gateway: Improved the warning when AWS CountTokens fails on Amazon Bedrock: it says Claude Code, not the gateway, counts after the 501, and points at IAM only when AWS denies access"
+          "en": "Gateway: Improved the warning when AWS CountTokens fails on Amazon Bedrock: it says Claude Code, not the gateway, counts after the 501, and points at IAM only when AWS denies access",
+          "area": [
+            "providers"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 3,
           "ko": "자체 호스트 러너: spawn 훅 환경에 `CLAUDE_RUNNER_SPAWN_REASON` 추가",
-          "en": "Self-hosted runner: Added `CLAUDE_RUNNER_SPAWN_REASON` to the orchestrator's spawn-runner hook environment: why Anthropic sent the request (e.g. `runner_lost`, `resumed`); unset when none was sent"
+          "en": "Self-hosted runner: Added `CLAUDE_RUNNER_SPAWN_REASON` to the orchestrator's spawn-runner hook environment: why Anthropic sent the request (e.g. `runner_lost`, `resumed`); unset when none was sent",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 3,
           "ko": "자체 호스트 러너: `--release-idle-session-min` 값 누락 시 시작 경고 추가",
-          "en": "Self-hosted runner: Added a startup warning when `--release-idle-session-min` is the last argument with no value (still ignored) or has a value of only spaces (still read as `0`)"
+          "en": "Self-hosted runner: Added a startup warning when `--release-idle-session-min` is the last argument with no value (still ignored) or has a value of only spaces (still read as `0`)",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "other",
           "impact": "internal",
           "weight": 2,
           "ko": "자체 호스트 러너: 오케스트레이터 로그 형식 변경 — `retryable=` 매칭 수정 필요",
-          "en": "Self-hosted runner: Changed the orchestrator's log lines: `ok session=…` now prints at every log level on stdout (was debug only, stderr) with `reason=…` after `jti=…`, and `nack session=…` ends its fields with `reason=…` after `retryable=…`; update scripts that match `retryable=true:` or `retryable=false:`"
+          "en": "Self-hosted runner: Changed the orchestrator's log lines: `ok session=…` now prints at every log level on stdout (was debug only, stderr) with `reason=…` after `jti=…`, and `nack session=…` ends its fields with `reason=…` after `retryable=…`; update scripts that match `retryable=true:` or `retryable=false:`",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "Remote Control: 작업 폴더 없을 때 ENOENT 오류가 폴더명을 알리도록 수정",
-          "en": "Remote Control: Fixed a misleading \"spawn error: ENOENT\" when a session's working folder is missing; the error now names the folder"
+          "en": "Remote Control: Fixed a misleading \"spawn error: ENOENT\" when a session's working folder is missing; the error now names the folder",
+          "area": [
+            "remote-control"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "Remote Control: 터미널 포크의 포크 제목을 `Name (fork 2)` 로 개선",
-          "en": "Remote Control: Improved the title a fork of a terminal fork is created with when the app doesn't set one: \"Name (fork 2)\""
+          "en": "Remote Control: Improved the title a fork of a terminal fork is created with when the app doesn't set one: \"Name (fork 2)\"",
+          "area": [
+            "remote-control"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 로그인이 거부된 창이 매분 새 프로세스를 띄우던 문제 수정",
-          "en": "[VSCode] Fixed a window whose sign-in the organization's settings refuse starting a new Claude Code process in the background every minute"
+          "en": "[VSCode] Fixed a window whose sign-in the organization's settings refuse starting a new Claude Code process in the background every minute",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 오류 배너의 긴 단어가 닫기 버튼을 밀어내던 문제 수정",
-          "en": "[VSCode] Fixed a long word in the chat panel's error banner pushing its close button out of view"
+          "en": "[VSCode] Fixed a long word in the chat panel's error banner pushing its close button out of view",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "improved",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 로그인 상태 확인 실패 시 출력 내용을 보여주도록 개선",
-          "en": "[VSCode] Improved the sign-in screen to show what Claude Code printed when its sign-in status check fails"
+          "en": "[VSCode] Improved the sign-in screen to show what Claude Code printed when its sign-in status check fails",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 2,
           "ko": "[클라우드 세션] 저장소를 고르지 않고 시작하는 No repository 옵션 추가",
-          "en": "[Cloud sessions] Added a No repository option: a cloud session on an Anthropic-hosted environment can now start without picking a repository"
+          "en": "[Cloud sessions] Added a No repository option: a cloud session on an Anthropic-hosted environment can now start without picking a repository",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 3,
           "ko": "[클라우드 세션] `google-chrome`·`CHROME_PATH` 로 내장 Chromium 찾도록 추가",
-          "en": "[Cloud sessions] Added the usual Chrome names to cloud sessions, so tools other than Playwright can find the built-in Chromium through google-chrome and CHROME_PATH"
+          "en": "[Cloud sessions] Added the usual Chrome names to cloud sessions, so tools other than Playwright can find the built-in Chromium through google-chrome and CHROME_PATH",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 3,
           "ko": "[클라우드 세션] 환경이 삭제된 안내 카드에 New session 버튼 추가",
-          "en": "[Cloud sessions] Added a New session button to the card shown when a cloud session's environment was deleted, where the message box is hidden"
+          "en": "[Cloud sessions] Added a New session button to the card shown when a cloud session's environment was deleted, where the message box is hidden",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "[클라우드 세션] `gh run view --log` 로 Actions 로그를 받도록 수정",
-          "en": "[Cloud sessions] Fixed reading GitHub Actions logs in cloud sessions: `gh run view --log` and `gh api` log requests now get the log in most environments, not an unreachable redirect"
+          "en": "[Cloud sessions] Fixed reading GitHub Actions logs in cloud sessions: `gh run view --log` and `gh api` log requests now get the log in most environments, not an unreachable redirect",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "[클라우드 세션] Create PR 실패 메시지가 사유·링크를 주도록 개선",
-          "en": "[Cloud sessions] Improved most Create PR failure messages in cloud and Remote Control sessions: they now give the reason or a link to GitHub instead of saying Try again"
+          "en": "[Cloud sessions] Improved most Create PR failure messages in cloud and Remote Control sessions: they now give the reason or a link to GitHub instead of saying Try again",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 3,
           "ko": "[클라우드 세션] 커넥터 검색이 디렉터리 일부만 본다고 알리도록 변경",
-          "en": "[Cloud sessions] Changed connector search results to tell Claude that the search covers only part of the connector directory"
+          "en": "[Cloud sessions] Changed connector search results to tell Claude that the search covers only part of the connector directory",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "[Remote Control] 같은 저장소 체크아웃 행이 각자 폴더명을 보이도록 수정",
-          "en": "[Remote Control] Fixed side-by-side checkouts of one repository looking identical in the environment menu's Remote Control rows; each now shows its own folder name"
+          "en": "[Remote Control] Fixed side-by-side checkouts of one repository looking identical in the environment menu's Remote Control rows; each now shows its own folder name",
+          "area": [
+            "remote-control"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[Claude Tag] 관리자 설정의 키보드 포커스·스크린 리더 안내 수정",
-          "en": "[Claude Tag] Fixed keyboard focus and screen reader announcements in Claude Tag admin setup; pressing Escape in the connect form no longer also closes the Add dialog"
+          "en": "[Claude Tag] Fixed keyboard focus and screen reader announcements in Claude Tag admin setup; pressing Escape in the connect form no longer also closes the Add dialog",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "improved",
           "impact": "internal",
           "weight": 3,
           "ko": "[Code Review] 분석 페이지가 실패 후 한 번 재시도하도록 개선",
-          "en": "[Code Review] Improved the Code Review analytics page to retry once after a server or network failure, then show a Try again banner instead of empty cards"
+          "en": "[Code Review] Improved the Code Review analytics page to retry once after a server or network failure, then show a Try again banner instead of empty cards",
+          "area": [
+            "code-review"
+          ]
         }
       ]
     },
