@@ -1,7 +1,21 @@
 {
   "schema": 1,
-  "generated": "2026-11-09T22:13:37Z",
+  "generated": "2026-11-10T06:41:06Z",
   "releases": [
+    {
+      "version": "v2.1.322",
+      "date": "2026-11-10",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.322",
+      "items": [
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "Vertex 의 `global`·`us`·`eu` 리전에서 fast mode 지원 추가",
+          "en": "Added fast mode on Vertex in the global, us and eu regions, falling back to standard speed if Vertex refuses it"
+        }
+      ]
+    },
     {
       "version": "v2.1.321",
       "date": "2026-11-09",
