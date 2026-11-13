@@ -12,973 +12,1390 @@
           "impact": "user",
           "weight": 1,
           "ko": "zstd 압축 응답 디코딩의 보안 문제 수정",
-          "en": "Fixed a security issue in how zstd-compressed responses are decoded"
+          "en": "Fixed a security issue in how zstd-compressed responses are decoded",
+          "area": [
+            "runtime"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 3,
           "ko": "노트북을 읽거나 고친 뒤 셀 재실행 안내 팁 추가",
-          "en": "Added a spinner tip in VS Code and similar integrated terminals about re-running a notebook cell, shown once Claude has read or edited a Jupyter notebook"
+          "en": "Added a spinner tip in VS Code and similar integrated terminals about re-running a notebook cell, shown once Claude has read or edited a Jupyter notebook",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 3,
           "ko": "조직 정책 차단 오류에 `/rewind`·`/clear` 안내 줄 추가",
-          "en": "Added a line under the error shown when your organization's policy blocks a request, saying how to continue: run `/rewind` and change the message, or run `/clear`"
+          "en": "Added a line under the error shown when your organization's policy blocks a request, saying how to continue: run `/rewind` and change the message, or run `/clear`",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "added",
           "impact": "user",
           "weight": 3,
           "ko": "샌드박스 git 명령이 `.claude` 보호 파일을 못 바꿀 때 안내 추가",
-          "en": "Added a note for Claude when a sandboxed `git checkout`, `git stash` or autostash pull cannot update protected files such as those in `.claude`"
+          "en": "Added a note for Claude when a sandboxed `git checkout`, `git stash` or autostash pull cannot update protected files such as those in `.claude`",
+          "area": [
+            "sandbox"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "bare 저장소 worktree 등에서 `/security-review` git 명령이 멈추던 문제 수정",
-          "en": "Fixed `/security-review` and skills' inline git commands stopping with an error in worktrees of bare repositories, `--separate-git-dir` checkouts and Android `repo` checkouts"
+          "en": "Fixed `/security-review` and skills' inline git commands stopping with an error in worktrees of bare repositories, `--separate-git-dir` checkouts and Android `repo` checkouts",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`opusplan`·`haiku` 에서 subagent 가 플랜 모드 모델로 바뀌던 문제 수정",
-          "en": "Fixed subagents with their own model being moved to the plan-mode model when the model setting is `opusplan` or `haiku`"
+          "en": "Fixed subagents with their own model being moved to the plan-mode model when the model setting is `opusplan` or `haiku`",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "다른 모델 subagent 가 파일·MCP 결과 크기를 본세션 모델로 계산하던 문제 수정",
-          "en": "Fixed subagents on a different model sizing file reads and MCP results with the main session's model"
+          "en": "Fixed subagents on a different model sizing file reads and MCP results with the main session's model",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "타사 게이트웨이·Foundry 세션이 압축 대신 컨텍스트 오류로 멈추던 문제 수정",
-          "en": "Fixed sessions on many third-party gateways and Foundry stopping with a context length error on every turn instead of compacting"
+          "en": "Fixed sessions on many third-party gateways and Foundry stopping with a context length error on every turn instead of compacting",
+          "area": [
+            "providers"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "비정상 종료 후 재개한 세션에서 최근 대화가 사라지던 문제 수정",
-          "en": "Fixed recent turns sometimes going missing from a resumed session after Claude Code stopped without a clean exit"
+          "en": "Fixed recent turns sometimes going missing from a resumed session after Claude Code stopped without a clean exit",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "작업 디렉터리 삭제 후 셸 명령이 실행 디렉터리에서 돌던 문제 수정",
-          "en": "Fixed shell commands running in the launch directory after the working directory was deleted; the command now fails with a message and can be re-issued"
+          "en": "Fixed shell commands running in the launch directory after the working directory was deleted; the command now fails with a message and can be re-issued",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`plansDirectory` 에 못 쓸 때 승인된 플랜 수정이 사라지던 문제 수정",
-          "en": "Fixed an approved plan edit being lost when the `plansDirectory` folder can't take it: the plan is now saved in the default plans folder, and a warning says where and why"
+          "en": "Fixed an approved plan edit being lost when the `plansDirectory` folder can't take it: the plan is now saved in the default plans folder, and a warning says where and why",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "새로 설치하면 `sonnet[1m]` 설정이 API 가 거부하는 모델 ID 로 바뀌던 문제 수정",
-          "en": "Fixed a saved `sonnet[1m]` model setting being rewritten on a new install to a model id the API rejects"
+          "en": "Fixed a saved `sonnet[1m]` model setting being rewritten on a new install to a model id the API rejects",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "예약 작업이 나중에 답하면 포커스 뷰가 내 프롬프트 답을 가리던 문제 수정",
-          "en": "Fixed focus view hiding the reply to your prompt when a scheduled task replied after it"
+          "en": "Fixed focus view hiding the reply to your prompt when a scheduled task replied after it",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "전체화면이 꺼진 백그라운드 subagent 뷰에 프롬프트가 빠지던 문제 수정",
-          "en": "Fixed the prompt sometimes missing from a background subagent's view when fullscreen is off"
+          "en": "Fixed the prompt sometimes missing from a background subagent's view when fullscreen is off",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "줄바꿈된 긴 선택지와 좁은 터미널의 첫 실행 화면이 깨지던 문제 수정",
-          "en": "Fixed long options in lists and permission prompts being partly overwritten when they wrap, and first-run screens losing lines on narrow terminals"
+          "en": "Fixed long options in lists and permission prompts being partly overwritten when they wrap, and first-run screens losing lines on narrow terminals",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "화면 밖으로 밀린 권한 규칙·MCP 인증 알림이 본 것으로 기록되던 문제 수정",
-          "en": "Fixed startup warnings about permission rules and the \"N MCP servers need authentication\" notice being recorded as seen when they were scrolled out of view"
+          "en": "Fixed startup warnings about permission rules and the \"N MCP servers need authentication\" notice being recorded as seen when they were scrolled out of view",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "에이전트 이름·폴더의 제어문자로 환영 헤더가 깨지던 문제 수정",
-          "en": "Fixed the welcome header showing control characters or splitting across lines when an agent's name or the working folder contains them or a line break"
+          "en": "Fixed the welcome header showing control characters or splitting across lines when an agent's name or the working folder contains them or a line break",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "사용자만 실행할 수 있는 명령의 오류 안내 수정",
-          "en": "Fixed the red error shown when Claude tries a command only you can run: a dim line now says it runs only when you type it at the prompt"
+          "en": "Fixed the red error shown when Claude tries a command only you can run: a dim line now says it runs only when you type it at the prompt",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "`/stats` 의 활동 일수가 하루 많게 나오던 문제 수정",
-          "en": "Fixed `/stats` showing an Active days total that was one day too high"
+          "en": "Fixed `/stats` showing an Active days total that was one day too high",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`/insights` 의 잘못된 완료 안내와 HTML 이스케이프 누락 수정",
-          "en": "Fixed `/insights` saying a report was ready when no session qualified for analysis, and writing two values into its HTML report without escaping them"
+          "en": "Fixed `/insights` saying a report was ready when no session qualified for analysis, and writing two values into its HTML report without escaping them",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "설정이 막고 있는데 `/voice` 가 변경됐다고 하던 문제 수정",
-          "en": "Fixed `/voice` saying voice mode changed when managed settings, `--settings`, or the project's `.claude/settings.json` or `.claude/settings.local.json` kept it as it was; it now says what holds it"
+          "en": "Fixed `/voice` saying voice mode changed when managed settings, `--settings`, or the project's `.claude/settings.json` or `.claude/settings.local.json` kept it as it was; it now says what holds it",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "Windows·Linux 에서 IDE 환영 창이 Cmd+Esc 를 안내하던 문제 수정",
-          "en": "Fixed the IDE welcome dialog showing Cmd+Esc for Quick Launch on Windows and Linux"
+          "en": "Fixed the IDE welcome dialog showing Cmd+Esc for Quick Launch on Windows and Linux",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "조직 정책이 클라우드 세션을 막아도 Slack 앱 안내가 뜨던 문제 수정",
-          "en": "Fixed Slack app tips showing when your organization's policy denies cloud sessions"
+          "en": "Fixed Slack app tips showing when your organization's policy denies cloud sessions",
+          "area": [
+            "claude-tag"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "`claude purge` 가 터미널·파이프 입력에서 멈추던 문제 수정",
-          "en": "Fixed `claude purge` hanging silently when there is no terminal to read keys from, and its project picker and `-i` prompts ignoring the keyboard when stdin is piped"
+          "en": "Fixed `claude purge` hanging silently when there is no terminal to read keys from, and its project picker and `-i` prompts ignoring the keyboard when stdin is piped",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "`claude plugin eval --output-dir ''` 가 현재 폴더에 쓰던 문제 수정",
-          "en": "Fixed `claude plugin eval --output-dir ''` writing the report into the current folder; it now exits with an error"
+          "en": "Fixed `claude plugin eval --output-dir ''` writing the report into the current folder; it now exits with an error",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "`claude -p` 터미널 출력이 서식 외 제어문자를 내보내던 문제 수정",
-          "en": "Fixed `claude -p` text output on a terminal passing control sequences other than text styling; pipes and files are unchanged"
+          "en": "Fixed `claude -p` text output on a terminal passing control sequences other than text styling; pipes and files are unchanged",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "설정 디렉터리에 `.oauth_refresh.lock.owner.tmp.*` 가 쌓이던 문제 수정",
-          "en": "Fixed leftover `.oauth_refresh.lock.owner.tmp.*` files piling up in the config directory"
+          "en": "Fixed leftover `.oauth_refresh.lock.owner.tmp.*` files piling up in the config directory",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "키 없는 Console 로그인에서 `/fast` 가 조직 제한이라 하던 문제 수정",
-          "en": "Fixed `/fast` saying \"Fast mode has been disabled by your organization\" under the keyless Console sign-in, where Claude Code had not asked the server"
+          "en": "Fixed `/fast` saying \"Fast mode has been disabled by your organization\" under the keyless Console sign-in, where Claude Code had not asked the server",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "확인할 수 없을 때 `/model` 이 조직 제한이라 하던 문제 수정",
-          "en": "Fixed `/model` saying that your organization restricts a model when Claude Code could not check that, for example with no network"
+          "en": "Fixed `/model` saying that your organization restricts a model when Claude Code could not check that, for example with no network",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "`/login` 브라우저 단계 직후 Esc 가 기존 로그인을 교체하던 문제 수정",
-          "en": "Fixed \"Sign in with your Console account\" in `/login` replacing your existing login when you pressed Esc right after the browser step"
+          "en": "Fixed \"Sign in with your Console account\" in `/login` replacing your existing login when you pressed Esc right after the browser step",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "로그인 실패·취소에도 브라우저가 성공 화면을 보이던 문제 수정",
-          "en": "Fixed the browser showing the sign-in success page in some cases where sign-in failed or was canceled"
+          "en": "Fixed the browser showing the sign-in success page in some cases where sign-in failed or was canceled",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "짧은 명령이 남긴 잠금으로 다음 세션이 1분쯤 멈추던 문제 수정",
-          "en": "Fixed `claude auth status` and other short commands leaving a lock behind on a Console profile, which made the next session hang for about a minute"
+          "en": "Fixed `claude auth status` and other short commands leaving a lock behind on a Console profile, which made the next session hang for about a minute",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "백그라운드 세션이 셸의 API 키·토큰으로 과금되던 문제 수정",
-          "en": "Fixed background sessions started on your claude.ai login using (and billing) an API key or token from the shell that started the background service"
+          "en": "Fixed background sessions started on your claude.ai login using (and billing) an API key or token from the shell that started the background service",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "세션이 몰래 다른 로그인으로 옮겨 가던 경우를 거부로 수정",
-          "en": "Fixed more cases of a session moving to another sign-in in the background; these moves are now refused, with a message saying what works"
+          "en": "Fixed more cases of a session moving to another sign-in in the background; these moves are now refused, with a message saying what works",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "이동 거부 후 종료 창의 두 번째 Enter 가 백그라운드 작업을 멈추던 문제 수정",
-          "en": "Fixed a second Enter in the exit dialog stopping background work after the move to the background was refused"
+          "en": "Fixed a second Enter in the exit dialog stopping background work after the move to the background was refused",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "`allowedProviders` 가 막아도 Bedrock 토큰 계산이 대화를 보내던 문제 수정",
-          "en": "Fixed token counting on Amazon Bedrock sending the conversation to Bedrock when the `allowedProviders` managed setting does not allow it"
+          "en": "Fixed token counting on Amazon Bedrock sending the conversation to Bedrock when the `allowedProviders` managed setting does not allow it",
+          "area": [
+            "providers"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "`HOME` 없이 시작하면 AWS·Google Cloud 자격증명이 실패하던 문제 수정",
-          "en": "Fixed AWS `credential_process` helpers and Google Cloud default credentials failing when Claude Code is started without a `HOME` environment variable"
+          "en": "Fixed AWS `credential_process` helpers and Google Cloud default credentials failing when Claude Code is started without a `HOME` environment variable",
+          "area": [
+            "providers"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "subagent 플랜 승인 뒤 세션이 이전 권한 모드로 돌아가던 문제 수정",
-          "en": "Fixed a session sometimes going back to an earlier permission mode after a subagent's plan was approved"
+          "en": "Fixed a session sometimes going back to an earlier permission mode after a subagent's plan was approved",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "Agent SDK `applyFlagSettings()` 가 이전 설정을 조용히 버리던 문제 수정",
-          "en": "Fixed one invalid value in an Agent SDK `applyFlagSettings()` call silently discarding all settings from earlier calls; a call that would do this is now refused with an error"
+          "en": "Fixed one invalid value in an Agent SDK `applyFlagSettings()` call silently discarding all settings from earlier calls; a call that would do this is now refused with an error",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "검토·병합만 남은 PR 세션이 입력 대기로 보이던 문제 수정",
-          "en": "Fixed sessions showing as waiting for input when a finished pull request only needed your own review or merge"
+          "en": "Fixed sessions showing as waiting for input when a finished pull request only needed your own review or merge",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "알 수 없는 `teammateMode` 값이 경고 없이 무시되던 문제 수정",
-          "en": "Fixed an unrecognized `teammateMode` settings value being ignored without a warning: `claude -p`, the startup warning and `claude doctor` now list it as a skipped entry (still not applied)"
+          "en": "Fixed an unrecognized `teammateMode` settings value being ignored without a warning: `claude -p`, the startup warning and `claude doctor` now list it as a skipped entry (still not applied)",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "`--worktree` 가 플러그인의 `WorktreeCreate` 훅을 건너뛰던 문제 수정",
-          "en": "Fixed `--worktree` skipping a `WorktreeCreate` hook from a plugin in `CLAUDE_CODE_PLUGIN_SEED_DIR` on the first run in a new home directory"
+          "en": "Fixed `--worktree` skipping a `WorktreeCreate` hook from a plugin in `CLAUDE_CODE_PLUGIN_SEED_DIR` on the first run in a new home directory",
+          "area": [
+            "hooks"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "Dispatch 같은 간략 모드 세션이 응답을 한 번 더 보내던 문제 수정",
-          "en": "Fixed brief-mode sessions, such as Dispatch, sending a reply again after the turn had already replied"
+          "en": "Fixed brief-mode sessions, such as Dispatch, sending a reply again after the turn had already replied",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "클라우드 세션에서 정상 커넥터를 실패라고 하던 문제 수정",
-          "en": "Fixed Claude saying a working Atlassian, Asana or Sentry connector had failed in cloud sessions when a plugin listed it at a different URL"
+          "en": "Fixed Claude saying a working Atlassian, Asana or Sentry connector had failed in cloud sessions when a plugin listed it at a different URL",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "Claude Desktop·SDK 세션의 폴더 MCP 서버 목록·연결 문제 수정",
-          "en": "Fixed Claude Desktop and SDK sessions listing a folder's own MCP servers (`.mcp.json`, local) as host-added or not at all, and not connecting WebSocket ones, after a folder move or pre-warmed start"
+          "en": "Fixed Claude Desktop and SDK sessions listing a folder's own MCP servers (`.mcp.json`, local) as host-added or not at all, and not connecting WebSocket ones, after a folder move or pre-warmed start",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "플러그인 재적용으로 지워진 MCP 서버가 `/mcp` 에 남던 문제 수정",
-          "en": "Fixed `/mcp` still listing a plugin's MCP server after a plugin reload removed it while it was connecting"
+          "en": "Fixed `/mcp` still listing a plugin's MCP server after a plugin reload removed it while it was connecting",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "일시적 갱신 실패 후 MCP 인증 상태와 `mcp_tool` 훅이 멈춰 있던 문제 수정",
-          "en": "Fixed an MCP server staying \"needs authentication\", and its `mcp_tool` hooks being skipped, after a token refresh that was refused only for a moment"
+          "en": "Fixed an MCP server staying \"needs authentication\", and its `mcp_tool` hooks being skipped, after a token refresh that was refused only for a moment",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "헤드리스에서 MCP elicitation 요청이 묻지 않고 취소되던 문제 수정",
-          "en": "Fixed MCP elicitation requests being cancelled without asking in headless mode after a server's connection was replaced during a tool call"
+          "en": "Fixed MCP elicitation requests being cancelled without asking in headless mode after a server's connection was replaced during a tool call",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "SDK 호스트의 MCP 도구 호출이 재연결 후에도 미연결로 답하던 문제 수정",
-          "en": "Fixed MCP tool calls from an SDK host answering \"Not connected\" after a tool call had reconnected the MCP server"
+          "en": "Fixed MCP tool calls from an SDK host answering \"Not connected\" after a tool call had reconnected the MCP server",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "질문이 닫힌 뒤 멈춰 있던 MCP 작업 문제 수정",
-          "en": "Fixed an MCP task getting stuck after its question was closed with Esc or asked again: the footer now says it needs your input, and Enter in `/tasks` shows the question again"
+          "en": "Fixed an MCP task getting stuck after its question was closed with Esc or asked again: the footer now says it needs your input, and Enter in `/tasks` shows the question again",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "연결이 끊긴 뒤 갱신이 멈추던 백그라운드 MCP 작업 문제 수정",
-          "en": "Fixed background MCP tasks that stopped updating after another call to the same server lost the connection, when a later call reconnects"
+          "en": "Fixed background MCP tasks that stopped updating after another call to the same server lost the connection, when a later call reconnects",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "작성 중인 메시지 위로 MCP 작업 질문이 뜨던 문제 수정",
-          "en": "Fixed a background MCP task's question opening over a message you were still typing; it now waits until you send or clear the draft, and the spinner and turn timer keep running"
+          "en": "Fixed a background MCP task's question opening over a message you were still typing; it now waits until you send or clear the draft, and the spinner and turn timer keep running",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "구버전 git 에서 희소 클론이 저장소 루트 파일을 빠뜨리던 문제 수정",
-          "en": "Fixed `worktree.sparsePaths` and sparse plugin and marketplace clones leaving out the repository's root files on older git versions, such as 2.34"
+          "en": "Fixed `worktree.sparsePaths` and sparse plugin and marketplace clones leaving out the repository's root files on older git versions, such as 2.34",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "self-hosted 러너 세션이 중간에 추가한 저장소를 못 쓰던 문제 수정",
-          "en": "Fixed self-hosted runner sessions with several repositories being unable to use a repository added mid-session"
+          "en": "Fixed self-hosted runner sessions with several repositories being unable to use a repository added mid-session",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "내 아티팩트와 그 데이터를 읽을 때 권한을 묻던 문제 수정",
-          "en": "Fixed Claude asking for permission before reading your own artifact or its data"
+          "en": "Fixed Claude asking for permission before reading your own artifact or its data",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "일부 클라우드 세션에서 Artifact 도구의 거부·확인 규칙과 훅이 적용되지 않던 문제 수정",
-          "en": "Fixed deny and ask permission rules and hooks for the Artifact tool not applying in some cloud sessions"
+          "en": "Fixed deny and ask permission rules and hooks for the Artifact tool not applying in some cloud sessions",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "Code Mode 스크립트가 `EnterWorktree` 워크트리를 무시하던 문제 수정",
-          "en": "Fixed Code Mode scripts ignoring a worktree entered with `EnterWorktree`, writing `~` paths into the project, and leaving `/mcp` showing an MCP server as connected after its sign-in expired"
+          "en": "Fixed Code Mode scripts ignoring a worktree entered with `EnterWorktree`, writing `~` paths into the project, and leaving `/mcp` showing an MCP server as connected after its sign-in expired",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "Code Mode 에서 승인과 함께 입력한 말이 Claude 에 닿지 않던 문제 수정",
-          "en": "Fixed words typed with a Yes at a permission dialog or plan approval not reaching Claude in Code Mode"
+          "en": "Fixed words typed with a Yes at a permission dialog or plan approval not reaching Claude in Code Mode",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "Code Mode 중 끝난 세션을 재개하면 Claude 가 알아서 일을 시작하던 문제 수정",
-          "en": "Fixed Claude starting work by itself when you resumed a session that ended during a Code Mode script; it now waits for your next prompt"
+          "en": "Fixed Claude starting work by itself when you resumed a session that ended during a Code Mode script; it now waits for your next prompt",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "턴 중간에 보낸 메시지의 OpenTelemetry `user_prompt` 이벤트 누락 수정",
-          "en": "Fixed a missing OpenTelemetry `user_prompt` event for a message sent while tool calls run. The event has `delivery.mode: \"mid_turn\"` and the running turn's `prompt.id`"
+          "en": "Fixed a missing OpenTelemetry `user_prompt` event for a message sent while tool calls run. The event has `delivery.mode: \"mid_turn\"` and the running turn's `prompt.id`",
+          "area": [
+            "other"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "병합된 메시지의 OpenTelemetry `user_prompt` 이벤트 본문 누락 수정",
-          "en": "Fixed the OpenTelemetry `user_prompt` event leaving out earlier messages' text when queued messages merged into one turn in VS Code, or when one message had an image"
+          "en": "Fixed the OpenTelemetry `user_prompt` event leaving out earlier messages' text when queued messages merged into one turn in VS Code, or when one message had an image",
+          "area": [
+            "other"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "슬래시 명령의 `allowed-tools` 허용이 백그라운드 에이전트에 적용되던 문제 수정",
-          "en": "Fixed a slash command's `allowed-tools` grants applying to background agents woken during or after its turn"
+          "en": "Fixed a slash command's `allowed-tools` grants applying to background agents woken during or after its turn",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "`/feedback`·`/bug` 가 다른 계정의 세션까지 업로드하던 문제 수정",
-          "en": "Fixed `/feedback` and `/bug` to upload other sessions only when they were recorded by the signed-in account or organization"
+          "en": "Fixed `/feedback` and `/bug` to upload other sessions only when they were recorded by the signed-in account or organization",
+          "area": [
+            "other"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "`cd` 후 상대 경로 거부·확인 규칙이 프로젝트를 못 덮던 문제 수정",
-          "en": "Fixed relative deny and ask permission rules (e.g. `Read(./.env)`) no longer covering the project after a `cd`; they now also apply in added directories"
+          "en": "Fixed relative deny and ask permission rules (e.g. `Read(./.env)`) no longer covering the project after a `cd`; they now also apply in added directories",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "`mcp__plugin_*_` 거부·확인 규칙이 대소문자 차이를 놓치던 문제 수정",
-          "en": "Fixed deny and ask permission rules starting with `mcp__plugin_*_` missing a plugin's MCP server or tool spelled in another letter case"
+          "en": "Fixed deny and ask permission rules starting with `mcp__plugin_*_` missing a plugin's MCP server or tool spelled in another letter case",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "재시작 뒤 도착한 승인에 거부 규칙이 적용되지 않던 문제 수정",
-          "en": "Fixed deny rules not being applied to a permission approval that arrives after Claude Code restarts, in self-hosted runner and `claude remote-control` sessions"
+          "en": "Fixed deny rules not being applied to a permission approval that arrives after Claude Code restarts, in self-hosted runner and `claude remote-control` sessions",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "커밋된 `.claude/settings.local.json` 이 내 설정으로 취급되던 문제 수정",
-          "en": "Fixed a case where a committed `.claude/settings.local.json` could be treated as the user's own when Claude Code was started in certain subfolders of a repository"
+          "en": "Fixed a case where a committed `.claude/settings.local.json` could be treated as the user's own when Claude Code was started in certain subfolders of a repository",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "일부 Bash 명령에 거부·확인 규칙이 적용되지 않던 문제 수정",
-          "en": "Fixed some deny and ask rules not applying to certain Bash commands"
+          "en": "Fixed some deny and ask rules not applying to certain Bash commands",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "복합 Bash 명령이 묻지 않고 실행되던 권한 검사 허점 수정",
-          "en": "Fixed a gap in Bash permission checks where some compound commands could run without asking; these now ask for permission"
+          "en": "Fixed a gap in Bash permission checks where some compound commands could run without asking; these now ask for permission",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "Bash 허용 규칙이 다른 프로그램을 실행할 수 있던 문제 수정",
-          "en": "Fixed a case where a Bash allow rule could run a different program than the one it names"
+          "en": "Fixed a case where a Bash allow rule could run a different program than the one it names",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "플러그인 로딩 중 커넥터 승인 창이 자동으로 응답되던 문제 수정",
-          "en": "Fixed a connector tool's approval prompt in cloud sessions being answered automatically while plugins were still loading"
+          "en": "Fixed a connector tool's approval prompt in cloud sessions being answered automatically while plugins were still loading",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "subagent 가 외부 공개 아티팩트를 묻지 않고 바꾸던 문제 수정",
-          "en": "Fixed some subagents changing an artifact that people outside your organization can see, or uploading files to it, without asking first when an allow rule is set or uploads were approved earlier"
+          "en": "Fixed some subagents changing an artifact that people outside your organization can see, or uploading files to it, without asking first when an allow rule is set or uploads were approved earlier",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "외부 공개 아티팩트 게시에서 확인 절차가 생략되던 문제 수정",
-          "en": "Fixed some artifact publishes skipping the confirmation for pages that people outside your organization can see when \"don't ask again\" had been chosen for Artifact"
+          "en": "Fixed some artifact publishes skipping the confirmation for pages that people outside your organization can see when \"don't ask again\" had been chosen for Artifact",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "자동 모드가 공개 아티팩트의 첫 변경만 판단하던 문제 수정",
-          "en": "Fixed auto mode judging only the first change to an artifact that people outside your organization can see; its yes now covers that change alone"
+          "en": "Fixed auto mode judging only the first change to an artifact that people outside your organization can see; its yes now covers that change alone",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "실행 중 세션에 `strictPluginOnlyCustomization` 잠금이 안 걸리던 문제 수정",
-          "en": "Fixed a managed `strictPluginOnlyCustomization` lock on agents and skills not taking effect in sessions that were already running"
+          "en": "Fixed a managed `strictPluginOnlyCustomization` lock on agents and skills not taking effect in sessions that were already running",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "샌드박스 명령이 업데이터 다운로드 폴더에 쓸 수 있던 문제 수정",
-          "en": "Fixed sandboxed commands being able to write to the native updater's download folder in some cases"
+          "en": "Fixed sandboxed commands being able to write to the native updater's download folder in some cases",
+          "area": [
+            "sandbox"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "Bash 샌드박스가 워크트리의 설정·훅을 덜 보호하던 문제 수정",
-          "en": "Fixed a case where the Bash sandbox did not fully protect a worktree's settings and hooks"
+          "en": "Fixed a case where the Bash sandbox did not fully protect a worktree's settings and hooks",
+          "area": [
+            "sandbox"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 1,
           "ko": "Bash 샌드박스가 연결된 워크트리의 공용 git 폴더를 덜 보호하던 문제 수정",
-          "en": "Fixed a case where the Bash sandbox did not fully protect a linked worktree's shared git folder"
+          "en": "Fixed a case where the Bash sandbox did not fully protect a linked worktree's shared git folder",
+          "area": [
+            "sandbox"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "특이한 git 상태에서 `/teleport` 의 stash 선택을 중단으로 수정",
-          "en": "Fixed `/teleport`'s stash choice in some unusual git states: it now stops and says what to do"
+          "en": "Fixed `/teleport`'s stash choice in some unusual git states: it now stops and says what to do",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "Windows 에서 열 수 없는 PATH 항목 때문에 시작이 지연되던 문제 수정",
-          "en": "Windows: Fixed a start-up stall that could last about a second when a PATH entry sits under a folder your account cannot open"
+          "en": "Windows: Fixed a start-up stall that could last about a second when a PATH entry sits under a folder your account cannot open",
+          "area": [
+            "runtime"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "Windows 에서 드라이브 문자 표기가 달라 `/resume` 세션이 숨던 문제 수정",
-          "en": "Fixed `/resume` on Windows refusing or hiding sessions whose folder was recorded with a different drive-letter case or slashes"
+          "en": "Fixed `/resume` on Windows refusing or hiding sessions whose folder was recorded with a different drive-letter case or slashes",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "Windows 인세션 `/resume` 가 프로젝트 신뢰를 잃던 문제 수정",
-          "en": "Fixed an in-session `/resume` on Windows dropping a project's saved trust when the session was recorded with a different drive-letter case"
+          "en": "Fixed an in-session `/resume` on Windows dropping a project's saved trust when the session was recorded with a different drive-letter case",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 2,
           "ko": "Linux 에서 심볼릭 홈 아래 샌드박스 Bash 가 실패하던 문제 수정",
-          "en": "Linux: Fixed sandboxed Bash commands failing with `bwrap: Can't create file` when the working directory was below an `allowRead` folder inside a `denyRead`, such as under a symlinked home directory"
+          "en": "Linux: Fixed sandboxed Bash commands failing with `bwrap: Can't create file` when the working directory was below an `allowRead` folder inside a `denyRead`, such as under a symlinked home directory",
+          "area": [
+            "sandbox"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "Claude Desktop 서드파티 배포가 중지 중 상태에 머물던 문제 수정",
-          "en": "Fixed Claude Desktop's third-party deployments staying on \"Stopping\" until a token renewal finished (once it includes this version)"
+          "en": "Fixed Claude Desktop's third-party deployments staying on \"Stopping\" until a token renewal finished (once it includes this version)",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "출력 한계로 잘린 subagent 답변을 짧게 다시 받도록 개선",
-          "en": "Improved subagents cut off at the output token limit: they are now asked for the whole answer again, more briefly, instead of returning only its end"
+          "en": "Improved subagents cut off at the output token limit: they are now asked for the whole answer again, more briefly, instead of returning only its end",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "Console 로그인 시 잠금 대기 없이 유효 토큰으로 시작하도록 개선",
-          "en": "Improved startup with a keyless Console sign-in or other Anthropic profile login: a token that is still valid is read without waiting for the credentials lock"
+          "en": "Improved startup with a keyless Console sign-in or other Anthropic profile login: a token that is still valid is read without waiting for the credentials lock",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 1,
           "ko": "내 계정 이메일을 클라이언트 신원으로 쓰는 것을 더 넓게 거부",
-          "en": "Improved the account email check: it now also refuses your email as a client's identity in scripts a command runs, file writes, web fetches and MCP calls"
+          "en": "Improved the account email check: it now also refuses your email as a client's identity in scripts a command runs, file writes, web fetches and MCP calls",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "비공개 마켓플레이스의 `HTTPS authentication failed` 안내 개선",
-          "en": "Improved the `HTTPS authentication failed` message for private plugin marketplaces: it now says git's terminal prompts and askpass programs are disabled, and it also appears with newer git versions"
+          "en": "Improved the `HTTPS authentication failed` message for private plugin marketplaces: it now says git's terminal prompts and askpass programs are disabled, and it also appears with newer git versions",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "플러그인 설치·마켓플레이스 확인에 코드 실행 위험 문구 추가",
-          "en": "Improved the add-marketplace confirmations, plugin recommendation prompts and plugin install warning to say that plugins can run code on your computer, with access to your files and shell"
+          "en": "Improved the add-marketplace confirmations, plugin recommendation prompts and plugin install warning to say that plugins can run code on your computer, with access to your files and shell",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "`claude --desktop` 로그인 오류가 원인 설정을 알리도록 개선",
-          "en": "Improved the `claude --desktop` sign-in error to name the API key, provider or setting that stops a Claude account sign-in from working"
+          "en": "Improved the `claude --desktop` sign-in error to name the API key, provider or setting that stops a Claude account sign-in from working",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "macOS·Windows 의 `/voice` 마이크 선택 안내 개선",
-          "en": "Improved the `/voice` \"No audio detected\" message on macOS and Windows: it now says where to pick your microphone"
+          "en": "Improved the `/voice` \"No audio detected\" message on macOS and Windows: it now says where to pick your microphone",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "MCP 작업이 답을 기다릴 때 Claude 가 `/tasks` 를 안내하도록 개선",
-          "en": "Improved MCP tasks: Claude is now told when a task is waiting for your answer, and can point you to `/tasks`"
+          "en": "Improved MCP tasks: Claude is now told when a task is waiting for your answer, and can point you to `/tasks`",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 2,
           "ko": "`claude remote-control` 의 종료 상태 코드 4·69 추가",
-          "en": "Improved `claude remote-control`: it now exits with status 4 when it stops by itself (single-session runs still exit 0) and 69 when it can't register, so a service manager can start it again"
+          "en": "Improved `claude remote-control`: it now exits with status 4 when it stops by itself (single-session runs still exit 0) and 69 when it can't register, so a service manager can start it again",
+          "area": [
+            "remote-control"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "백그라운드 세션의 키 사용 불가 안내 문구 개선",
-          "en": "Improved the messages shown when a background session can't use its session's API key or token: they no longer suggest adding the key to settings"
+          "en": "Improved the messages shown when a background session can't use its session's API key or token: they no longer suggest adding the key to settings",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "improved",
           "impact": "user",
           "weight": 3,
           "ko": "기본 dataviz 스킬의 부분-전체 차트 조언 개선",
-          "en": "Improved the bundled dataviz skill's part-to-whole advice for static images and for parts with a natural order, such as age bands"
+          "en": "Improved the bundled dataviz skill's part-to-whole advice for static images and for parts with a natural order, such as age bands",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "샌드박스 Bash 명령도 기본으로 권한 확인을 거치도록 변경",
-          "en": "Changed sandboxed Bash commands to follow the normal permission flow by default; set `sandbox.autoAllowBashIfSandboxed: true` to keep running them without prompts"
+          "en": "Changed sandboxed Bash commands to follow the normal permission flow by default; set `sandbox.autoAllowBashIfSandboxed: true` to keep running them without prompts",
+          "area": [
+            "sandbox"
+          ]
         },
         {
           "kind": "changed",
           "impact": "internal",
           "weight": 3,
           "ko": "샌드박스를 켜는 관리 설정에서 무확인 실행을 유지하는 방법 변경",
-          "en": "Changed managed settings that turn the sandbox on: to keep commands running without prompts, set `sandbox.autoAllowBashIfSandboxed: true` in your highest-ranking managed source"
+          "en": "Changed managed settings that turn the sandbox on: to keep commands running without prompts, set `sandbox.autoAllowBashIfSandboxed: true` in your highest-ranking managed source",
+          "area": [
+            "sandbox"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "신뢰하지 않은 저장소의 읽기 전용 git 명령도 먼저 묻도록 변경",
-          "en": "Changed read-only git commands to ask first in a repository that isn't the project's or one you trusted; name it with `--add-dir`, not the `additionalDirectories` setting, to run them without prompts"
+          "en": "Changed read-only git commands to ask first in a repository that isn't the project's or one you trusted; name it with `--add-dir`, not the `additionalDirectories` setting, to run them without prompts",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "예약 작업·`/loop` 가 `allowed-tools`·훅 선언 스킬 실행 전 묻도록 변경",
-          "en": "Changed scheduled tasks and `/loop` to ask before running a skill that declares `allowed-tools` or hooks; add `Skill(name)` to `permissions.allow` to run it unattended"
+          "en": "Changed scheduled tasks and `/loop` to ask before running a skill that declares `allowed-tools` or hooks; add `Skill(name)` to `permissions.allow` to run it unattended",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "changed",
           "impact": "internal",
           "weight": 3,
           "ko": "Desktop·IDE·SDK 호스트의 항상 허용 제공 조건 변경",
-          "en": "Changed \"Always allow\" in Desktop, IDE and SDK hosts: a rule alone is offered only when saving it would allow that command again, so a scheduled task that relied on one can now wait for you"
+          "en": "Changed \"Always allow\" in Desktop, IDE and SDK hosts: a rule alone is offered only when saving it would allow that command again, so a scheduled task that relied on one can now wait for you",
+          "area": [
+            "permissions"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "추가 디렉터리의 `.claude` 설정·훅에 대한 샌드박스 쓰기도 거부로 변경",
-          "en": "Changed the sandbox to refuse sandboxed writes to `.claude` settings, skills, agents, commands and hooks in added directories, as it does in the launch folder"
+          "en": "Changed the sandbox to refuse sandboxed writes to `.claude` settings, skills, agents, commands and hooks in added directories, as it does in the launch folder",
+          "area": [
+            "sandbox"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "격리된 워크트리에서 `git bisect run`·`scalar` 등을 거부로 변경",
-          "en": "Changed worktree isolation: an isolated worktree session or agent is now refused `git bisect run`, `git maintenance register|start` and `scalar`'s set-up commands, and is told what still works"
+          "en": "Changed worktree isolation: an isolated worktree session or agent is now refused `git bisect run`, `git maintenance register|start` and `scalar`'s set-up commands, and is told what still works",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "플러그인 MCP 번들을 플러그인 디렉터리 아래에 풀도록 변경",
-          "en": "Changed plugin MCP bundles (`.mcpb`, `.dxt`) to unpack under the plugins directory, not `.mcpb-cache` in the plugin's folder, so read-only plugin folders load; one fetched by URL downloads again once"
+          "en": "Changed plugin MCP bundles (`.mcpb`, `.dxt`) to unpack under the plugins directory, not `.mcpb-cache` in the plugin's folder, so read-only plugin folders load; one fetched by URL downloads again once",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "changed",
           "impact": "internal",
           "weight": 3,
           "ko": "관리 설정이 선언한 원격 마켓플레이스 플러그인을 조직 것으로 변경",
-          "en": "Changed plugins of a remote marketplace that managed settings declare, enable and list in `prependPlugins` or `appendPlugins` to count as the organization's; `pluginDigests` is deprecated and ignored"
+          "en": "Changed plugins of a remote marketplace that managed settings declare, enable and list in `prependPlugins` or `appendPlugins` to count as the organization's; `pluginDigests` is deprecated and ignored",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "플러그인의 안전하지 않은 경로·링크를 건너뛰도록 변경",
-          "en": "Changed plugin loading to skip, and `claude plugin validate` to report, some unsafe paths and links in a plugin's folder"
+          "en": "Changed plugin loading to skip, and `claude plugin validate` to report, some unsafe paths and links in a plugin's folder",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "`--plugin-dir` 플러그인의 중첩 `.claude/skills` 로딩 방식 변경",
-          "en": "Changed nested skill loading: `.claude/skills` folders in `--plugin-dir` plugins no longer load from a session started above them; start Claude Code in the plugin folder instead"
+          "en": "Changed nested skill loading: `.claude/skills` folders in `--plugin-dir` plugins no longer load from a session started above them; start Claude Code in the plugin folder instead",
+          "area": [
+            "skills-commands"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "`WorktreeCreate` 훅의 프로젝트 내 심볼릭 링크 경로를 거부로 변경",
-          "en": "Changed EnterWorktree to refuse a `WorktreeCreate` hook path that goes through a symlink inside the project; have the hook print the real path"
+          "en": "Changed EnterWorktree to refuse a `WorktreeCreate` hook path that goes through a symlink inside the project; have the hook print the real path",
+          "area": [
+            "hooks"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "tmux·iTerm2 팀메이트가 세션 폴더에서 시작하도록 변경",
-          "en": "Changed tmux and iTerm2 teammates, and new sessions from the agents view opened with ←, to start in the session's folder instead of where the shell last ran `cd`"
+          "en": "Changed tmux and iTerm2 teammates, and new sessions from the agents view opened with ←, to start in the session's folder instead of where the shell last ran `cd`",
+          "area": [
+            "agents"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 3,
           "ko": "백그라운드 턴이 이어질 때 프롬프트 제안 갱신을 줄이도록 변경",
-          "en": "Changed prompt suggestions in the terminal to refresh less often after 8 turns in a row started by background or scheduled tasks, saving usage until you press a key or return to the terminal"
+          "en": "Changed prompt suggestions in the terminal to refresh less often after 8 turns in a row started by background or scheduled tasks, saving usage until you press a key or return to the terminal",
+          "area": [
+            "terminal-ui"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "백그라운드 MCP 작업 질문의 Esc 를 나중에 답하기로 변경",
-          "en": "Changed Esc on a background MCP task's question to \"answer later\": nothing is sent to the server, and the question stays in `/tasks`"
+          "en": "Changed Esc on a background MCP task's question to \"answer later\": nothing is sent to the server, and the question stays in `/tasks`",
+          "area": [
+            "mcp"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 3,
           "ko": "`CLAUDE_CODE_MAX_CONTEXT_TOKENS` 가 미지의 `claude-` 모델에도 적용되도록 변경",
-          "en": "Changed `CLAUDE_CODE_MAX_CONTEXT_TOKENS` to also set the context window of unrecognized model IDs that start with `claude-`, such as a gateway's `claude-sonnet-latest`"
+          "en": "Changed `CLAUDE_CODE_MAX_CONTEXT_TOKENS` to also set the context window of unrecognized model IDs that start with `claude-`, such as a gateway's `claude-sonnet-latest`",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "`/login` 이 개인정보 설정 변경 전 권한을 묻도록 변경",
-          "en": "Changed `/login` to ask for permission to change your privacy settings"
+          "en": "Changed `/login` to ask for permission to change your privacy settings",
+          "area": [
+            "auth-account"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "`/cost`·`--max-budget-usd` 가 모드의 모델 호출도 집계하도록 변경",
-          "en": "Changed `/cost`, `$.session.usage()`, `--max-budget-usd` and the cost and token metrics to count a mod's `$.model.complete` and `$.model.classify` calls"
+          "en": "Changed `/cost`, `$.session.usage()`, `--max-budget-usd` and the cost and token metrics to count a mod's `$.model.complete` and `$.model.classify` calls",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "샌드박스가 띄우는 자체 프로그램 환경에서 로그인 토큰·API 키 제거",
-          "en": "Changed the programs that Claude Code's sandbox starts for its own use, such as its network bridge, to run without Claude Code's sign-in tokens and API keys in their environment"
+          "en": "Changed the programs that Claude Code's sandbox starts for its own use, such as its network bridge, to run without Claude Code's sign-in tokens and API keys in their environment",
+          "area": [
+            "sandbox"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "ripgrep·git 등 보조 프로그램 환경에서 mTLS 키 암구호 제거",
-          "en": "Changed ripgrep, local git commands and the sandbox runtime's own helper programs to run without the mTLS client key's passphrase in their environment"
+          "en": "Changed ripgrep, local git commands and the sandbox runtime's own helper programs to run without the mTLS client key's passphrase in their environment",
+          "area": [
+            "tools"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "공유 링크가 있는 세션의 `/resume`·`/teleport` 는 먼저 연결 해제로 변경",
-          "en": "Remote Control: Changed `/resume` and `/teleport` to disconnect first when the connected session has a share link, or when that can't be checked; run `/remote-control` to connect again"
+          "en": "Remote Control: Changed `/resume` and `/teleport` to disconnect first when the connected session has a share link, or when that can't be checked; run `/remote-control` to connect again",
+          "area": [
+            "remote-control"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "클라우드 세션이 `sandbox.failIfUnavailable` 에도 시작되도록 변경",
-          "en": "Changed Claude Code on the web, cloud scheduled tasks and Cowork cloud sessions to start despite `sandbox.failIfUnavailable`: the hosted container has no command sandbox"
+          "en": "Changed Claude Code on the web, cloud scheduled tasks and Cowork cloud sessions to start despite `sandbox.failIfUnavailable`: the hosted container has no command sandbox",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "클라우드·self-hosted 세션 연결의 설정·권한 조회를 축소·거부로 변경",
-          "en": "Changed requests for settings, permission rules, hooks or status over a cloud or self-hosted session's connection to return less or be refused; what applies in the session is unchanged"
+          "en": "Changed requests for settings, permission rules, hooks or status over a cloud or self-hosted session's connection to return less or be refused; what applies in the session is unchanged",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "계정 데이터 캐시가 없는 `claude -p` 는 데이터를 받은 뒤 요청하도록 변경",
-          "en": "Changed `claude -p` with no cached account data to wait for that data before its first request, so a first run in a clean environment can start a few seconds later"
+          "en": "Changed `claude -p` with no cached account data to wait for that data before its first request, so a first run in a clean environment can start a few seconds later",
+          "area": [
+            "sessions"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 3,
           "ko": "지워질 수 있는 임시 스크래치패드 폴더를 피하도록 Claude 지침 변경",
-          "en": "Changed Claude's instructions to keep files you'll want out of its temporary scratchpad folder, which can be cleared"
+          "en": "Changed Claude's instructions to keep files you'll want out of its temporary scratchpad folder, which can be cleared",
+          "area": [
+            "memory-context"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "마켓플레이스 `ref` 가 커밋 전체 ID 를 받도록 변경",
-          "en": "Changed marketplace `ref` to accept the full ID of any commit on a branch or tag; clients before this version can't clone such a pin, so a marketplace pinned this way stops loading there"
+          "en": "Changed marketplace `ref` to accept the full ID of any commit on a branch or tag; clients before this version can't clone such a pin, so a marketplace pinned this way stops loading there",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "`ALL_PROXY` 만 있을 때 플러그인 다운로드를 CONNECT 터널로 변경",
-          "en": "Changed plugin marketplace and plugin downloads to use a CONNECT tunnel when `ALL_PROXY` is the only proxy set; a proxy that refuses CONNECT now fails them"
+          "en": "Changed plugin marketplace and plugin downloads to use a CONNECT tunnel when `ALL_PROXY` is the only proxy set; a proxy that refuses CONNECT now fails them",
+          "area": [
+            "plugins"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 1,
           "ko": "컨테이너 마운트 시 `settings.local.json` 허용 규칙을 신뢰 후에만 적용",
-          "en": "Changed `-p` and SDK runs in a worktree or submodule mounted into a container to apply `.claude/settings.local.json` allow rules only once the folder is trusted"
+          "en": "Changed `-p` and SDK runs in a worktree or submodule mounted into a container to apply `.claude/settings.local.json` allow rules only once the folder is trusted",
+          "area": [
+            "settings"
+          ]
         },
         {
           "kind": "changed",
           "impact": "user",
           "weight": 2,
           "ko": "self-hosted 러너가 심볼릭 링크 경로 세션을 거부하도록 변경",
-          "en": "Changed self-hosted runners to refuse a session whose session folder or repository path is a symbolic link, other than a `checkout` hook's checkout"
+          "en": "Changed self-hosted runners to refuse a session whose session folder or repository path is a symbolic link, other than a `checkout` hook's checkout",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "other",
           "impact": "user",
           "weight": 3,
           "ko": "클라우드·Remote Control 지출 한도 오류의 관리자 문구 삭제",
-          "en": "Removed \"ask your admin to raise it\" from spend limit and shared budget errors in cloud sessions and under Remote Control"
+          "en": "Removed \"ask your admin to raise it\" from spend limit and shared budget errors in cloud sessions and under Remote Control",
+          "area": [
+            "models-usage"
+          ]
         },
         {
           "kind": "added",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 프롬프트 제안 추가 — Tab 수락, `promptSuggestionEnabled` 로 끔",
-          "en": "[VSCode] Added prompt suggestions wherever the terminal shows them: Tab accepts the suggested next prompt; `promptSuggestionEnabled: false` in Claude Code's settings.json turns them off"
+          "en": "[VSCode] Added prompt suggestions wherever the terminal shows them: Tab accepts the suggested next prompt; `promptSuggestionEnabled: false` in Claude Code's settings.json turns them off",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "added",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] API 키를 만들지 않는 Console 로그인 추가",
-          "en": "[VSCode] Added a Console sign-in that creates no API key"
+          "en": "[VSCode] Added a Console sign-in that creates no API key",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "added",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] SSH·WSL·컨테이너 창의 MCP 리디렉트 URL 입력란 추가",
-          "en": "[VSCode] Added a field to paste the redirect URL when signing in to an MCP server from the panel in SSH, WSL and container windows"
+          "en": "[VSCode] Added a field to paste the redirect URL when signing in to an MCP server from the panel in SSH, WSL and container windows",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 모델이 바뀐 뒤 선택 표시가 옛 모델에 남던 문제 수정",
-          "en": "[VSCode] Fixed the model picker's check mark staying on the old model after Claude Code restarted on another model or the model was switched over Remote Control"
+          "en": "[VSCode] Fixed the model picker's check mark staying on the old model after Claude Code restarted on another model or the model was switched over Remote Control",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 노력 선택기가 상한 위 단계를 제공하던 문제 수정",
-          "en": "[VSCode] Fixed the effort selector offering levels above the effort cap set by your organization or the `maxEffortLevel` setting"
+          "en": "[VSCode] Fixed the effort selector offering levels above the effort cap set by your organization or the `maxEffortLevel` setting",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 로그인 화면이 `allowedProviders` 가 막은 방식을 보이던 문제 수정",
-          "en": "[VSCode] Fixed the sign-in screen offering sign-ins that the managed `allowedProviders` setting refuses"
+          "en": "[VSCode] Fixed the sign-in screen offering sign-ins that the managed `allowedProviders` setting refuses",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] MCP 도구 권한 창이 묻는 이유를 알리지 않던 문제 수정",
-          "en": "[VSCode] Fixed the permission prompt for MCP tools not saying why Claude Code asks when a safety check raises the question"
+          "en": "[VSCode] Fixed the permission prompt for MCP tools not saying why Claude Code asks when a safety check raises the question",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 조직 설정 로드 실패 안내 문구 수정",
-          "en": "[VSCode] Fixed the message for organization settings that couldn't load saying to run a command again; it now says to try again, matching the tab's Retry link"
+          "en": "[VSCode] Fixed the message for organization settings that couldn't load saying to run a command again; it now says to try again, matching the tab's Retry link",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "improved",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 신뢰하지 않은 폴더 안내 개선",
-          "en": "[VSCode] Improved the note shown for an untrusted folder: it now says why the extension is off and how to turn it on"
+          "en": "[VSCode] Improved the note shown for an untrusted folder: it now says why the extension is off and how to turn it on",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "improved",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 실행이 차단될 때의 오류 안내 개선",
-          "en": "[VSCode] Improved the error shown when the system refuses to run Claude Code: it now says your IT team can allow a blocked program"
+          "en": "[VSCode] Improved the error shown when the system refuses to run Claude Code: it now says your IT team can allow a blocked program",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "improved",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] localhost 연결 오류 시 로그인 카드 안내 개선",
-          "en": "[VSCode] Improved the sign-in card to say what to do when the browser shows a connection error for localhost"
+          "en": "[VSCode] Improved the sign-in card to say what to do when the browser shows a connection error for localhost",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "changed",
           "impact": "internal",
           "weight": 3,
           "ko": "[VSCode] 설치 링크의 마켓플레이스 확인 버튼 문구 변경",
-          "en": "[VSCode] Changed the install link's marketplace confirmation button to \"Trust marketplace and continue\""
+          "en": "[VSCode] Changed the install link's marketplace confirmation button to \"Trust marketplace and continue\"",
+          "area": [
+            "ide-desktop"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "user",
           "weight": 3,
           "ko": "클라우드 세션의 MCP 도구 설명 잘림 한도를 16,384자로 수정",
-          "en": "[Claude Code on the web] Fixed new cloud sessions cutting MCP tool descriptions loaded through tool search at 4,096 characters; the limit is now 16,384, as in other Claude Code sessions"
+          "en": "[Claude Code on the web] Fixed new cloud sessions cutting MCP tool descriptions loaded through tool search at 4,096 characters; the limit is now 16,384, as in other Claude Code sessions",
+          "area": [
+            "cloud-sessions"
+          ]
         },
         {
           "kind": "fixed",
           "impact": "internal",
           "weight": 3,
           "ko": "[Claude Tag] Slack 의 아티팩트 링크 카드가 안 뜨던 문제 수정",
-          "en": "[Claude Tag] Fixed artifact links pasted in Slack getting no card when the poster's Claude sign-in had expired in a workspace their organization doesn't manage; a plain card now appears"
+          "en": "[Claude Tag] Fixed artifact links pasted in Slack getting no card when the poster's Claude sign-in had expired in a workspace their organization doesn't manage; a plain card now appears",
+          "area": [
+            "claude-tag"
+          ]
         }
       ]
     },
