@@ -46,6 +46,23 @@ classify_one() {
   judge_call "$ROOT/prompts/classify.md" "$in" "$out"
 }
 
+# 조각(`{버전}@{번호}`, build.py `_chunks`) 판정을 받는 자리 — 하위 디렉터리라 merge 가 읽는 `*.json` 에
+# 섞이지 않는다.
+PARTS="$JUDGED_DIR/parts"
+mkdir -p "$PARTS"
+
+# 판정 파일이 없으면 merge 가 그 릴리스만 거부하므로, 조각이 하나라도 실패한 릴리스는 잇지 않는다.
+join_release() { # join_release <버전>
+  local base="$1"
+  case "$failed " in *" $base@"*) echo "::warning::$base — 실패한 조각이 있어 잇지 않는다"; return ;; esac
+  jq -s '{releases: [.[0].releases[0] + {items: [.[].releases[0].items[]]}]}' "$PARTS/$base"@*.json \
+    > "$JUDGED_DIR/$base.json" 2>/dev/null || {
+    rm -f "$JUDGED_DIR/$base.json"
+    echo "::warning::$base — 조각 판정을 잇지 못했다"
+    failed="$failed $base"
+  }
+}
+
 failed=''
 found=0
 for f in "$PENDING_DIR"/*.json; do
@@ -53,10 +70,11 @@ for f in "$PENDING_DIR"/*.json; do
   [ -e "$f" ] || break
   found=$((found + 1))
   v=$(basename "$f" .json)
+  case "$v" in *@*) out="$PARTS/$v.json" ;; *) out="$JUDGED_DIR/$v.json" ;; esac
   echo "::group::판정 $v"
-  if classify_one "$f" "$JUDGED_DIR/$v.json"; then
+  if classify_one "$f" "$out"; then
     # 판정기가 0 으로 끝나고도 아무것도 안 쓸 수 있다. 그 침묵을 여기서 끊는다.
-    test -s "$JUDGED_DIR/$v.json" || {
+    test -s "$out" || {
       echo "::warning::$v — 판정이 0 으로 끝났는데 출력 파일이 없다"
       failed="$failed $v"
     }
@@ -65,9 +83,17 @@ for f in "$PENDING_DIR"/*.json; do
     failed="$failed $v"
   fi
   echo "::endgroup::"
+  # 마지막 조각을 마친 자리에서 바로 잇는다 — 루프 끝까지 미루면 단계 시간 제한에 걸렸을 때 다 판정한
+  # 릴리스도 잇지 못하고 버려진다.
+  case "$v" in
+    *@*)
+      last=$(printf '%s\n' "$PENDING_DIR/${v%@*}"@*.json | tail -1)
+      [ "$f" = "$last" ] && join_release "${v%@*}"
+      ;;
+  esac
 done
 
-echo "판정한 릴리스 $found"
+echo "판정 호출 $found (큰 릴리스는 조각마다 한 번)"
 
 if [ -n "$failed" ]; then
   echo "::error::판정 실패:$failed"

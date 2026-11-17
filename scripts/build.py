@@ -61,6 +61,12 @@ PREFIX_RE = re.compile(r"^(\[[^\]]+\]|[A-Za-z][A-Za-z/ ]{0,20}:)\s*")
 # 버전이 판정 입출력의 **파일명**이 되므로, 경로 구분자·상대경로가 섞이지 않는지 본다.
 VERSION_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}")
 
+# 367항목 릴리스(v2.1.326)를 통째로 물었을 때 판정기가 응답마다 약 50항목씩 나눠 쓰다 턴 상한에
+# 걸렸다(실측) — 응답 하나에 Write 한 번으로 끝날 크기로 묶는다.
+# `@` 는 VERSION_RE 밖이라 버전과 섞이지 않는다. classify-all.sh 도 이 구분자를 그대로 쓴다.
+CHUNK_SIZE = 40
+CHUNK_SEP = "@"
+
 
 def kind_of(text: str) -> str:
     """원문 접두어에서 kind 를 읽는다.
@@ -145,7 +151,7 @@ def pending(extracted: Path, summaries: Path, out: Path, split_dir: Path = None)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps({"releases": fresh}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-    # split_dir 이 주어지면 **릴리스마다 한 파일**을 더 쓴다 — 판정을 릴리스마다 나눠 부르기 위한 입력이다.
+    # split_dir 이 주어지면 **판정 입력 파일**을 더 쓴다(나누는 단위는 `_chunks`) — 판정을 나눠 부르기 위한 입력이다.
     # 파일 하나의 형태는 통짜 pending.json 과 같게 둔다 — 프롬프트와 merge 의 계약이 릴리스 수와
     # 무관해진다.
     if split_dir is not None:
@@ -157,11 +163,21 @@ def pending(extracted: Path, summaries: Path, out: Path, split_dir: Path = None)
         for r in fresh:
             if not VERSION_RE.fullmatch(r["version"]):
                 raise ValueError(f"파일명으로 쓸 수 없는 버전: {r['version']!r}")
-            body = {"releases": [r]}
-            (split_dir / f"{r['version']}.json").write_text(
-                json.dumps(body, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-            )
+            for name, part in _chunks(r):
+                _write_json_atomic(split_dir / f"{name}.json", {"releases": [part]})
     return len(fresh)
+
+
+def _chunks(release: dict) -> list:
+    # 번호를 0 으로 채운다 — 판정 루프가 파일 이름 정렬로 항목 순서를 되찾는다. 조각 판정을 릴리스 하나로
+    # 잇는 것은 판정 루프(`classify-all.sh`)이고, merge 는 릴리스마다 판정 파일 하나를 받는다.
+    items = release["items"]
+    if len(items) <= CHUNK_SIZE:
+        return [(release["version"], release)]
+    return [
+        (f"{release['version']}{CHUNK_SEP}{n:03d}", dict(release, items=items[start:start + CHUNK_SIZE]))
+        for n, start in enumerate(range(0, len(items), CHUNK_SIZE), 1)
+    ]
 
 
 def _judged_releases(judged_file: Path) -> tuple:
