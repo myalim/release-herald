@@ -69,6 +69,30 @@ chk "위반한 릴리스는 빠짐"              "$(jq --arg v "$BAD" '[.release
 chk "위반은 사유와 함께 보고됨"         "$(printf '%s' "$OUT" | grep -c "거부: $BAD: 계약 위반")" "1"
 chk "병합 결과가 계약을 지킴"           "$(python3 "$HERE/build.py" validate "$TMP/summaries.json" >/dev/null 2>&1 && echo y || echo n)" "y"
 
+echo "── 조각 — 큰 릴리스를 판정 입력 여럿으로 나눈다 ──"
+# 경계 입력은 CHUNK_SIZE(40)와 CHUNK_SIZE+1 이다 — 상한을 바꾸면 같이 옮긴다. 조각을 잇는 쪽은
+# classify-all.sh 라 그 테스트가 갖는다.
+CH="$TMP/chunk"; mkdir -p "$CH"
+python3 - "$CH" <<'PY'
+import json, sys
+ch = sys.argv[1]
+def rel(v, n):
+    return {"version": v, "date": "2026-11-16", "url": f"https://example.com/{v}",
+            "items": [{"kind": "fixed", "en": f"Fixed {v} item {i}"} for i in range(n)]}
+ext = {"releases": [rel("v9.0.367", 367), rel("v9.0.41", 41), rel("v9.0.40", 40)]}
+open(f"{ch}/extracted.json", "w").write(json.dumps(ext))
+open(f"{ch}/summaries.json", "w").write(json.dumps({"releases": []}))
+PY
+python3 "$HERE/build.py" pending --extracted "$CH/extracted.json" --summaries "$CH/summaries.json" \
+  --out "$CH/pending.json" --split-dir "$CH/pending" >/dev/null
+count() { find "$CH/pending" -name "$1" | wc -l | tr -d ' '; }
+chk "상한 이하는 통짜 파일 하나"        "$(count 'v9.0.40.json')" "1"
+chk "상한을 넘으면 조각으로 나뉨(41→2)"  "$(count 'v9.0.41@*.json')" "2"
+chk "367항목은 조각 10개"               "$(count 'v9.0.367@*.json')" "10"
+chk "조각 하나는 상한을 넘지 않음"       "$(jq -s 'map(.releases[0].items | length) | max' "$CH"/pending/*.json)" "40"
+chk "조각 이름 정렬이 항목 순서"         "$(jq -r '.releases[0].items[0].en' "$(find "$CH/pending" -name 'v9.0.367@*.json' | sort | tail -1)")" "Fixed v9.0.367 item 360"
+chk "조각에도 릴리스 필드가 그대로"      "$(jq -r '.releases[0].url' "$CH/pending/v9.0.41@002.json")" "https://example.com/v9.0.41"
+
 echo
 echo "통과 $PASS · 실패 $FAIL"
 [ "$FAIL" -eq 0 ] || exit 1
