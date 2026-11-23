@@ -1,7 +1,959 @@
 {
   "schema": 1,
-  "generated": "2026-11-21T02:12:54Z",
+  "generated": "2026-11-23T23:58:28Z",
   "releases": [
+    {
+      "version": "v2.1.331",
+      "date": "2026-11-23",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.331",
+      "items": [
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "Bedrock·Google Cloud·Foundry 등 터미널 세션의 Code Mode 지원 추가",
+          "en": "Added Code Mode support in terminal sessions on Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry and Claude Platform on AWS"
+        },
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "Claude apps 게이트웨이에 그룹 조회용 `oidc.groups_jsonpath` 추가",
+          "en": "Added `oidc.groups_jsonpath` to the Claude apps gateway, to read groups from the matching entries of a list of objects with a small subset of JSONPath (RFC 9535)"
+        },
+        {
+          "kind": "added",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`claude doctor` 에 API 연결 상태 확인 섹션 추가",
+          "en": "Added an API connectivity section to `claude doctor` that reports whether the API can be reached, with the HTTP status or the error, or says why it wasn't tested"
+        },
+        {
+          "kind": "added",
+          "impact": "user",
+          "weight": 2,
+          "ko": "탭 모드 음성 입력이 스스로 멈출 때 안내 표시 추가",
+          "en": "Added a notice when tap-mode voice dictation stops by itself, after 15 seconds without recognized speech or at its 2-minute limit"
+        },
+        {
+          "kind": "added",
+          "impact": "user",
+          "weight": 2,
+          "ko": "응답 압축을 끄는 `CLAUDE_CODE_DISABLE_RESPONSE_COMPRESSION` 추가",
+          "en": "Added `CLAUDE_CODE_DISABLE_RESPONSE_COMPRESSION` to ask for uncompressed model responses behind a proxy that cuts compressed ones off; not advised yet for self-hosted runners or Remote Control"
+        },
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "게이트웨이용 `CLAUDE_GATEWAY_IDP_CONNECT_BY_HOSTNAME=1` 추가",
+          "en": "Added `CLAUDE_GATEWAY_IDP_CONNECT_BY_HOSTNAME=1` for Claude apps gateways: with `oidc.use_proxy: true`, sign-in requests hand the proxy an `https` IdP's hostname even with `NO_PROXY` set"
+        },
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "`claude_code.llm_request` 트레이스 스팬에 `gen_ai.usage.*` 등 추가",
+          "en": "Added `gen_ai.usage.*`, `gen_ai.response.model` and `gen_ai.operation.name` to `claude_code.llm_request` trace spans; `gen_ai.usage.input_tokens` includes prompt cache tokens"
+        },
+        {
+          "kind": "added",
+          "impact": "user",
+          "weight": 2,
+          "ko": "플러그인 매니페스트에 `optionalDependencies` 추가",
+          "en": "Added `optionalDependencies` to plugin manifests: plugins that install with the plugin listing them and can be disabled or uninstalled on their own"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "잘못된 응답에서 MCP 도구 호출이 멈춰 있던 문제 수정",
+          "en": "Fixed MCP tool calls hanging for up to 30 minutes on some malformed replies from a local or WebSocket server"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "헤드리스 실행에서 PushNotification 결과가 잘못 보고되던 문제 수정",
+          "en": "Fixed PushNotification telling a headless run, such as a scheduled one, that the terminal was active in its first minute, instead of saying whether a mobile push was requested"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "`/install-github-app` 이 저장소 선택 단계를 건너뛰던 문제 수정",
+          "en": "Fixed `/install-github-app` skipping the repository step after setup warnings when no repository was found, and Esc not going back from its workflow list and sign-in steps"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "좁은 창에서 한 줄 도구 결과가 줄임표 없이 잘리던 문제 수정",
+          "en": "Fixed one-line tool results cut with no ellipsis in narrow windows, Markdown stars in the Auto mode tab of /permissions, and a hook's reason to stop a forked skill showing twice"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "24~26행 창에서 `/diff` 키 힌트와 파일 선택이 안 되던 문제 수정",
+          "en": "Fixed `/diff` hiding its key hints and not selecting files in windows of 24 to 26 rows, and leaving out files added with `git add -N` in a repository with no commits"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "짧은 창에서 첫 실행 테마 목록이 적게 표시되던 문제 수정",
+          "en": "Fixed the first-run theme list showing too few themes in short windows, and /usage and other tall screens coming out garbled there"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "전체 화면 `/bug` 에서 예·아니오 선택이 가려지던 문제 수정",
+          "en": "Fixed `/bug` in fullscreen hiding its Yes and No answers behind a long report, and Yes staying out of view in very short windows"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`/compact` 과 자동 압축이 대화 요약 일부를 잃던 문제 수정",
+          "en": "Fixed /compact and auto-compact sometimes losing part of the conversation summary when the summary quoted certain XML tags"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "권한 규칙으로 서브에이전트 메시지가 버려진 것을 Claude 가 모르던 문제 수정",
+          "en": "Fixed Claude not being told when permission rules on the Agent tool dropped its queued message to a subagent that had already ended"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "Remote Control 메시지가 끝나던 응답보다 위에 표시되던 문제 수정",
+          "en": "Fixed a Remote Control message sometimes showing above the reply that was finishing when it was sent"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "Claude Desktop 의 Stop 훅이 마지막 응답을 놓치던 문제 수정",
+          "en": "Fixed Stop hooks that read the transcript missing the last reply in Claude Desktop; SubagentStop hooks now wait for it too"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "응답이 조용히 끊길 때 턴·서브에이전트가 실패하던 문제 수정",
+          "en": "Fixed turns and subagents failing in cloud sessions, or timing out on long replies elsewhere, when a reply went silent while Claude was still thinking; Claude Code now tries the request once more"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "네트워크 파일 읽기가 멈출 때 Esc·Stop 이 지연되던 문제 수정",
+          "en": "Fixed Esc and Stop waiting about a minute or more when the contents of a cloud or network file that Claude is reading stall"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "다른 권한 모드로 `--resume` 한 Code Mode 세션이 스크립트 제한을 잃던 문제 수정",
+          "en": "Fixed Code Mode sessions resumed with `--resume` or `--continue` in another permission mode losing thinking and the prompt cache; one begun in a mode that asks keeps that mode's limits on scripts"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "스크립트 실행 중 `!`·슬래시 입력 시 Code Mode 가 매초 요청하던 문제 수정",
+          "en": "Fixed Code Mode sending a request about every second when a `!` or slash command was typed while a script was running"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "플러그인 업데이트 중단 시 일부만 설치된 폴더가 로드되던 문제 수정",
+          "en": "Fixed an interrupted or failed plugin update leaving a partial plugin folder that later loaded with skills or other components missing (#102186)"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "Windows: FAT32·exFAT 파일 쓰기가 매번 권한을 묻던 문제 수정",
+          "en": "Windows: Fixed file writes on FAT32 and exFAT drives asking for permission every time in some plugin sessions"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "null 출력이나 트레이스백 없는 오류가 담긴 노트북 읽기 실패 수정",
+          "en": "Fixed Claude failing to read a notebook that has a null output or an error output with no traceback"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "복원이 실패한 뒤 되감기가 파일을 삭제하던 문제 수정",
+          "en": "Fixed a rewind deleting files after a restore had failed"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "auto 모드가 `/loop` 중지 호출을 거부해 다음 실행이 남던 문제 수정",
+          "en": "Fixed auto mode sometimes refusing Claude's call to stop a /loop, which left the next wake-up to fire"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "Workflow 에이전트의 백그라운드 셸·MCP 서버가 남아 있던 문제 수정",
+          "en": "Fixed a Workflow agent's background shells and MCP servers sometimes being left running after it handed back its report"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "Windows: `/desktop` 이 구버전 설치 파일을 받던 문제 수정",
+          "en": "Windows: Fixed `/desktop` downloading the older Claude Desktop installer, and asking for an update when an older install's folder was left behind"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "관리 설정 승인이 필요할 때 플러그인 명령이 멈추던 문제 수정",
+          "en": "Fixed `claude plugin install`, `marketplace add` and similar commands hanging with no output when managed settings needed an approval that could not be asked for"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`Agent(model:*)` 권한 규칙이 서브에이전트 후속 메시지를 막던 문제 수정",
+          "en": "Fixed a permission rule on a subagent's model, such as `Agent(model:*)`, blocking Claude's follow-up message to a subagent started on this version with no model named"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "PermissionRequest 훅이 `Skill(name:*)` 허용 규칙을 저장하지 못하던 문제 수정",
+          "en": "Fixed PermissionRequest hooks not saving `Skill(name:*)` allow rules outside local settings"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "그룹 예산에 막혔을 때 \"Ask your admin\" 안내가 틀리던 문제 수정",
+          "en": "Fixed \"Ask your admin\" asking to raise your own limit when your team's pooled group budget blocked you, and saying \"Request sent\" when an admin had approved your request in the last few minutes"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "Code Mode 가 긴 스크립트 출력의 중간을 잃던 문제 수정",
+          "en": "Fixed Code Mode losing the middle of a long script output; Claude now gets a path to the uncut text (#111373)"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "바쁠 때 홀드 투 토크 음성 입력이 일찍 멈추던 문제 수정",
+          "en": "Fixed hold-to-talk dictation stopping early and losing words when Claude Code was busy"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "`--bare` Code Mode 가 스크립트 호출 범위를 알리지 않던 문제 수정",
+          "en": "Fixed Code Mode with `--bare` not telling Claude what its scripts can call"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "이름 없는 도구 호출을 받았을 때 크래시하던 문제 수정",
+          "en": "Fixed a crash when a custom API endpoint returned a tool call with no tool name; the call now fails with an error and the session continues"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "Windows: 메모리가 거의 없을 때 발생할 수 있던 크래시 수정",
+          "en": "Windows: Fixed a possible crash when the machine is almost out of memory"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "일부 응답에서 CLI 가 멈추고 인용문이 사라지던 문제 수정",
+          "en": "Fixed the CLI freezing on some replies, and quoted text sometimes going missing or showing twice"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "Windows: 레지스트리 관리 설정에 비ASCII 문자가 있으면 시작이 거부되던 문제 수정",
+          "en": "Windows: Fixed Claude Code refusing to start when managed settings in the registry contain non-ASCII characters such as Japanese (#93280)"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "Windows: Remote Control 에서 새 subagent 의 단계가 표시되지 않던 문제 수정",
+          "en": "Windows: Fixed Remote Control clients showing no steps for a new subagent"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "`@file#10-12` 형태 @-mention 이 파일 전체를 첨부하던 문제 수정",
+          "en": "Fixed @-mentions written as `@file#10-12` attaching the whole file instead of those lines"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "붙여넣은 artifact 초대 링크를 잘못 읽던 문제 수정",
+          "en": "Fixed Claude misreading a pasted artifact invitation link; it now asks you to accept the invitation and paste the artifact's own link"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "임시 디스크가 꽉 찼을 때 샌드박스 Bash 명령이 시작되지 않던 문제 수정",
+          "en": "Fixed sandboxed Bash commands sometimes failing to start on a full temp disk, for sandboxes whose file rules keep commands out of the temp directory"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 2,
+          "ko": "스크린 리더 모드 입력 속도 개선 — 긴 세션에서 특히 크게 개선",
+          "en": "Improved typing speed in screen reader mode, most of all in long sessions"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 2,
+          "ko": "시작 시간 개선 — 연속 실행 시 모델 목록, git 저장소 밖에서 git 대기 생략",
+          "en": "Improved start-up time: a session started soon after another no longer waits for the model list, and one outside a git repository without `.claude/settings.local.json` no longer waits on git"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "Windows: 셸 시작 파일이 없는 환경에서 세션 첫 Bash 명령 속도 개선",
+          "en": "Windows: Improved the speed of the first Bash command in a session on machines with no custom shell start-up files"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 2,
+          "ko": "플러그인 자동 업데이트 알림에 의존성으로 새로 설치된 플러그인 구분 표시",
+          "en": "Improved the plugin auto-update notice to name plugins it newly installs as dependencies, separately from updated plugins"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 2,
+          "ko": "Code Mode 도구 검색에 MCP 도구 설명·제한·형식·기본값 더 표시",
+          "en": "Improved Code Mode tool search to show more of an MCP tool's description, with its limits, formats and defaults"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "/login 과 `claude auth login --console` 의 Console 로그인 링크 단축",
+          "en": "Improved the Console sign-in link shown by /login and `claude auth login --console`: it is now much shorter"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "artifact 목록에 웹 페이지 표시 — Claude Docs 커넥터로 열기 시도 감소",
+          "en": "Improved Claude's list of your artifacts: it now marks web pages, so Claude is less likely to try opening one with the Claude Docs connector"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 2,
+          "ko": "짧은 터미널에서 `/cd`·`/add-dir` 폴더 신뢰 프롬프트 표시 개선",
+          "en": "Improved the folder trust prompts in short terminals: fullscreen `/cd` and `/add-dir` show their choices in fewer rows, and the prompt at launch keeps the folder path in view when it has many warnings"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "`/ide`·`/clear`·`/compact`·`/rewind` 확인 질문에서 Yes 가 앞으로 — Down+Enter 는 No",
+          "en": "Changed the questions for stopping auto-connect in `/ide` and for `/clear`, `/compact` or `/rewind` in a subagent's view to list Yes first; they still start on No, so Down then Enter now answers No"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "`PermissionDenied` 훅의 `retry: true` 해석 변경 — 요청한 호출만 재시도",
+          "en": "Changed what a `PermissionDenied` hook's `retry: true` tells Claude: make the refused call again only if you asked for that call"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "관리 `extraKnownMarketplaces` 마켓플레이스 자동 업데이트 기본값 전환 예고 (11/30 이후)",
+          "en": "Changed in a future release, on or after November 30, 2026: plugin marketplaces in managed `extraKnownMarketplaces` will auto-update by default. To opt one out, set `\"autoUpdate\": false` on its entry"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "Windows: `HKLM` 정책이 `managed-settings.json` 보다 우선 — 업그레이드 전 값 점검 필요",
+          "en": "Windows: Changed start-up with managed settings in the registry: check them before upgrading, as an `HKLM` policy outranks `managed-settings.json` and a broken value can stop the start"
+        },
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 로그아웃 시 claude.ai 로그인 해제 미확인 경고와 해제 페이지 링크 추가",
+          "en": "[VSCode] Added a warning and a link to the revoke page when you log out and the request to revoke your claude.ai login isn't confirmed"
+        },
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 매우 큰 선택 영역·첨부 파일 전송 전 안내와 길이 초과 조언 추가",
+          "en": "[VSCode] Added a notice before sending a very large selection or attached text file, and advice under \"Prompt is too long\" that names the large part and what to do next"
+        },
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 노트북 셀 메뉴에 \"Add Cell to Chat\" 추가 — 출력·오류까지 첨부",
+          "en": "[VSCode] Added \"Add Cell to Chat\" to the notebook cell menu, which attaches a cell with its outputs or error"
+        },
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 오류·경고·실패한 테스트에 \"Fix with Claude Code\" 빠른 수정 추가",
+          "en": "[VSCode] Added \"Fix with Claude Code\" as a quick fix for errors and warnings and to failed tests in the test peek and the Test Results view, which puts the problem into the chat box"
+        },
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] Source Control 변경 파일 우클릭 메뉴에 \"Add to Chat\" 추가",
+          "en": "[VSCode] Added \"Add to Chat\" to the right-click menu of changed files in the Source Control view"
+        },
+        {
+          "kind": "added",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 병합 충돌 파일에 \"Resolve Merge Conflicts\" 추가",
+          "en": "[VSCode] Added \"Resolve Merge Conflicts\" to the editor title of a file with merge conflicts and to the Merge Changes group in Source Control"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 선택 코드 태그·모드 버튼·슬래시 메뉴 등 표시 문제 수정",
+          "en": "[VSCode] Fixed raw tags for selected code under a reworded prompt, the mode button flashing Manual, the slash menu hiding its highlighted row, a broken sign-in image, and a blinking Accept/Reject bar"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 분기한 대화가 원본 대화의 plan 파일을 덮어쓰던 문제 수정",
+          "en": "[VSCode] Fixed a forked conversation overwriting the original conversation's plan file; a fork or rewind that can't copy the plan now shows a warning"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 음성 입력 연결 끊김을 음성 미인식으로 알리던 문제 수정",
+          "en": "[VSCode] Fixed voice dictation saying no speech was recognized when its connection closed or never opened; it now says the connection was lost or couldn't connect"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 패널을 닫으면 보내지 않은 곁 질문이 사라지던 문제 수정",
+          "en": "[VSCode] Fixed an unsent side question being lost when its panel closes"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 세션 이름 변경 후 Escape 가 Claude 를 중단시키던 문제 수정",
+          "en": "[VSCode] Fixed Escape stopping Claude after renaming a session, and typing going nowhere after closing the session history with Escape"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 기록에서 이어받은 탭에서 \"still connecting\" 이 표시되던 문제 수정",
+          "en": "[VSCode] Fixed Rename, Mark as Unread and Add to Group saying \"still connecting\" on a tab that resumed a session from its history"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 넓은 표·긴 경로·긴 오류가 잘리던 표시 문제 수정",
+          "en": "[VSCode] Fixed wide tables and long paths cut off, long errors hiding their close button, errors out of view in the Add MCP server form and Chrome dialog, and plugin pictures ignoring the editor theme"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] Rewind 대화상자가 가려지고 포커스가 옮겨가던 문제 수정",
+          "en": "[VSCode] Fixed later prompts and the message box covering the Rewind code dialog, and focus jumping from \"Never mind\" to \"Rewind\" when it finishes checking files"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 명령 메뉴에서 Enter 가 잘못된 행을 실행할 수 있던 문제 수정",
+          "en": "[VSCode] Fixed the command menu keeping an earlier match highlighted while you type more in its filter, so Enter could run the wrong row"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] @ 메뉴가 검색 결과 도착 전 \"No files found\" 를 띄우던 문제 수정",
+          "en": "[VSCode] Fixed the @ menu showing \"No files found\" before its first search results arrived, or when it couldn't search all files of a very large workspace, which it now says"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 삭제 확인·곁 질문 패널에서 Escape 가 Claude 를 중단시키던 문제 수정",
+          "en": "[VSCode] Fixed Escape stopping Claude at a Remove or Delete confirmation in MCP, Hooks and Memory dialogs, on a side question panel's button or link, and on the Bookmarks button with its panel open"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] diff 의 + − 기호가 빈 사각형으로 보이던 문제 수정",
+          "en": "[VSCode] Fixed empty boxes showing instead of the + and − signs in diffs (#73069)"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 패널 크기 변경 후 채팅이 답변을 따라가지 않던 문제 수정",
+          "en": "[VSCode] Fixed the chat no longer following Claude's reply after the panel was resized, or hidden and shown again"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] bypass 모드 대화가 초기 권한 모드 대신 Auto 로 열리던 문제 수정",
+          "en": "[VSCode] Fixed a chat left in bypass permissions mode reopening in Auto mode instead of your initial permission mode when settings disable bypass"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 일부 CSS 코드 블록·diff 에서 채팅 패널이 멈추던 문제 수정",
+          "en": "[VSCode] Fixed the chat panel freezing on some CSS code blocks and diffs"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] API 오류·슬래시 명령 후 컨텍스트 사용량 표시가 사라지던 문제 수정",
+          "en": "[VSCode] Fixed the context usage indicator disappearing after an API error, \"Prompt is too long\", or a slash command"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "[VSCode] 대기 중인 `/clear` 뒤에 쌓인 메시지가 사라지던 문제 수정",
+          "en": "[VSCode] Fixed a message queued behind a queued /clear being lost"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "VSCode 플러그인 관리의 검색창 유실·결과 없음 안내·목록 로드 실패 안내 누락 수정",
+          "en": "[VSCode] Fixed Manage Plugins losing its search box or showing no message when a search has no match, and not saying that the list of available plugins failed to load"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode 노트북·커스텀 에디터 파일의 변경 제안이 수락·거부 없는 탭으로 열리던 문제 수정",
+          "en": "[VSCode] Fixed proposed changes to notebooks and files with a custom editor opening in a tab with no Accept or Reject that stayed open after the answer"
+        },
+        {
+          "kind": "fixed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "VSCode Team·Enterprise 사용자에게 `/usage-credits` 실행을 안내하던 지출 한도 메시지 수정",
+          "en": "[VSCode] Fixed the spend limit message telling Team and Enterprise members to run `/usage-credits`, which can't send a request to their admin from the panel"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode `/` 메뉴의 Tab·온보딩 제안 클릭으로 작성 중인 메시지가 지워지던 문제 수정",
+          "en": "[VSCode] Fixed a written message being wiped by Tab on a command in the \"/\" button's menu or by a click on an onboarding suggestion"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode 작업 중 코드를 되감은 뒤에도 Claude 가 파일을 계속 수정하던 문제 수정",
+          "en": "[VSCode] Fixed Claude continuing to edit files after you rewind code while it is working"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode `/tasks`·`/copy`·`/export`·`/plan` 실행 후 입력 중인 텍스트 유실 수정",
+          "en": "[VSCode] Fixed typed text being lost after /tasks, /copy, /export, a skipped /feedback, or /plan while already in plan mode"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "VSCode 질문 카드의 `Other` 답변이 Ctrl/Cmd+Enter 에서 유실되던 문제 수정",
+          "en": "[VSCode] Fixed the question card dropping a typed \"Other\" answer on Ctrl/Cmd+Enter, and sending the word \"Other\" when nothing was typed"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "VSCode 이름 없는 도구 호출이 포함된 대화에서 패널 오류가 표시되던 문제 수정",
+          "en": "[VSCode] Fixed the panel showing \"Something went wrong\" for a conversation in which a gateway sent a tool call with no name"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode 심링크로 열린 폴더에서 저장 안 된 변경 누락·Claude 수정 덮어쓰기 수정",
+          "en": "[VSCode] Fixed unsaved changes being missed, and Claude's edit being overwritten by the next save, in a folder opened through a symlink"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode Claude 가 `cd` 로 폴더를 바꾼 뒤 @-멘션이 잘못된 파일을 첨부하던 문제 수정",
+          "en": "[VSCode] Fixed @-mentions attaching nothing, or another file of the same name, after Claude changed folders with `cd`"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode 선택 중 방향키가 입력 텍스트를 이전 프롬프트로 바꾸던 문제 수정",
+          "en": "[VSCode] Fixed the arrow keys replacing typed text with an old prompt while selecting, and dropping edits to a recalled prompt"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "VSCode 권한 프롬프트가 열린 동안 추가한 @-멘션이 유실되던 문제 수정",
+          "en": "[VSCode] Fixed an @-mention added while a permission prompt was open being lost"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "VSCode 단축키가 열린 대화상자를 대신 응답해 파일 복원·브랜치 전환되던 문제 수정",
+          "en": "[VSCode] Fixed shortcuts such as Ctrl+1, Alt+1 or Ctrl+Space answering an open dialog, which could restore files in the rewind confirmation or switch the git branch"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode 파일 경로·주석으로 시작하는 프롬프트에서 선택 코드가 빠지던 문제 수정",
+          "en": "[VSCode] Fixed prompts that start with a file path or code comment being sent without the selected code and having no fork or rewind menu"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "VSCode 채팅의 파일 링크가 편집기 연결 설정을 무시하던 문제 수정",
+          "en": "[VSCode] Fixed file links in the chat ignoring your editor associations for files in the workspace, except notebooks (#81482)"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "VSCode 탭을 닫은 뒤에도 선택한 줄이 다음 메시지에 첨부되던 문제 수정",
+          "en": "[VSCode] Fixed selected lines staying attached to your next message after their file's tab was closed"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "VSCode Shift+Tab 으로 Plan 모드에 간 뒤 새 세션이 Edit 로 시작하던 문제 수정",
+          "en": "[VSCode] Fixed new sessions starting in Edit automatically after pressing Shift+Tab through it to reach Plan mode"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "VSCode 권한 프롬프트에서 수정한 명령이 입력한 줄바꿈 없이 실행되던 문제 수정",
+          "en": "[VSCode] Fixed an edited command on the permission prompt running without the line breaks that were typed or pasted into it"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode 새 Claude 탭의 입력창 포커스 누락·입력 텍스트가 전송되던 문제 수정",
+          "en": "[VSCode] Fixed a newly opened Claude tab not focusing its message box, or taking the keyboard late from the terminal or command palette and sending the typed text as a prompt"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode `@app.ts#5-10` 형태의 줄 범위가 파일 전체를 보내던 문제 수정",
+          "en": "[VSCode] Fixed Alt+K line ranges such as `@app.ts#5-10` sending the whole file, or its first 2,000 lines, instead of the selected lines"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode 여러 subagent 승인 대기 시 diff 탭 순서·앞 수정 취소되던 문제 수정",
+          "en": "[VSCode] Fixed diff tabs opening out of order when several subagents wait for approval, and a later edit to the same file cancelling an earlier one"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode `/api` 처럼 다른 텍스트 옆의 `/단어` 에서 Enter 가 오동작하던 문제 수정",
+          "en": "[VSCode] Fixed Enter rewriting a message or running a menu action when a `/word` such as the path `/api` stands beside other text, and running a typed slash command without its arguments"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "VSCode Electron 실행 래퍼·훅·MCP 에 `ELECTRON_RUN_AS_NODE=1` 설정 필요",
+          "en": "[VSCode] Fixed Electron apps and extension tests failing to start from Claude, a hook or an MCP server; a wrapper, hook or server that runs VS Code as Node must now set `ELECTRON_RUN_AS_NODE=1`"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode diff 에서 부분 거부·수정한 내용을 Claude 가 전달받지 못하던 문제 수정",
+          "en": "[VSCode] Fixed Claude not being told when you reject part of a proposed edit or change it in the diff view before accepting"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "VSCode 권한 프롬프트의 Escape 가 취소 대신 입력 중인 지시를 전송하던 문제 수정",
+          "en": "[VSCode] Fixed Escape on a permission prompt sending a half-typed instruction to Claude instead of cancelling"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "VSCode 채팅의 Ctrl+J·Ctrl+O 가 VS Code 터미널·파일 열기도 띄우던 문제 수정",
+          "en": "[VSCode] Fixed Ctrl+J and Ctrl+O in the chat also opening VS Code's terminal or Open File dialog on Windows and Linux"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode @ 메뉴가 빠른 Tab·Enter 에서 다른 파일을 넣던 문제 수정",
+          "en": "[VSCode] Fixed the @ menu inserting the wrong file on a quick Tab or Enter, and Enter not sending a prompt that ends in an @word with no matching file"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode 시작 중 탭을 닫으면 새 탭이 비고 사이드바가 로드되지 않던 문제 수정",
+          "en": "[VSCode] Fixed new Claude tabs staying blank and the side bar failing to load after closing a tab while Claude was still starting"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode 빠른 더블클릭이 첫 클릭 후 나타난 버튼·행을 누르던 문제 수정",
+          "en": "[VSCode] Fixed a quick double click in the panel pressing a button or row that appeared after the first click, or starting a second compaction from the context usage circle"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode settings.json 이 비었거나 BOM 으로 시작할 때 모델 전환 실패 수정",
+          "en": "[VSCode] Fixed switching models failing with \"Settings file is not valid JSON\" when settings.json is empty or starts with a byte order mark"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode 긴 대화를 포크·되감을 때마다 메모리가 증가하던 문제 수정",
+          "en": "[VSCode] Fixed memory growing with each fork or rewind of a long conversation until the window was reloaded"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "VSCode Focus 뷰의 계획 승인 카드에 계획 코멘트가 표시되지 않던 문제 수정",
+          "en": "[VSCode] Fixed plan comments not showing on the plan approval card in Focus view"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "VSCode 줄 번호 없는 파일 링크가 열린 파일의 커서를 1행으로 옮기던 문제 수정",
+          "en": "[VSCode] Fixed file links without a line number moving the cursor of an open file to line 1"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode 같은 패널의 뒤쪽 대화가 권한·답변을 요구할 때 알림 누락 수정",
+          "en": "[VSCode] Fixed a missing notification when a conversation running behind another one in the same panel needs a permission or an answer"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode Claude Code 시작이 느리거나 실패할 때 플러그인 관리가 열리지 않던 문제 수정",
+          "en": "[VSCode] Fixed Manage Plugins not loading when Claude Code is slow to start or fails to start, so a plugin that blocks startup can be turned off"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode `files.encoding` 이 UTF-8 이 아닐 때 diff 의 비ASCII 문자 깨짐 수정",
+          "en": "[VSCode] Fixed proposed diffs showing and saving garbled non-ASCII text when `files.encoding` is not UTF-8"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode 히브리·아랍·페르시아어 줄의 RTL 표식이 `\\u200F` 로 저장되던 문제 수정",
+          "en": "[VSCode] Fixed approved edits and writes saving right-to-left marks as literal `\\u200F` escapes on lines with Hebrew, Arabic or Persian text"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "VSCode Claude 프로세스 종료·시작 중에 모델 선택이 무시되던 문제 수정",
+          "en": "[VSCode] Fixed a model pick being ignored for the next message when Claude's process had ended or was still starting"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "VSCode 프로세스 종료 후 Rewind 가 세션 없음으로 표시되던 문제 수정",
+          "en": "[VSCode] Fixed Rewind showing \"No active session\" after Claude's process had ended"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "VSCode 브라우저 미연결 시 @ 입력이 탭마다 보조 프로세스를 남기던 문제 수정",
+          "en": "[VSCode] Fixed typing @ leaving a helper process running per tab when no browser is connected, except when Claude in Chrome's service can't be reached"
+        },
+        {
+          "kind": "fixed",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode 세션 목록이 트랜스크립트를 한 번에 모두 열어 멈추고 세션이 빠지던 문제 수정",
+          "en": "[VSCode] Fixed the session list opening every transcript at once, which stalled the editor's extensions and could leave sessions out in projects with many sessions"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "VSCode Python 확장 설치 후 Python 없는 폴더의 첫 응답 지연 개선",
+          "en": "[VSCode] Improved the time to the first reply in a new folder when the Python extension is installed and the folder has no Python"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "VSCode 로그인 화면에 요청 거부 때문에 열렸음을 표시",
+          "en": "[VSCode] Improved the sign-in screen to say when it opened because a request was refused"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode 긴 대화 열기·복원·재진입 속도 개선",
+          "en": "[VSCode] Improved the speed of opening, restoring and switching back to long conversations, most of all with many file edits or where git is slow"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode 긴 대화에서 응답 중 입력·파일 쓰기 멈춤 현상 대폭 개선",
+          "en": "[VSCode] Improved responsiveness in long chats: smooth typing and large file writes while a reply streams, faster permission prompts, and far less freezing on send with accessibility support on"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode 패널·새 탭 시작 속도와 메모리 사용 개선",
+          "en": "[VSCode] Improved startup and memory use: the panel and new chat tabs open faster, a first message in a new tab is answered sooner, and on Pro and Max plans the folder trust dialog comes up sooner"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "VSCode 원격 창(SSH·WSL·컨테이너) 시작·응답·세션 재개 속도 개선",
+          "en": "[VSCode] Improved speed in remote windows (SSH, WSL, containers): the panel starts, replies appear and sessions reopen faster"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "VSCode 메모리가 부족한 환경에서 유휴 후 첫 응답 속도 개선",
+          "en": "[VSCode] Improved the time to a response for the first message after a chat has been idle for a few minutes on a machine that is low on memory"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "VSCode 느린·백신 검사 디스크에서 대화 시작·복원 속도 개선",
+          "en": "[VSCode] Improved how fast chats start, open from history and come back after a restart on slow or antivirus-scanned disks"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 3,
+          "ko": "VSCode 재진입한 대화의 diff 표시 속도 개선",
+          "en": "[VSCode] Improved how fast diffs appear in reopened conversations, and removed diff menu entries that did not work"
+        },
+        {
+          "kind": "improved",
+          "impact": "user",
+          "weight": 2,
+          "ko": "VSCode `@` 파일 메뉴에 열린 탭 파일을 최근 사용순으로 먼저 표시",
+          "en": "[VSCode] Improved the @ file menu to list the files of open editor tabs first, the most recently used on top"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "VSCode 제안 diff 저장이 오른쪽(제안) 편집 후에만 수락되도록 변경",
+          "en": "[VSCode] Changed saving a proposed diff to accept it only after you click or type in its proposed (right) side; a notification says when a save is refused or a close with Save applies nothing"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 1,
+          "ko": "VSCode 터미널 세션 diff 가 키보드 포커스를 옮기지 않고 열리도록 변경",
+          "en": "[VSCode] Changed diffs from a terminal session to open without moving keyboard focus, and beside a file with unsaved changes; to answer, click Accept or use the terminal"
+        },
+        {
+          "kind": "changed",
+          "impact": "internal",
+          "weight": 3,
+          "ko": "`allowManagedPermissionRulesOnly` 설정 시 권한 카드에 예·아니오만 표시",
+          "en": "[VSCode] Changed permission cards to show only Yes and No when `allowManagedPermissionRulesOnly` is set and the card would offer an allow rule; key 2 on those cards now answers No"
+        },
+        {
+          "kind": "changed",
+          "impact": "user",
+          "weight": 3,
+          "ko": "VSCode 찾기 상자가 포커스를 잃으면 Enter 무시하고 안내 표시",
+          "en": "[VSCode] Changed a Claude tab to ignore Enter and show a notice when its Find box has lost the keyboard"
+        }
+      ]
+    },
     {
       "version": "v2.1.330",
       "date": "2026-11-20",
