@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/myalim/release-herald/compare/v0.2.0...v0.2.1) (2026-11-17)
+
+
+### Bug Fixes
+
+* 큰 릴리스 판정을 조각으로 나눠 턴 상한 초과 해소 ([#21](https://github.com/myalim/release-herald/issues/21)) ([122f74c](https://github.com/myalim/release-herald/commit/122f74cb0d39c8910bffbe599ad96c2dd2e3a523))
+
 ## [0.2.0](https://github.com/myalim/release-herald/compare/v0.1.1...v0.2.0) (2026-10-06)
 
 
